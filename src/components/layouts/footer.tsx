@@ -29,6 +29,7 @@ export const Footer = () => {
         label={
           <ActionIcon
             size="lg"
+            aria-label="Scroll to top"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
             <RiArrowUpLine />

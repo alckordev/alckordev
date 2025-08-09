@@ -9,6 +9,7 @@ export default Button.extend({
         root: {
           "--button-bg": theme.colors[color][5],
           "--button-hover": alpha(theme.colors[color][5], 0.9),
+          "--button-color": theme.colors["dark"][9],
           "--mantine-color-disabled": alpha(theme.colors[color][5], 0.5),
           "--mantine-color-disabled-color": alpha("#fff", 0.5),
         },
