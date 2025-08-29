@@ -1,0 +1,133 @@
+---
+title: "How to Fix Hydration Errors with next-themes in Next.js (App Router)"
+abstract: "Resolve the ‘hydration mismatch’ warnings caused by next-themes in Next 13/14 projects using the App Router. Learn how to create an SSR-friendly ThemeProvider and consume it in any client component via the `useTheme` hook."
+publishedAt: "2025-08-05 19:00:00"
+topics:
+  - name: Next.js
+    slug: nextjs
+---
+
+**Hydration errors** (or _hydration mismatches_) appear when the HTML rendered on the server doesn’t match what React renders on the client.  
+With **next-themes** and the **App Router** (Next.js 13/14) this happens because the `<ThemeProvider />` reads `window.matchMedia`, `localStorage`, and other browser-only APIs during the server render.  
+The usual result is a console warning like:
+
+In this article you’ll learn:
+
+1. Why the error occurs.
+2. How to create a wrapper `ThemeProvider` that **disables SSR**.
+3. How to use it in `layout.tsx`.
+4. **How to consume the `useTheme()` hook from any Client Component** with a `ThemeSwitcher` example.
+5. Final tips and best practices.
+
+---
+
+## 1. Why does the hydration mismatch happen?
+
+- **next-themes** decides the theme (light/dark/system) _during_ the first render.
+- In the App Router, everything inside `layout.tsx` runs on the server first.
+- `window` and local storage don’t exist there → the server HTML gets a “default” theme.
+- During hydration, the client discovers the real theme and React warns about the difference.
+
+**Solution:** render `ThemeProvider` **only in the browser**.
+
+---
+
+## 2. Creating an App-Router-friendly ThemeProvider
+
+`src/providers/theme-provider.tsx`
+
+```tsx
+"use client";
+
+import dynamic from "next/dynamic";
+import { type ThemeProviderProps } from "next-themes";
+
+// Dynamic import with SSR disabled
+const NextThemesProvider = dynamic(
+  () => import("next-themes").then((m) => m.ThemeProvider),
+  {
+    ssr: false,
+  },
+);
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+}
+```
+
+## 3. Integrating it in Layout
+
+`src/app/layout.tsx`
+
+```tsx
+import "@/styles/globals.css";
+import { ThemeProvider } from "@/providers/theme-provider";
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+Because the provider is client-only, the server HTML no longer includes `ThemeProvider`, eliminating the mismatch.
+
+## 4. Using useTheme
+
+With the provider in place, you can call `useTheme()` in any Client Component to read or change the theme.
+
+`src/components/theme-switcher.tsx`
+
+```tsx
+"use client";
+
+import { RiMoonLine, RiSunLine } from "@remixicon/react";
+import { IconButton } from "./ui/icon-button";
+import { useTheme } from "next-themes";
+
+export const ThemeSwitcher = () => {
+  const { setTheme, theme } = useTheme();
+
+  return (
+    <IconButton
+      aria-label="Toggle Theme"
+      variant="outline"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+    >
+      {theme === "dark" ? <RiSunLine /> : <RiMoonLine />}
+    </IconButton>
+  );
+};
+```
+
+Drop `<ThemeSwitcher />` in your navbar—or anywhere else on the client—and it will work with no flicker and no warnings.
+
+## 5. Tips & Best Practices
+
+| Best practice                              | Why it matters                                                                              |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| **`suppressHydrationWarning`** on `<html>` | Silences benign React warnings when the theme class changes                                 |
+| **`disableTransitionOnChange`**            | Removes flicker if you use Tailwind or CSS transitions                                      |
+| **Persist preference**                     | next-themes writes to `localStorage`; if you prefer cookies, grab `useTheme()` and store it |
+| **Tailwind**                               | Ensure `darkMode: "class"` in `tailwind.config.js` to match the class-based approach        |
+|                                            |
+
+## Conclusion
+
+- Problem: next-themes accesses browser APIs during SSR → hydration mismatch.
+- Fix: import `ThemeProvider` dynamically with `ssr:false` and wrap your app.
+- Usage: with the wrapper in place, `useTheme()` works in any Client Component (e.g., `ThemeSwitcher`).
+
+That’s it! Your Next.js App Router project now supports dark/light mode without hydration errors.
+Questions or suggestions? Drop them in the comments—thanks for reading!

@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["cascadia", "roboto"]
+  "cSpell.words": ["cascadia", "roboto"],
+  "cSpell.ignorePaths": ["messages/es.json", "content/*/es"]
 }

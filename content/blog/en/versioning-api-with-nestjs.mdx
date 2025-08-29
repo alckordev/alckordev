@@ -1,0 +1,231 @@
+---
+title: "API Versioning with NestJS"
+abstract: "Learn how to enable and organize versioning for your REST endpoints in NestJS using different schemes (URI, header, media type), folder structure best practices, and concrete examples with controllers and services."
+publishedAt: "2025-08-01 19:00:00"
+topics:
+  - name: "NestJS"
+    slug: "nestjs"
+  - name: "API"
+    slug: "api"
+featured: true
+---
+
+API versioning lets you evolve your backend without breaking clients that rely on older endpoints. NestJS provides native support for several versioning schemes,
+such as **URI**, **Header**, and **Media Type** (Accept header). In this guide, we will:
+
+1. Install NestJS and create a project.
+2. Enable global versioning (URI).
+3. Show examples of v1 and v2 controllers.
+4. Explore other schemes (header, media type).
+5. Share folder structure recommendations and best practices.
+
+## 1. Install the NestJS CLI
+
+If you don’t have it yet, install the NestJS CLI globally:
+
+```bash
+npm i -g @nestjs/cli
+```
+
+```bash
+nest --version
+```
+
+## 2. Create the Project
+
+Generate a new project:
+
+```bash
+nest new my-api
+cd my-api
+```
+
+(Optional) Install basic dependencies:
+
+```bash
+npm install @nestjs/config
+```
+
+## 3. Enable Global Versioning
+
+Open `src/main.ts` and configure:
+
+```ts
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { VersioningType } from "@nestjs/common";
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // Global prefix "api"
+  app.setGlobalPrefix("api");
+
+  // Enable URI versioning: /api/v{version}/{route}
+  app.enableVersioning({
+    type: VersioningType.URI,
+    prefix: "v",
+    defaultVersion: "1",
+  });
+
+  await app.listen(3000);
+  console.log(`Listening on http://localhost:3000/api/v1/...`);
+}
+bootstrap();
+```
+
+- type: `URI` / `HEADER` / `MEDIA_TYPE` / `CUSTOM`
+- prefix: URI prefix (`v`)
+- defaultVersion: version when none is specified
+
+## 4. Folder Structure by Version
+
+For clarity, organize modules, controllers, and services by version:
+
+```cpp
+src/
+├── api/
+│   ├── v1/
+│   │   ├── products/
+│   │   │   ├── products.module.ts
+│   │   │   ├── products.controller.ts
+│   │   │   └── products.service.ts
+│   └── v2/
+│       └── products/
+│           ├── products.module.ts
+│           ├── products.controller.ts
+│           └── products.service.ts
+└── app.module.ts
+```
+
+## 5. Example: v1 Controller & Service
+
+Generate module, service, and controller:
+
+```bash
+nest g module api/v1/products
+nest g service api/v1/products
+nest g controller api/v1/products
+```
+
+`src/api/v1/products/products.controller.ts`:
+
+```ts
+import { Controller, Get } from "@nestjs/common";
+import { ProductsService } from "./products.service";
+
+@Controller({ path: "products", version: "1" })
+export class ProductsController {
+  constructor(private readonly service: ProductsService) {}
+
+  @Get()
+  findAll() {
+    return this.service.findAll();
+  }
+}
+```
+
+`src/api/v1/products/products.service.ts`:
+
+```ts
+import { Injectable } from "@nestjs/common";
+
+@Injectable()
+export class ProductsService {
+  findAll() {
+    return [{ id: 1, name: "Product V1" }];
+  }
+}
+```
+
+## 6. Example: v2 Controller & Service
+
+Generate module, service, and controller:
+
+```bash
+nest g module api/v2/products
+nest g service api/v2/products
+nest g controller api/v2/products
+```
+
+`src/api/v2/products/products.controller.t`s:
+
+```ts
+import { Controller, Get } from "@nestjs/common";
+import { ProductsService } from "./products.service";
+
+@Controller({ path: "products", version: "2" })
+export class ProductsController {
+  constructor(private readonly service: ProductsService) {}
+
+  @Get()
+  findAll() {
+    // New structure or extra fields in V2
+    return this.service
+      .findAll()
+      .map((p) => ({ ...p, description: "Added  in V2" }));
+  }
+}
+```
+
+`src/api/v2/products/products.service.ts`:
+
+```ts
+import { Injectable } from "@nestjs/common";
+
+@Injectable()
+export class ProductsService {
+  findAll() {
+    return [{ id: 1, name: "Product V2", description: "" }];
+  }
+}
+```
+
+Now calling:
+
+- `GET /api/v1/products` → `[{ id: 1, name: 'Product V1' }]`
+- `GET /api/v2/products` → `[{ id: 1, name: 'Product V2', description: 'Added in V2' }]`
+
+## 7. Other Versioning Schemes
+
+### a. Header Versioning
+
+```ts
+app.enableVersioning({
+  type: VersioningType.HEADER,
+  header: "X-API-Version",
+  defaultVersion: "1",
+});
+```
+
+Client sends: `X-API-Version: 2`
+
+### b. Media Type Versioning
+
+```ts
+app.enableVersioning({
+  type: VersioningType.MEDIA_TYPE,
+  key: "v", // Accept: application/json;v=2
+  defaultVersion: "1",
+});
+```
+
+### c. Custom Versioning
+
+```ts
+app.enableVersioning({
+  type: VersioningType.CUSTOM,
+  factory: (request) => {
+    // extract version from cookie or query param
+    return request.headers["api-version"] || "1";
+  },
+});
+```
+
+## 8. Best Practices & Recommendations
+
+- Keep versions clean: deprecate or remove V1 when no longer needed.
+- Test both versions using Postman or e2e tests.
+- Avoid unnecessary breaking changes: only bump major versions when essential.
+
+With NestJS’s native capabilities, your API is now versioned and ready to evolve without breaking existing integrations!
