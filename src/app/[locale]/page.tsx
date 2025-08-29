@@ -6,7 +6,7 @@ import { RiArrowRightLongLine, RiSparklingLine } from "@remixicon/react";
 
 export default function Home() {
   return (
-    <main className="space-y-16 md:space-y-20">
+    <div className="space-y-16 md:space-y-20">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="animate-slide-up max-w-3xl">
@@ -137,6 +137,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }
