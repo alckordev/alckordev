@@ -7,5 +7,5 @@ export type Experience = {
     url?: string;
   };
   description: string;
-  tags?: string[];
+  technologies?: string[];
 };
