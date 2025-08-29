@@ -1,8 +1,13 @@
-// src/components/footer.tsx
+"use client";
+
 import { Link } from "@/i18n/navigation";
-import { RiHeartLine, RiCodeLine, RiDrinksLine } from "@remixicon/react";
+import { RiHeartFill } from "@remixicon/react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export function Footer() {
+  const t = useTranslations();
+
   const currentYear = new Date().getFullYear();
 
   return (
@@ -15,23 +20,46 @@ export function Footer() {
             <span>© {currentYear} alckor.dev</span>
             <span className="text-border">•</span>
             <span className="flex items-center space-x-1">
-              <span>Built with</span>
-              <RiHeartLine className="h-3 w-3 text-red-500" />
-              <span>and</span>
-              <RiDrinksLine className="text-accent h-3 w-3" />
+              <span>{t("built_with")}</span>
+              <RiHeartFill className="animate-jump animate-infinite animate-duration-[3000ms] h-3 w-3 text-red-500" />
+              <span>{t("for_a_better_web")}.</span>
             </span>
           </div>
 
           {/* Right side - Tech stack */}
           <div className="text-muted-foreground flex items-center space-x-3 text-xs">
             <div className="flex items-center space-x-1">
-              <RiCodeLine className="h-3 w-3" />
+              <Image
+                src="/assets/svg/nextjs.svg"
+                alt="Next.js logo"
+                width={16}
+                height={16}
+                className="aspect-square object-contain"
+              />
               <span>Next.js</span>
             </div>
             <span className="text-border">•</span>
-            <span>Tailwind CSS</span>
+            <div className="flex items-center space-x-1">
+              <Image
+                src="/assets/svg/tailwindcss.svg"
+                alt="Next.js logo"
+                width={16}
+                height={16}
+                className="aspect-square object-contain"
+              />
+              <span>Tailwind CSS</span>
+            </div>
             <span className="text-border">•</span>
-            <span>TypeScript</span>
+            <div className="flex items-center space-x-1">
+              <Image
+                src="/assets/svg/typescript.svg"
+                alt="Next.js logo"
+                width={16}
+                height={16}
+                className="aspect-square object-contain"
+              />
+              <span>TypeScript</span>
+            </div>
           </div>
         </div>
 
@@ -41,26 +69,26 @@ export function Footer() {
             href="/blog"
             className="text-muted-foreground hover:text-accent text-sm transition-colors duration-200"
           >
-            Blog
+            {t("blog")}
           </Link>
           <Link
             href="/projects"
             className="text-muted-foreground hover:text-accent text-sm transition-colors duration-200"
           >
-            Projects
+            {t("projects")}
           </Link>
           <a
             href="mailto:tu@email.com"
             className="text-muted-foreground hover:text-accent text-sm transition-colors duration-200"
           >
-            Contact
+            {t("contact")}
           </a>
           <a
             href="/sitemap.xml"
             target="_blank"
             className="text-muted-foreground hover:text-accent text-sm transition-colors duration-200"
           >
-            Sitemap
+            {t("sitemap")}
           </a>
         </div>
 

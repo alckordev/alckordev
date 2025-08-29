@@ -3,8 +3,11 @@ import { ProjectCard } from "@/components/project-card";
 import { Timeline } from "@/components/timeline";
 import { Link } from "@/i18n/navigation";
 import { RiArrowRightLongLine, RiSparklingLine } from "@remixicon/react";
+import { getTranslations } from "next-intl/server";
 
-export default function Home() {
+export default async function Home() {
+  const t = await getTranslations();
+
   return (
     <div className="space-y-16 md:space-y-20">
       {/* Hero Section */}
@@ -63,17 +66,17 @@ export default function Home() {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">
-              Featured Projects
+              {t("featured_projects")}
             </h2>
             <p className="text-muted-foreground text-sm">
-              Some things I've built recently
+              {t("featured_projects_description")}
             </p>
           </div>
           <Link
             href="/projects"
             className="group/link text-muted-foreground hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors"
           >
-            <span>View all</span>
+            <span>{t("view_all")}</span>
             <RiArrowRightLongLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
           </Link>
         </div>
@@ -94,9 +97,11 @@ export default function Home() {
       {/* Experience Section */}
       <section className="space-y-6">
         <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight">Experience</h2>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {t("experience")}
+          </h2>
           <p className="text-muted-foreground text-sm">
-            My professional journey
+            {t("experience_description")}
           </p>
         </div>
 
@@ -110,17 +115,17 @@ export default function Home() {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">
-              Latest Posts
+              {t("latest_posts")}
             </h2>
             <p className="text-muted-foreground text-sm">
-              Recent thoughts and tutorials
+              {t("latest_posts_description")}
             </p>
           </div>
           <Link
             href="/blog"
             className="group/link text-muted-foreground hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors"
           >
-            <span>View all</span>
+            <span>{t("view_all")}</span>
             <RiArrowRightLongLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
           </Link>
         </div>

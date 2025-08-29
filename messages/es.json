@@ -1,1 +1,18 @@
-{}
+{
+  "built_with": "Creado con",
+  "for_a_better_web": "para una mejor web",
+  "blog": "Blog",
+  "projects": "Proyectos",
+  "contact": "Contacto",
+  "sitemap": "Mapa del sitio",
+  "switch_to_dark_mode": "Cambiar al modo oscuro",
+  "switch_to_light_mode": "Cambiar al modo de claro",
+  "toggle_theme": "Alternar tema",
+  "featured_projects": "Proyectos Destacados",
+  "featured_projects_description": "Algunas cosas que he construido recientemente",
+  "view_all": "Ver todo",
+  "experience": "Experiencia",
+  "experience_description": "Mi viaje profesional",
+  "latest_posts": "Últimas Publicaciones",
+  "latest_posts_description": "Pensamientos y tutoriales recientes"
+}

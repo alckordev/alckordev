@@ -41,7 +41,7 @@ export const ProjectCard = () => {
 
           {/* Actions */}
           <div className="flex flex-shrink-0 items-center gap-2">
-            <div className="border-border/50 bg-secondary/50 flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-medium">
+            <div className="border-border/50 animate-shine flex items-center gap-1 rounded-full border bg-[linear-gradient(110deg,hsl(var(--secondary)/0.5),45%,hsl(var(--secondary)/0.8),55%,hsl(var(--secondary)/0.5))] bg-[length:200%_100%] px-2 py-1 text-xs font-medium">
               <RiStarLine className="text-accent h-3 w-3" />
               <span>127</span>
             </div>

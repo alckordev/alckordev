@@ -11,7 +11,7 @@ export const Timeline = () => {
         {experiences.map((exp, i) => (
           <div key={i} className="group relative pl-12">
             {/* Timeline dot with animation */}
-            <div className="absolute top-2 left-0 flex h-8 w-8 items-center justify-center">
+            <div className="absolute top-2 left-0.25 flex h-8 w-8 items-center justify-center">
               <div className="border-accent bg-background group-hover:border-accent group-hover:shadow-accent/25 h-4 w-4 rounded-full border-2 transition-all duration-300 group-hover:scale-125 group-hover:shadow-lg">
                 <div className="bg-accent/20 group-hover:bg-accent/40 h-full w-full rounded-full transition-all duration-300" />
               </div>

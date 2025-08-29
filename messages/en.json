@@ -1,1 +1,18 @@
-{}
+{
+  "built_with": "Built with",
+  "for_a_better_web": "for a better web",
+  "blog": "Blog",
+  "projects": "Projects",
+  "contact": "Contact",
+  "sitemap": "Sitemap",
+  "switch_to_dark_mode": "Switch to dark mode",
+  "switch_to_light_mode": "Switch to light mode",
+  "toggle_theme": "Toggle theme",
+  "featured_projects": "Featured Projects",
+  "featured_projects_description": "Some things I've built recently",
+  "view_all": "View all",
+  "experience": "Experience",
+  "experience_description": "My professional journey",
+  "latest_posts": "Latest Posts",
+  "latest_posts_description": "Recent thoughts and tutorials"
+}

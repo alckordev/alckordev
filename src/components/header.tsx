@@ -5,9 +5,11 @@ import { Link } from "@/i18n/navigation";
 import { RiMoonLine, RiSunLine } from "@remixicon/react";
 import { socials } from "@/consts/socials";
 import { cn } from "@/lib/cn";
+import { useTranslations } from "next-intl";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
+  const t = useTranslations();
 
   return (
     <header className="border-border/50 bg-background/50 sticky top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300">
@@ -37,7 +39,7 @@ export function Header() {
               className={cn(
                 "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
                 "text-muted-foreground transition-all duration-200",
-                "hover:bg-secondary/60 hover:text-foreground hover:scale-110",
+                "hover:bg-secondary/60 hover:text-foreground",
                 "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                 "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100",
               )}
@@ -50,18 +52,20 @@ export function Header() {
           <button
             type="button"
             title={
-              theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+              theme === "light"
+                ? t("switch_to_dark_mode")
+                : t("switch_to_light_mode")
             }
             className={cn(
-              "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
+              "group relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg",
               "text-muted-foreground transition-all duration-200",
-              "hover:bg-secondary/60 hover:text-foreground hover:scale-110",
+              "hover:bg-secondary/60 hover:text-foreground",
               "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
               "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100",
             )}
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           >
-            <span className="sr-only">Toggle theme</span>
+            <span className="sr-only">{t("toggle_theme")}</span>
             {theme === "light" ? (
               <RiMoonLine className="h-4 w-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
             ) : (
