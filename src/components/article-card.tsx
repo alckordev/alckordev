@@ -1,34 +1,16 @@
 import { Link } from "@/i18n/navigation";
-import {
-  RiArrowRightLongLine,
-  RiCalendarLine,
-  RiTimeLine,
-} from "@remixicon/react";
-
-interface Article {
-  title: string;
-  excerpt: string;
-  slug: string;
-  date: string;
-  readTime: string;
-  tags: string[];
-}
+import { Frontmatter } from "@/types/mdx";
+import { RiArrowRightLine, RiCalendarLine, RiTimeLine } from "@remixicon/react";
+import { useLocale, useTranslations } from "next-intl";
 
 interface ArticleCardProps {
-  article?: Article;
+  article: Frontmatter;
 }
 
-const defaultArticle: Article = {
-  title: "How to Fix Hydration Errors with next-themes in Next.js (App Router)",
-  excerpt:
-    "Resolve the hydration mismatch warnings caused by next-themes in Next 13/14 projects using the App Router. Learn how to create an SSR-friendly ThemeProvider and consume it in any client component via the useTheme hook.",
-  slug: "hydration-errors-next-themes",
-  date: "2024-12-15",
-  readTime: "5 min read",
-  tags: ["Next.js", "React", "SSR"],
-};
+export function ArticleCard({ article }: ArticleCardProps) {
+  const locale = useLocale();
+  const t = useTranslations();
 
-export function ArticleCard({ article = defaultArticle }: ArticleCardProps) {
   return (
     <article className="group border-border/50 bg-card/30 hover:border-border hover:bg-card/60 relative overflow-hidden rounded-lg border backdrop-blur-sm transition-all duration-300 hover:shadow-md">
       {/* Subtle gradient overlay on hover */}
@@ -38,9 +20,9 @@ export function ArticleCard({ article = defaultArticle }: ArticleCardProps) {
         {/* Article metadata */}
         <div className="text-muted-foreground flex items-center gap-4 text-xs">
           <div className="flex items-center gap-1">
-            <RiCalendarLine className="h-3 w-3" />
+            <RiCalendarLine className="h-4 w-4" />
             <time>
-              {new Date(article.date).toLocaleDateString("en-US", {
+              {new Date(article.publishedAt).toLocaleDateString(locale, {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
@@ -48,12 +30,16 @@ export function ArticleCard({ article = defaultArticle }: ArticleCardProps) {
             </time>
           </div>
           <div className="flex items-center gap-1">
-            <RiTimeLine className="h-3 w-3" />
-            <span>{article.readTime}</span>
+            <RiTimeLine className="h-4 w-4" />
+            <span>
+              {t("reading_time", {
+                count: Math.max(1, Math.round(article.readingTime || 0)),
+              })}
+            </span>
           </div>
-          <div className="bg-accent/10 text-accent ml-auto rounded-full px-2 py-0.5 font-medium">
-            New
-          </div>
+          {/* <div className="bg-accent/10 text-accent ml-auto rounded-full px-2 py-0.5 font-medium">
+            {t("new")}
+          </div> */}
         </div>
 
         {/* Title and description */}
@@ -63,22 +49,21 @@ export function ArticleCard({ article = defaultArticle }: ArticleCardProps) {
               {article.title}
             </h3>
           </Link>
-
           <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
-            {article.excerpt}
+            {article.abstract}
           </p>
         </div>
 
         {/* Tags and read more */}
         <div className="flex items-center justify-between">
           <div className="flex flex-wrap gap-1.5">
-            {article.tags.slice(0, 3).map((tag) => (
+            {article.topics?.map((tag) => (
               <Link
-                key={tag}
-                href={`/blog/tags/${tag.toLowerCase().replace(".", "")}`}
+                key={tag.slug}
+                href={`/blog/topics/${tag.slug}`}
                 className="border-border/30 bg-secondary/20 text-muted-foreground hover:border-accent/30 hover:bg-accent/10 hover:text-accent inline-flex items-center rounded-md border px-2 py-1 text-xs font-medium transition-colors"
               >
-                {tag}
+                {tag.name}
               </Link>
             ))}
           </div>
@@ -88,8 +73,8 @@ export function ArticleCard({ article = defaultArticle }: ArticleCardProps) {
             href={`/blog/${article.slug}`}
             className="group/read text-muted-foreground hover:text-accent hidden items-center gap-1 text-sm font-medium transition-colors md:flex"
           >
-            <span>Read</span>
-            <RiArrowRightLongLine className="h-4 w-4 transition-transform group-hover/read:translate-x-1" />
+            <span>{t("read_more")}</span>
+            <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/read:translate-x-1" />
           </Link>
         </div>
 
@@ -98,8 +83,8 @@ export function ArticleCard({ article = defaultArticle }: ArticleCardProps) {
           href={`/blog/${article.slug}`}
           className="border-border/50 bg-secondary/30 text-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent flex items-center justify-center gap-2 rounded-md border py-2 text-sm font-medium transition-colors md:hidden"
         >
-          <span>Read Article</span>
-          <RiArrowRightLongLine className="h-4 w-4" />
+          <span>{t("read_more")}</span>
+          <RiArrowRightLine className="h-4 w-4" />
         </Link>
       </div>
 

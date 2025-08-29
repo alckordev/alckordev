@@ -3,6 +3,7 @@ import { Frontmatter } from "@/types/mdx";
 import fs from "fs";
 import { getFrontmatter } from "next-mdx-remote-client/utils";
 import path from "path";
+import readingTime from "reading-time";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
 
@@ -20,9 +21,8 @@ const readMdx = (slug: string): string | undefined => {
 };
 
 /** Type‑guard to filter out undefined values */
-const isPostInfo = (
-  value: (Frontmatter & { slug: string }) | undefined,
-): value is Frontmatter & { slug: string } => value !== undefined;
+const isPostInfo = (value: Frontmatter | undefined): value is Frontmatter =>
+  value !== undefined;
 
 /* ────────────────────────────── public API ─────────────────────────────── */
 
@@ -32,9 +32,7 @@ export const getPostSource = async (
 ): Promise<string | undefined> => readMdx(slug);
 
 /** Get front‑matter for one post */
-export const getPostInfo = (
-  slug: string,
-): (Frontmatter & { slug: string }) | undefined => {
+export const getPostInfo = (slug: string): Frontmatter | undefined => {
   const source = readMdx(slug);
   if (!source) return undefined;
 
@@ -42,6 +40,7 @@ export const getPostInfo = (
   return {
     ...frontmatter,
     slug: path.basename(slug, ".mdx"),
+    readingTime: readingTime(source).minutes,
   };
 };
 
@@ -60,16 +59,13 @@ export const listSlugs = (dir = ""): string[] => {
 };
 
 /** Get front‑matter for every post under `dir` */
-export const getPostsInfo = (dir = ""): (Frontmatter & { slug: string })[] => {
+export const getPostsInfo = (dir = ""): Frontmatter[] => {
   const slugs = listSlugs(dir);
   return slugs.map(getPostInfo).filter(isPostInfo);
 };
 
 /** Get posts sorted by publish date (newest first) */
-export const getRecentPosts = (
-  dir = "",
-  limit?: number,
-): (Frontmatter & { slug: string })[] => {
+export const getRecentPosts = (dir = "", limit?: number): Frontmatter[] => {
   const posts = getPostsInfo(dir);
 
   const sorted = posts.sort(
@@ -81,10 +77,7 @@ export const getRecentPosts = (
 };
 
 /** Get posts by topic */
-export const getPostsByTopic = (
-  topicSlug: string,
-  dir = "",
-): (Frontmatter & { slug: string })[] => {
+export const getPostsByTopic = (topicSlug: string, dir = ""): Frontmatter[] => {
   const posts = getPostsInfo(dir);
 
   return posts.filter((post) =>

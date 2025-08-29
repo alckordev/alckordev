@@ -3,18 +3,15 @@ import { NewsletterCTA } from "@/components/newsletter-cta";
 import { InfiniteArticlesList } from "@/components/infinite-articles-list";
 import { Link } from "@/i18n/navigation";
 import { getPostsInfo, getAllTopics } from "@/lib/server/mdx";
-import {
-  RiBookOpenLine,
-  RiPriceTag3Line,
-  RiArrowRightLine,
-} from "@remixicon/react";
+import { RiBookOpenLine, RiPriceTag3Line } from "@remixicon/react";
 import { Metadata } from "next";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations();
+
   const title = `Blog - Isco`;
-  const description =
-    "Deep dives into modern web development, React patterns, TypeScript best practices, and the latest tools that make building great software more enjoyable.";
+  const description = t("blog_description");
 
   return {
     title,
@@ -24,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Blog() {
   const locale = await getLocale();
+  const t = await getTranslations();
 
   // Get all posts and sort by date
   const allPosts = getPostsInfo(`blog/${locale}`).sort(
@@ -41,20 +39,7 @@ export default async function Blog() {
   );
 
   // Get popular topics with real data
-  const popularTopics = getAllTopics(`blog/${locale}`).slice(0, 8);
-
-  // Transform featured post for FeaturedArticleCard
-  const transformedFeaturedPost = featuredPost
-    ? {
-        title: featuredPost.title,
-        excerpt: featuredPost.abstract,
-        slug: featuredPost.slug,
-        date: featuredPost.publishedAt,
-        readTime: "5 min read", // Could calculate based on content
-        tags: featuredPost.topics?.map((topic) => topic.name) || [],
-        featured: true,
-      }
-    : null;
+  const topics = getAllTopics(`blog/${locale}`).slice(0, 8);
 
   return (
     <main className="space-y-12 md:space-y-16">
@@ -64,7 +49,7 @@ export default async function Blog() {
           <div className="mb-6 flex items-center gap-3">
             <RiBookOpenLine className="text-accent h-6 w-6" />
             <span className="text-muted-foreground text-sm font-medium">
-              Technical Blog
+              {t("technical_blog")}
             </span>
           </div>
 
@@ -75,9 +60,7 @@ export default async function Blog() {
           </h1>
 
           <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">
-            Deep dives into modern web development, React patterns, TypeScript
-            best practices, and the latest tools that make building great
-            software more enjoyable.
+            {t("blog_description")}
           </p>
         </div>
 
@@ -87,17 +70,17 @@ export default async function Blog() {
       </section>
 
       {/* Popular Topics */}
-      {popularTopics.length > 0 && (
+      {topics.length > 0 && (
         <section className="space-y-4">
           <div className="space-y-1">
-            <h2 className="text-xl font-semibold">Popular Topics</h2>
+            <h2 className="text-xl font-semibold">{t("popular_topics")}</h2>
             <p className="text-muted-foreground text-sm">
-              Browse articles by technology and subject
+              {t("popular_topics_description")}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {popularTopics.map((topic) => (
+            {topics.map((topic) => (
               <Link
                 key={topic.slug}
                 href={`/blog/tags/${topic.slug}`}
@@ -113,15 +96,15 @@ export default async function Blog() {
       )}
 
       {/* Featured Post */}
-      {transformedFeaturedPost && (
+      {featuredPost && (
         <section className="space-y-6">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold">Featured</h2>
+            <h2 className="text-xl font-semibold">{t("featured")}</h2>
             <div className="from-border h-px flex-1 bg-gradient-to-r to-transparent" />
           </div>
 
           <div className="animate-slide-up" style={{ animationDelay: "200ms" }}>
-            <FeaturedArticleCard article={transformedFeaturedPost} />
+            <FeaturedArticleCard article={featuredPost} />
           </div>
         </section>
       )}
@@ -129,23 +112,10 @@ export default async function Blog() {
       {/* All Articles with Infinite Scroll */}
       {remainingPosts.length > 0 && (
         <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-semibold">All Articles</h2>
-              <p className="text-muted-foreground text-sm">
-                {allPosts.length} articles total
-              </p>
-            </div>
-
-            <Link
-              href="/blog/archive"
-              className="group/link text-muted-foreground hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors"
-            >
-              <span>View Archive</span>
-              <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
-            </Link>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold">{t("all_posts")}</h2>
+            <div className="from-border h-px flex-1 bg-gradient-to-r to-transparent" />
           </div>
-
           <InfiniteArticlesList articles={remainingPosts} itemsPerPage={3} />
         </section>
       )}
@@ -156,10 +126,10 @@ export default async function Blog() {
           <div className="mx-auto max-w-md space-y-4">
             <RiBookOpenLine className="text-muted-foreground/50 mx-auto h-12 w-12" />
             <h3 className="text-foreground text-lg font-semibold">
-              No articles yet
+              {t("no_posts_found")}
             </h3>
             <p className="text-muted-foreground text-sm">
-              Check back soon for technical insights and tutorials.
+              {t("no_posts_found_description")}
             </p>
           </div>
         </section>

@@ -14,5 +14,18 @@
   "experience": "Experience",
   "experience_description": "My professional journey",
   "latest_posts": "Latest Posts",
-  "latest_posts_description": "Recent thoughts and tutorials"
+  "latest_posts_description": "Recent thoughts and tutorials",
+  "technical_blog": "Technical Blog",
+  "blog_description": "Deep dives into modern web development, React patterns, TypeScript best practices, and the latest tools that make building great software more enjoyable.",
+  "popular_topics": "Popular Topics",
+  "popular_topics_description": "Browse articles by technology and subject",
+  "featured": "Featured",
+  "all_posts": "All Posts",
+  "no_posts_found": "No articles yet",
+  "no_posts_found_description": "Check back soon for technical insights and tutorials.",
+  "reading_time": "{count, plural, one {# min read} other {# mins read}}",
+  "read_more": "Read more",
+  "new": "New",
+  "loading_more": "Loading more...",
+  "no_more_articles": "You've reached the end!"
 }
