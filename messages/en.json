@@ -27,5 +27,9 @@
   "read_more": "Read more",
   "new": "New",
   "loading_more": "Loading more...",
-  "no_more_articles": "You've reached the end!"
+  "no_more_articles": "You've reached the end!",
+  "greeting": "Hey there, I'm",
+  "current_focus": "Currently building amazing things with",
+  "hero_description": "I'm passionate about modern web technologies, scalable architectures, and mentoring development teams to build impactful software.",
+  "years_experience": "+{count} years of experience"
 }

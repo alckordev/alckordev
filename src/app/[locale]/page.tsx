@@ -2,22 +2,31 @@ import { ArticleCard } from "@/components/article-card";
 import { ProjectCard } from "@/components/project-card";
 import { Timeline } from "@/components/timeline";
 import { Link } from "@/i18n/navigation";
+import { getPostsInfo } from "@/lib/server/mdx";
 import { RiArrowRightLongLine, RiSparklingLine } from "@remixicon/react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 export default async function Home() {
+  const locale = await getLocale();
   const t = await getTranslations();
+
+  const allPosts = getPostsInfo(`blog/${locale}`)
+    .sort(
+      (a, b) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    )
+    .slice(0, 3);
 
   return (
     <div className="space-y-16 md:space-y-20">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="animate-slide-up max-w-3xl">
-          {/* Greeting with floating animation */}
+        <div className="animate-fade-up max-w-3xl">
+          {/* Greeting */}
           <div className="mb-6 flex items-center gap-3">
-            <span className="text-2xl">👋</span>
+            <span className="animate-wiggle animate-infinite text-2xl">👋</span>
             <span className="text-muted-foreground text-sm font-medium">
-              Hey there, I'm
+              {t("greeting")}
             </span>
           </div>
 
@@ -26,28 +35,25 @@ export default async function Home() {
             <span className="gradient-text">Isco</span>
             <span className="text-foreground">, Tech Lead &</span>
             <br />
-            <span className="text-foreground">Senior </span>
-            <span className="gradient-text-accent">Fullstack</span>
-            <span className="text-foreground"> Developer</span>
+            <span className="text-foreground">Senior</span>{" "}
+            <span className="gradient-text-accent">Fullstack</span>{" "}
+            <span className="text-foreground">Developer</span>
           </h1>
 
           {/* Description */}
           <div className="text-muted-foreground max-w-2xl space-y-4 text-lg leading-relaxed">
             <p>
-              From Peru with{" "}
               <span className="text-accent font-semibold">
-                +10 years of experience
+                {t("years_experience", { count: 10 })}
               </span>
-              . I'm passionate about modern web technologies, scalable
-              architectures, and mentoring development teams to build impactful
-              software.
+              . {t("hero_description")}
             </p>
 
             {/* Current focus */}
             <div className="border-border/50 bg-secondary/30 flex items-center gap-2 rounded-lg border px-4 py-3">
               <RiSparklingLine className="text-accent h-4 w-4" />
               <span className="text-sm">
-                Currently building amazing things with{" "}
+                {t("current_focus")}{" "}
                 <span className="text-foreground font-medium">
                   Astro, Next.js, Nest.js & TypeScript
                 </span>
@@ -85,7 +91,7 @@ export default async function Home() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="animate-slide-up"
+              className="animate-fade-up"
               style={{ animationDelay: `${i * 100 + 200}ms` }}
             >
               <ProjectCard />
@@ -105,7 +111,7 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="animate-slide-up" style={{ animationDelay: "300ms" }}>
+        <div className="animate-fade-up" style={{ animationDelay: "300ms" }}>
           <Timeline />
         </div>
       </section>
@@ -131,15 +137,15 @@ export default async function Home() {
         </div>
 
         <div className="space-y-4">
-          {/* {Array.from({ length: 3 }).map((_, i) => (
+          {allPosts.map((post, i) => (
             <div
-              key={i}
-              className="animate-slide-up"
+              key={post.slug}
+              className="animate-fade-up"
               style={{ animationDelay: `${i * 100 + 400}ms` }}
             >
-              <ArticleCard />
+              <ArticleCard article={post} />
             </div>
-          ))} */}
+          ))}
         </div>
       </section>
     </div>

@@ -27,5 +27,9 @@
   "read_more": "Leer más",
   "new": "Nuevo",
   "loading_more": "Cargando más...",
-  "no_more_articles": "¡Has llegado al final!"
+  "no_more_articles": "¡Has llegado al final!",
+  "greeting": "Hola, soy yo",
+  "current_focus": "Actualmente construyendo cosas increíbles con",
+  "hero_description": "Me apasionan las tecnologías web modernas, las arquitecturas escalables y la mentoría de equipos de desarrollo para crear software con impacto.",
+  "years_experience": "+{count} años de experiencia"
 }
