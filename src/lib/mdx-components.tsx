@@ -2,7 +2,7 @@
 import { MDXComponents } from "next-mdx-remote-client/rsc";
 import { CodeBlock } from "@/components/code-block";
 import { highlight } from "@/lib/shiki-shared";
-import { RiDoubleQuotesL } from "@remixicon/react";
+// import { RiDoubleQuotesL } from "@remixicon/react";
 import Link from "next/link";
 import { BundledLanguage } from "shiki/bundle/web";
 
