@@ -1,4 +1,3 @@
-// src/lib/server/mdx.ts
 import { Frontmatter } from "@/types/mdx";
 import fs from "fs";
 import { getFrontmatter } from "next-mdx-remote-client/utils";
@@ -9,10 +8,8 @@ const CONTENT_DIR = path.join(process.cwd(), "content");
 
 /* ──────────────────────────────── helpers ──────────────────────────────── */
 
-/** Return the absolute path for a given slug (.mdx) */
 const mdxPath = (slug: string) => path.join(CONTENT_DIR, `${slug}.mdx`);
 
-/** Read an .mdx file; return undefined if it does not exist */
 const readMdx = (slug: string): string | undefined => {
   const filePath = mdxPath(slug);
   return fs.existsSync(filePath)
@@ -20,18 +17,15 @@ const readMdx = (slug: string): string | undefined => {
     : undefined;
 };
 
-/** Type‑guard to filter out undefined values */
 const isPostInfo = (value: Frontmatter | undefined): value is Frontmatter =>
   value !== undefined;
 
 /* ────────────────────────────── public API ─────────────────────────────── */
 
-/** Get raw mdx source for a single slug (async) */
 export const getPostSource = async (
   slug: string,
 ): Promise<string | undefined> => readMdx(slug);
 
-/** Get front‑matter for one post */
 export const getPostInfo = (slug: string): Frontmatter | undefined => {
   const source = readMdx(slug);
   if (!source) return undefined;
@@ -44,7 +38,6 @@ export const getPostInfo = (slug: string): Frontmatter | undefined => {
   };
 };
 
-/** List all slugs inside a directory (e.g. "es" or "en") */
 export const listSlugs = (dir = ""): string[] => {
   const targetDir = path.join(CONTENT_DIR, dir);
 
@@ -58,13 +51,11 @@ export const listSlugs = (dir = ""): string[] => {
     .map((f) => path.posix.join(dir, path.basename(f, ".mdx")));
 };
 
-/** Get front‑matter for every post under `dir` */
 export const getPostsInfo = (dir = ""): Frontmatter[] => {
   const slugs = listSlugs(dir);
   return slugs.map(getPostInfo).filter(isPostInfo);
 };
 
-/** Get posts sorted by publish date (newest first) */
 export const getRecentPosts = (dir = "", limit?: number): Frontmatter[] => {
   const posts = getPostsInfo(dir);
 
@@ -76,7 +67,6 @@ export const getRecentPosts = (dir = "", limit?: number): Frontmatter[] => {
   return limit ? sorted.slice(0, limit) : sorted;
 };
 
-/** Get posts by topic */
 export const getPostsByTopic = (topicSlug: string, dir = ""): Frontmatter[] => {
   const posts = getPostsInfo(dir);
 
@@ -85,7 +75,6 @@ export const getPostsByTopic = (topicSlug: string, dir = ""): Frontmatter[] => {
   );
 };
 
-/** Get all unique topics from posts */
 export const getAllTopics = (
   dir = "",
 ): { name: string; slug: string; count: number }[] => {

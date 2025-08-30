@@ -23,22 +23,18 @@ export default async function Blog() {
   const locale = await getLocale();
   const t = await getTranslations();
 
-  // Get all posts and sort by date
   const allPosts = getPostsInfo(`blog/${locale}`).sort(
     (a, b) =>
       new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   );
 
-  // Find featured post (first post with featured: true, or fallback to newest)
   const featuredPost =
     allPosts.find((post) => post.featured === true) || allPosts[0];
 
-  // Get remaining posts (excluding featured)
   const remainingPosts = allPosts.filter(
     (post) => post.slug !== featuredPost?.slug,
   );
 
-  // Get popular topics with real data
   const topics = getAllTopics(`blog/${locale}`).slice(0, 8);
 
   return (
@@ -54,9 +50,9 @@ export default async function Blog() {
           </div>
 
           <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">
-            <span className="gradient-text">Thoughts</span>
-            <span className="text-foreground"> & </span>
-            <span className="gradient-text-accent">Tutorials</span>
+            <span className="gradient-text">{t("thoughts")}</span>{" "}
+            <span className="text-foreground">&</span>{" "}
+            <span className="gradient-text-accent">{t("tutorials")}</span>
           </h1>
 
           <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">

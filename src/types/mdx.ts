@@ -22,7 +22,7 @@ export type Toc = {
 };
 
 export type Scope = {
-  reading: number;
+  readingTime?: number;
   toc?: Toc;
   // [key: string]: unknown;
 };

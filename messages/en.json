@@ -31,5 +31,7 @@
   "greeting": "Hey there, I'm",
   "current_focus": "Currently building amazing things with",
   "hero_description": "I'm passionate about modern web technologies, scalable architectures, and mentoring development teams to build impactful software.",
-  "years_experience": "+{count} years of experience"
+  "years_experience": "+{count} years of experience",
+  "thoughts": "Thoughts",
+  "tutorials": "Tutorials"
 }

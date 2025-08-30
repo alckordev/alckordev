@@ -14,7 +14,7 @@
   "experience": "Experiencia",
   "experience_description": "Mi viaje profesional",
   "latest_posts": "Últimas publicaciones",
-  "latest_posts_description": "Pensamientos y tutoriales recientes",
+  "latest_posts_description": "Ideas y tutoriales recientes",
   "technical_blog": "Blog técnico",
   "blog_description": "Exploraciones profundas en desarrollo web moderno, patrones de React, mejores prácticas con TypeScript y las últimas herramientas que hacen que crear software de calidad sea más agradable.",
   "popular_topics": "Temas populares",
@@ -31,5 +31,7 @@
   "greeting": "Hola, soy yo",
   "current_focus": "Actualmente construyendo cosas increíbles con",
   "hero_description": "Me apasionan las tecnologías web modernas, las arquitecturas escalables y la mentoría de equipos de desarrollo para crear software con impacto.",
-  "years_experience": "+{count} años de experiencia"
+  "years_experience": "+{count} años de experiencia",
+  "thoughts": "Ideas",
+  "tutorials": "Tutoriales"
 }
