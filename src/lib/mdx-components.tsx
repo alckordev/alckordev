@@ -2,7 +2,7 @@
 import { MDXComponents } from "next-mdx-remote-client/rsc";
 import { CodeBlock } from "@/components/code-block";
 import { highlight } from "@/lib/shiki-shared";
-import { RiDoubleQuotesL, RiExternalLinkLine } from "@remixicon/react";
+import { RiDoubleQuotesL } from "@remixicon/react";
 import Link from "next/link";
 import { BundledLanguage } from "shiki/bundle/web";
 
@@ -22,7 +22,6 @@ export const components: MDXComponents = {
           {...props}
         >
           {children}
-          <RiExternalLinkLine className="h-3 w-3" />
         </a>
       );
     }
@@ -50,22 +49,13 @@ export const components: MDXComponents = {
     );
   },
 
-  // Headings with anchor links
+  // Headings
   h1: ({ children, id, ...props }) => (
     <h1
       id={id}
       className="group text-foreground relative mt-10 mb-6 scroll-mt-24 text-3xl font-bold tracking-tight first:mt-0 md:text-4xl"
       {...props}
     >
-      {id && (
-        <a
-          href={`#${id}`}
-          className="absolute top-0 -left-6 flex h-full w-6 items-center opacity-0 transition-opacity group-hover:opacity-100"
-          aria-label="Link to this section"
-        >
-          <span className="text-muted-foreground hover:text-accent">#</span>
-        </a>
-      )}
       {children}
     </h1>
   ),
@@ -76,15 +66,6 @@ export const components: MDXComponents = {
       className="group text-foreground relative mt-8 mb-4 scroll-mt-24 text-2xl font-semibold tracking-tight md:text-3xl"
       {...props}
     >
-      {id && (
-        <a
-          href={`#${id}`}
-          className="absolute top-0 -left-6 flex h-full w-6 items-center opacity-0 transition-opacity group-hover:opacity-100"
-          aria-label="Link to this section"
-        >
-          <span className="text-muted-foreground hover:text-accent">#</span>
-        </a>
-      )}
       {children}
     </h2>
   ),
@@ -95,17 +76,6 @@ export const components: MDXComponents = {
       className="group text-foreground relative mt-6 mb-3 scroll-mt-24 text-xl font-semibold tracking-tight md:text-2xl"
       {...props}
     >
-      {id && (
-        <a
-          href={`#${id}`}
-          className="absolute top-0 -left-5 flex h-full w-5 items-center opacity-0 transition-opacity group-hover:opacity-100"
-          aria-label="Link to this section"
-        >
-          <span className="text-muted-foreground hover:text-accent text-sm">
-            #
-          </span>
-        </a>
-      )}
       {children}
     </h3>
   ),
@@ -116,17 +86,6 @@ export const components: MDXComponents = {
       className="group text-foreground relative mt-5 mb-2 scroll-mt-24 text-lg font-semibold tracking-tight"
       {...props}
     >
-      {id && (
-        <a
-          href={`#${id}`}
-          className="absolute top-0 -left-5 flex h-full w-5 items-center opacity-0 transition-opacity group-hover:opacity-100"
-          aria-label="Link to this section"
-        >
-          <span className="text-muted-foreground hover:text-accent text-sm">
-            #
-          </span>
-        </a>
-      )}
       {children}
     </h4>
   ),
@@ -137,17 +96,6 @@ export const components: MDXComponents = {
       className="group text-foreground relative mt-4 mb-2 scroll-mt-24 text-base font-semibold tracking-tight"
       {...props}
     >
-      {id && (
-        <a
-          href={`#${id}`}
-          className="absolute top-0 -left-4 flex h-full w-4 items-center opacity-0 transition-opacity group-hover:opacity-100"
-          aria-label="Link to this section"
-        >
-          <span className="text-muted-foreground hover:text-accent text-xs">
-            #
-          </span>
-        </a>
-      )}
       {children}
     </h5>
   ),
@@ -158,17 +106,6 @@ export const components: MDXComponents = {
       className="group text-foreground relative mt-3 mb-2 scroll-mt-24 text-sm font-semibold tracking-tight"
       {...props}
     >
-      {id && (
-        <a
-          href={`#${id}`}
-          className="absolute top-0 -left-4 flex h-full w-4 items-center opacity-0 transition-opacity group-hover:opacity-100"
-          aria-label="Link to this section"
-        >
-          <span className="text-muted-foreground hover:text-accent text-xs">
-            #
-          </span>
-        </a>
-      )}
       {children}
     </h6>
   ),
@@ -176,7 +113,7 @@ export const components: MDXComponents = {
   // Paragraphs
   p: ({ children, ...props }) => (
     <p
-      className="text-foreground mb-4 leading-7 [&:not(:first-child)]:mt-4"
+      className="text-foreground mb-6 leading-normal [&:not(:first-child)]:mt-6"
       {...props}
     >
       {children}
@@ -185,35 +122,38 @@ export const components: MDXComponents = {
 
   // Lists
   ul: ({ children, ...props }) => (
-    <ul
-      className="text-foreground mb-4 ml-6 list-disc space-y-2 [&>li]:mt-2"
-      {...props}
-    >
+    <ul className="text-foreground mb-6 space-y-2 [&>li]:mt-2" {...props}>
       {children}
     </ul>
   ),
 
   ol: ({ children, ...props }) => (
-    <ol
-      className="text-foreground mb-4 ml-6 list-decimal space-y-2 [&>li]:mt-2"
-      {...props}
-    >
+    <ol className="text-foreground mb-6 space-y-2 [&>li]:mt-2" {...props}>
       {children}
     </ol>
   ),
 
   li: ({ children, ...props }) => (
-    <li className="leading-7" {...props}>
-      {children}
+    <li className="flex items-start gap-x-2 leading-normal" {...props}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="text-accent my-1 h-4 w-4"
+      >
+        <path d="M16.52 6a2 2 0 0 1 1.561 .75l3.7 4.625a1 1 0 0 1 0 1.25l-3.7 4.624a2 2 0 0 1 -1.561 .751h-10.52a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3z" />
+      </svg>
+      <span className="flex-1">{children}</span>
     </li>
   ),
 
+  // Blockquotes
   blockquote: ({ children, ...props }) => (
     <blockquote
       className="border-accent/50 bg-secondary/30 text-muted-foreground relative my-6 border-l-4 py-4 pr-4 pl-6 italic"
       {...props}
     >
-      <RiDoubleQuotesL className="text-accent/50 absolute top-2 left-2 h-4 w-4" />
+      {/* <RiDoubleQuotesL className="text-accent/50 absolute top-2 left-2 h-4 w-4" /> */}
       <div className="relative">{children}</div>
     </blockquote>
   ),
@@ -273,7 +213,7 @@ export const components: MDXComponents = {
     </td>
   ),
 
-  // Code blocks and inline code - UPDATED for server-side rendering
+  // Code blocks and inline code
   pre: ({ children, ...props }) => (
     <div className="not-prose" {...props}>
       {children}
@@ -283,6 +223,8 @@ export const components: MDXComponents = {
   code: async ({ children, className, ...props }) => {
     // Extract language from className (format: language-js, language-typescript, etc.)
     const language = className?.replace(/language-/, "") as BundledLanguage;
+
+    console.log(props.title);
 
     // If it's a code block (has language), pre-render with Shiki
     if (language && typeof children === "string") {
@@ -297,7 +239,7 @@ export const components: MDXComponents = {
     // Otherwise, it's inline code
     return (
       <code
-        className="border-border/50 bg-secondary/50 text-foreground relative rounded-md border px-2 py-1 font-mono text-sm"
+        className="border-accent/20 bg-accent/10 text-accent hover:border-accent/30 hover:bg-accent/15 dark:border-accent/30 dark:bg-accent/5 dark:text-accent relative inline-block rounded-md border px-1.5 py-0.25 font-mono text-xs font-medium transition-all duration-200"
         {...props}
       >
         {children}

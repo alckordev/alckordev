@@ -69,12 +69,6 @@ export default async function Article({
                 <h1 className="text-foreground text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
                   {frontmatter.title}
                 </h1>
-
-                {frontmatter.abstract && (
-                  <p className="text-muted-foreground text-lg leading-relaxed">
-                    {frontmatter.abstract}
-                  </p>
-                )}
               </div>
 
               {/* Article Meta */}
@@ -174,6 +168,8 @@ export default async function Article({
               </div>
             </footer>
           </article>
+
+          <pre>{JSON.stringify(scope.toc, null, 2)}</pre>
         </main>
 
         {/* Sidebar */}
@@ -196,69 +192,6 @@ export default async function Article({
                 </nav>
               </div>
             )}
-
-            {/* Article Info */}
-            <div className="border-border/50 bg-card/30 rounded-lg border p-4">
-              <h3 className="text-foreground mb-4 text-sm font-semibold">
-                Article Info
-              </h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Published</span>
-                  <span className="text-foreground">
-                    {new Date(frontmatter.publishedAt).toLocaleDateString(
-                      locale,
-                      {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      },
-                    )}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Reading time</span>
-                  <span className="text-foreground">
-                    {Math.ceil(scope.readingTime || 0)} min
-                  </span>
-                </div>
-                {frontmatter.topics && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Topics</span>
-                    <span className="text-foreground">
-                      {frontmatter.topics.length}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Share Buttons */}
-            <div className="border-border/50 bg-card/30 rounded-lg border p-4">
-              <h3 className="text-foreground mb-4 text-sm font-semibold">
-                Share
-              </h3>
-              <div className="flex gap-2">
-                <a
-                  // href={twitterShareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border-border/50 bg-secondary/30 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent flex flex-1 items-center justify-center gap-2 rounded-lg border py-2 text-xs font-medium transition-colors"
-                >
-                  <RiTwitterXLine className="h-3 w-3" />
-                  <span>Twitter</span>
-                </a>
-                <a
-                  // href={linkedinShareUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="border-border/50 bg-secondary/30 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent flex flex-1 items-center justify-center gap-2 rounded-lg border py-2 text-xs font-medium transition-colors"
-                >
-                  <RiLinkedinLine className="h-3 w-3" />
-                  <span>LinkedIn</span>
-                </a>
-              </div>
-            </div>
           </div>
         </aside>
       </div>

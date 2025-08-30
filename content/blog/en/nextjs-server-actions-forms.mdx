@@ -43,10 +43,8 @@ export const ContactSchema = z.object({
 export type ContactInput = z.infer<typeof ContactSchema>;
 ```
 
-<Alert variant="light" color="blue" title="Zod v4">
-  The no-argument signature of flatten() is deprecated. When you need readable
-  messages, pass a mapper: (issue) => issue.message.
-</Alert>
+> [!TIP]
+> Zod v4, The no-argument signature of flatten() is deprecated. When you need readable messages, pass a mapper: (issue) => issue.message.
 
 ## 2. Server Action: validate, persist, and return state
 

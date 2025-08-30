@@ -32,9 +32,8 @@ CULQI_PUBLIC_KEY = "pk_test_XXXXXXXXXXXXX";
 CULQI_SECRET_KEY = "sk_test_XXXXXXXXXXXXX";
 ```
 
-<Alert title="Security tip">
-  Never expose your `CULQI_SECRET_KEY` in client code or public repos.
-</Alert>
+> [!TIP]
+> Never expose your `CULQI_SECRET_KEY` in client code or public repos.
 
 ## Initialize the Client
 
@@ -68,10 +67,8 @@ console.log("Token:", token.id);
 // e.g.: tkn_test_XXXXXXXXXXXX
 ```
 
-<Alert title="Important">
-  If you tokenize on the backend, your server processes raw card data and must
-  comply with PCI-DSS SAQ-D.
-</Alert>
+> [!IMPORTANT]
+> If you tokenize on the backend, your server processes raw card data and must comply with PCI-DSS SAQ-D.
 
 ## Create a One-Time Charge
 

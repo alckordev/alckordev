@@ -44,10 +44,8 @@ export const ContactSchema = z.object({
 export type ContactInput = z.infer<typeof ContactSchema>;
 ```
 
-<Alert variant="light" color="blue" title="Zod v4">
-  La firma de flatten() sin argumentos está deprecada; cuando necesites mensajes
-  legibles, pasa un mapper: (issue) => issue.message.
-</Alert>
+> [!TIP]
+> Zod v4, La firma de flatten() sin argumentos está deprecada; cuando necesites mensajes legibles, pasa un mapper: (issue) => issue.message.
 
 ## 2. Server Action: validar, persistir y retornar estado
 
