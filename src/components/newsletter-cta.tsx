@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { RiMailLine, RiCheckLine } from "@remixicon/react";
+import { Link } from "@/i18n/navigation";
 
 export function NewsletterCTA() {
   const [email, setEmail] = useState("");
@@ -77,19 +78,19 @@ export function NewsletterCTA() {
             </button>
             <label className="text-muted-foreground text-xs leading-relaxed">
               I agree to receive email updates and accept the{" "}
-              <a
+              <Link
                 href="/privacy"
                 className="text-accent hover:text-accent/80 underline underline-offset-2"
               >
                 Privacy Policy
-              </a>{" "}
+              </Link>{" "}
               and{" "}
-              <a
+              <Link
                 href="/terms"
                 className="text-accent hover:text-accent/80 underline underline-offset-2"
               >
                 Terms of Service
-              </a>
+              </Link>
               . You can unsubscribe at any time.
             </label>
           </div>
