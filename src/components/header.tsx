@@ -1,31 +1,28 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Link } from "@/i18n/navigation";
 import { RiMoonLine, RiSunLine } from "@remixicon/react";
 import { socials } from "@/consts/socials";
 import { cn } from "@/lib/cn";
 import { useTranslations } from "next-intl";
+import { LogoBrand } from "./logo-brand";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
   const t = useTranslations();
 
   return (
-    <header className="border-border/50 bg-background/50 sticky top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300">
+    <header
+      className={cn(
+        "sticky top-0 z-50",
+        "bg-neutral-100/50 backdrop-blur-xl [.dark_&]:bg-neutral-950/50",
+        "border-b border-neutral-300/30 [.dark_&]:border-neutral-800/30",
+        "transition-colors duration-300",
+      )}
+    >
       <nav className="mx-auto flex max-w-4xl items-center justify-between p-4">
         {/* Logo/Brand */}
-        <Link
-          href="/"
-          className={cn(
-            "group text-lg font-semibold transition-all duration-200",
-            "hover:text-accent",
-            "after:bg-accent relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:transition-all after:duration-300 after:content-[''] hover:after:w-full",
-          )}
-        >
-          <span className="gradient-text">alckor</span>
-          <span className="text-accent">.dev</span>
-        </Link>
+        <LogoBrand />
 
         <div className="flex items-center space-x-1">
           {/* Social Links */}
@@ -38,9 +35,10 @@ export function Header() {
               rel="noopener noreferrer"
               className={cn(
                 "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
-                "border-border/50 hover:border-accent/50 border",
-                "text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all duration-200",
-                "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
+                "hover:border-accent-500/50 border border-neutral-300/50 [.dark_&]:border-neutral-800/50 [.dark_&]:hover:border-transparent",
+                "hover:bg-accent-500/10 [.dark_&]:hover:text-accent-500 text-neutral-500 hover:text-neutral-950",
+                "before:from-accent-500/20 before:to-accent-500/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
+                "transition-all duration-200",
               )}
             >
               <Icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
@@ -56,10 +54,10 @@ export function Header() {
             }
             className={cn(
               "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
-              "border-border/50 hover:border-accent/50 border",
-              "text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all duration-200",
-              "cursor-pointer",
-              "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
+              "hover:border-accent-500/50 border border-neutral-300/50 [.dark_&]:border-neutral-800/50 [.dark_&]:hover:border-transparent",
+              "hover:bg-accent-500/10 [.dark_&]:hover:text-accent-500 text-neutral-500 hover:text-neutral-950",
+              "before:from-accent-500/20 before:to-accent-500/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
+              "cursor-pointer transition-all duration-200",
             )}
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           >

@@ -2,15 +2,16 @@ import { ArticleCard } from "@/components/article-card";
 import { ProjectCard } from "@/components/project-card";
 import { Timeline } from "@/components/timeline";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/cn";
 import { getPostsInfo } from "@/lib/server/mdx";
-import { RiArrowRightLongLine, RiSparklingLine } from "@remixicon/react";
+import { RiArrowRightLine, RiSparklingLine } from "@remixicon/react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 export default async function Home() {
   const locale = await getLocale();
   const t = await getTranslations();
 
-  const allPosts = getPostsInfo(`blog/${locale}`)
+  const posts = getPostsInfo(`blog/${locale}`)
     .sort(
       (a, b) =>
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
@@ -20,41 +21,44 @@ export default async function Home() {
   return (
     <div className="space-y-16 md:space-y-20">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative">
         <div className="animate-fade-up max-w-3xl">
-          {/* Greeting */}
           <div className="mb-6 flex items-center gap-3">
             <span className="animate-wiggle animate-infinite text-2xl">👋</span>
-            <span className="text-muted-foreground text-sm font-medium">
+            <span className="text-sm font-medium text-neutral-600 [.dark_&]:text-neutral-400">
               {t("greeting")}
             </span>
           </div>
 
-          {/* Main title with gradient */}
           <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            <span className="gradient-text">Isco</span>
-            <span className="text-foreground">, Tech Lead &</span>
+            Isco, Tech Lead &
             <br />
-            <span className="text-foreground">Senior</span>{" "}
-            <span className="gradient-text-accent">Fullstack</span>{" "}
-            <span className="text-foreground">Developer</span>
+            Senior{" "}
+            <span className="from-accent-500 to-accent-500 bg-linear-to-r via-pink-500 bg-clip-text text-transparent">
+              Fullstack
+            </span>{" "}
+            Developer
           </h1>
 
-          {/* Description */}
-          <div className="text-muted-foreground max-w-2xl space-y-4 text-lg leading-relaxed">
+          <div className="max-w-2xl space-y-4 text-lg leading-relaxed text-neutral-600 [.dark_&]:text-neutral-400">
             <p>
-              <span className="text-accent font-semibold">
+              <span className="text-accent-500 font-semibold">
                 {t("years_experience", { count: 10 })}
               </span>
               . {t("hero_description")}
             </p>
 
-            {/* Current focus */}
-            <div className="border-border/50 bg-secondary/30 flex items-center gap-2 rounded-lg border px-4 py-3">
-              <RiSparklingLine className="text-accent h-4 w-4" />
+            <div
+              className={cn(
+                "flex items-center gap-2 rounded-lg px-4 py-3",
+                "bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
+                "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+              )}
+            >
+              <RiSparklingLine className="text-accent-500 h-4 w-4 animate-pulse" />
               <span className="text-sm">
                 {t("current_focus")}{" "}
-                <span className="text-foreground font-medium">
+                <span className="font-medium text-neutral-950 [.dark_&]:text-neutral-100">
                   Astro, Next.js, Nest.js & TypeScript
                 </span>
               </span>
@@ -62,9 +66,8 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Subtle background decoration */}
-        <div className="from-accent/20 to-accent/5 absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-gradient-to-br blur-3xl" />
-        <div className="from-accent/10 absolute bottom-0 left-0 -z-10 h-24 w-24 rounded-full bg-gradient-to-tr to-transparent blur-2xl" />
+        <div className="from-accent-500/20 to-accent-500/5 absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-gradient-to-br blur-3xl" />
+        <div className="from-accent-500/10 absolute bottom-0 left-0 -z-10 h-24 w-24 rounded-full bg-gradient-to-tr to-transparent blur-2xl" />
       </section>
 
       {/* Projects Section */}
@@ -74,16 +77,16 @@ export default async function Home() {
             <h2 className="text-2xl font-semibold tracking-tight">
               {t("featured_projects")}
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-neutral-400 [.dark_&]:text-neutral-600">
               {t("featured_projects_description")}
             </p>
           </div>
           <Link
             href="/projects"
-            className="group/link text-muted-foreground hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors"
+            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors [.dark_&]:text-neutral-400"
           >
             <span>{t("view_all")}</span>
-            <RiArrowRightLongLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
+            <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
           </Link>
         </div>
 
@@ -106,7 +109,7 @@ export default async function Home() {
           <h2 className="text-2xl font-semibold tracking-tight">
             {t("experience")}
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-neutral-400 [.dark_&]:text-neutral-600">
             {t("experience_description")}
           </p>
         </div>
@@ -123,21 +126,21 @@ export default async function Home() {
             <h2 className="text-2xl font-semibold tracking-tight">
               {t("latest_posts")}
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-neutral-400 [.dark_&]:text-neutral-600">
               {t("latest_posts_description")}
             </p>
           </div>
           <Link
             href="/blog"
-            className="group/link text-muted-foreground hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors"
+            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors [.dark_&]:text-neutral-400"
           >
             <span>{t("view_all")}</span>
-            <RiArrowRightLongLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
+            <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
           </Link>
         </div>
 
         <div className="space-y-4">
-          {allPosts.map((post, i) => (
+          {posts.map((post, i) => (
             <div
               key={post.slug}
               className="animate-fade-up"

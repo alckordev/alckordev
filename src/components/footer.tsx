@@ -1,6 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/cn";
 import { RiHeartFill } from "@remixicon/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -11,23 +12,31 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-border/50 bg-background/50 border-t backdrop-blur-md transition-colors duration-300">
+    <footer
+      className={cn(
+        "bg-neutral-100/50 text-neutral-800 [.dark_&]:bg-neutral-950/50 [.dark_&]:text-neutral-300",
+        "border-t border-neutral-300/30 [.dark_&]:border-neutral-800/30",
+        "transition-colors duration-300",
+      )}
+    >
       <div className="mx-auto max-w-4xl px-4 py-8">
         {/* Main footer content */}
         <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
           {/* Left side - Copyright */}
-          <div className="text-muted-foreground flex items-center space-x-2 text-sm">
+          <div className="flex items-center space-x-2 text-sm">
             <span>© {currentYear} alckor.dev</span>
-            <span className="text-border">•</span>
+            <span className="text-neutral-600/30 [.dark_&]:text-neutral-400/30">
+              •
+            </span>
             <span className="flex items-center space-x-1">
               <span>{t("built_with")}</span>
-              <RiHeartFill className="animate-jump animate-infinite animate-duration-[3000ms] h-3 w-3 text-red-500" />
+              <RiHeartFill className="animate-jump animate-infinite animate-duration-[3000ms] h-3 w-3 text-pink-500" />
               <span>{t("for_a_better_web")}.</span>
             </span>
           </div>
 
           {/* Right side - Tech stack */}
-          <div className="text-muted-foreground flex items-center space-x-3 text-xs">
+          <div className="flex items-center space-x-3 text-xs">
             <div className="flex items-center space-x-1">
               <Image
                 src="/assets/svg/nextjs.svg"
@@ -38,7 +47,9 @@ export function Footer() {
               />
               <span>Next.js</span>
             </div>
-            <span className="text-border">•</span>
+            <span className="text-sm text-neutral-600/30 [.dark_&]:text-neutral-400/30">
+              •
+            </span>
             <div className="flex items-center space-x-1">
               <Image
                 src="/assets/svg/tailwindcss.svg"
@@ -49,7 +60,9 @@ export function Footer() {
               />
               <span>Tailwind CSS</span>
             </div>
-            <span className="text-border">•</span>
+            <span className="text-sm text-neutral-600/30 [.dark_&]:text-neutral-400/30">
+              •
+            </span>
             <div className="flex items-center space-x-1">
               <Image
                 src="/assets/svg/typescript.svg"
@@ -64,29 +77,34 @@ export function Footer() {
         </div>
 
         {/* Bottom section - Links */}
-        <div className="border-border/30 mt-6 flex flex-col items-center justify-center space-y-2 border-t pt-6 md:flex-row md:space-y-0 md:space-x-6">
+        <div
+          className={cn(
+            "mt-6 flex flex-col items-center justify-center space-y-2 pt-6 md:flex-row md:space-y-0 md:space-x-6",
+            "border-t border-neutral-300/30 [.dark_&]:border-neutral-800/30",
+          )}
+        >
           <Link
             href="/blog"
-            className="text-muted-foreground hover:text-accent text-sm transition-colors duration-200"
+            className="hover:text-accent-500 text-sm transition-colors duration-200"
           >
             {t("blog")}
           </Link>
           <Link
             href="/projects"
-            className="text-muted-foreground hover:text-accent text-sm transition-colors duration-200"
+            className="hover:text-accent-500 text-sm transition-colors duration-200"
           >
             {t("projects")}
           </Link>
           <a
             href="mailto:tu@email.com"
-            className="text-muted-foreground hover:text-accent text-sm transition-colors duration-200"
+            className="hover:text-accent-500 text-sm transition-colors duration-200"
           >
             {t("contact")}
           </a>
           <a
             href="/sitemap.xml"
             target="_blank"
-            className="text-muted-foreground hover:text-accent text-sm transition-colors duration-200"
+            className="hover:text-accent-500 text-sm transition-colors duration-200"
           >
             {t("sitemap")}
           </a>
@@ -94,7 +112,7 @@ export function Footer() {
 
         {/* Subtle decoration */}
         <div className="mt-6 flex justify-center">
-          <div className="via-accent/30 h-px w-24 bg-gradient-to-r from-transparent to-transparent" />
+          <div className="via-accent-500/50 h-px w-24 bg-gradient-to-r from-transparent to-transparent" />
         </div>
       </div>
     </footer>

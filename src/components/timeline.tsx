@@ -1,42 +1,53 @@
 import { experiences } from "@/consts/experiences";
-import { RiArrowRightUpLongLine, RiBriefcaseLine } from "@remixicon/react";
+import { cn } from "@/lib/cn";
+import { RiArrowRightUpLine, RiBriefcaseLine } from "@remixicon/react";
+import { useTranslations } from "next-intl";
 
 export const Timeline = () => {
+  const t = useTranslations();
+
   return (
     <div className="relative">
-      {/* Timeline line with gradient */}
-      <div className="from-accent via-border absolute top-0 bottom-0 left-4 w-0.5 bg-gradient-to-b to-transparent" />
+      <div className="from-accent-500 absolute top-0 bottom-0 left-4 w-0.5 bg-gradient-to-b via-neutral-200 to-transparent [.dark_&]:via-neutral-800" />
 
       <div className="space-y-8">
         {experiences.map((exp, i) => (
           <div key={i} className="group relative pl-12">
-            {/* Timeline dot with animation */}
-            <div className="absolute top-2 left-0.25 flex h-8 w-8 items-center justify-center">
-              <div className="border-accent bg-background group-hover:border-accent group-hover:shadow-accent/25 h-4 w-4 rounded-full border-2 transition-all duration-300 group-hover:scale-125 group-hover:shadow-lg">
-                <div className="bg-accent/20 group-hover:bg-accent/40 h-full w-full rounded-full transition-all duration-300" />
+            <div className="absolute top-4 left-0.25 flex h-8 w-8 items-center justify-center">
+              <div className="border-accent-500 bg-background group-hover:border-accent-500 group-hover:shadow-accent-500/25 h-5 w-5 rounded-full border-2 transition-all duration-300 group-hover:scale-125 group-hover:shadow-lg">
+                <div className="bg-accent-500/20 group-hover:bg-accent-500/40 h-full w-full rounded-full transition-all duration-300" />
               </div>
-
-              {/* Icon overlay */}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <RiBriefcaseLine className="text-accent h-3 w-3" />
+                <RiBriefcaseLine className="text-accent h-4 w-4" />
               </div>
             </div>
 
-            {/* Content card */}
-            <div className="border-border/50 bg-card/30 group-hover:border-border group-hover:bg-card/60 rounded-lg border p-4 backdrop-blur-sm transition-all duration-300 group-hover:shadow-md">
-              {/* Date badge */}
-              <div className="border-border/50 bg-secondary/50 text-muted-foreground mb-3 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs font-medium">
+            <div
+              className={cn(
+                "rounded-lg p-4 backdrop-blur-sm transition-all duration-300 group-hover:shadow-md",
+                "bg-neutral-50/50 hover:bg-neutral-50 [.dark_&]:bg-neutral-950/50 [.dark_&]:hover:bg-neutral-950",
+                "group-hover:border-border border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+              )}
+            >
+              <div
+                className={cn(
+                  "mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-xs font-medium",
+                  "bg-neutral-200 text-neutral-600 [.dark_&]:bg-neutral-900 [.dark_&]:text-neutral-400",
+                  "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+                )}
+              >
                 <span>{exp.startYear}</span>
-                <span className="text-border">—</span>
-                <span>{exp.endYear ? exp.endYear : "Present"}</span>
+                <span className="text-neutral-600/30 [.dark_&]:text-neutral-400/30">
+                  —
+                </span>
+                <span>{exp.endYear ? exp.endYear : t("present")}</span>
                 {!exp.endYear && (
                   <div className="ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
                 )}
               </div>
 
-              {/* Role and company */}
               <div className="space-y-2">
-                <h3 className="text-foreground group-hover:text-accent text-lg font-semibold tracking-tight transition-colors">
+                <h3 className="group-hover:text-accent-500 text-lg font-semibold tracking-tight transition-colors">
                   {exp.role}
                 </h3>
 
@@ -44,41 +55,20 @@ export const Timeline = () => {
                   href={exp.company.url}
                   target="_blank"
                   rel="noopener"
-                  className="group/company text-muted-foreground hover:text-accent inline-flex items-center gap-2 text-sm font-medium transition-colors"
+                  className="group/company hover:text-accent-500! inline-flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors [.dark_&]:text-neutral-400"
                 >
                   <span>{exp.company.name}</span>
-                  <RiArrowRightUpLongLine className="h-3 w-3 transition-transform group-hover/company:translate-x-0.5 group-hover/company:-translate-y-0.5" />
+                  <RiArrowRightUpLine className="h-3 w-3 transition-transform group-hover/company:translate-x-0.5 group-hover/company:-translate-y-0.5" />
                 </a>
               </div>
 
-              {/* Description */}
-              <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
+              <p className="mt-3 text-sm leading-relaxed text-neutral-600 [.dark_&]:text-neutral-400">
                 {exp.description}
               </p>
-
-              {/* Skills/Technologies (if available) */}
-              {exp.technologies && (
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {exp.technologies.slice(0, 4).map((tech) => (
-                    <span
-                      key={tech}
-                      className="border-border/30 bg-secondary/20 text-muted-foreground inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                  {exp.technologies.length > 4 && (
-                    <span className="border-border/30 bg-secondary/20 text-muted-foreground inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium">
-                      +{exp.technologies.length - 4} more
-                    </span>
-                  )}
-                </div>
-              )}
             </div>
 
-            {/* Connecting line to next item */}
             {i < experiences.length - 1 && (
-              <div className="from-border/50 absolute top-12 left-4 h-8 w-0.5 bg-gradient-to-b to-transparent" />
+              <div className="from-accent-500 absolute top-12 left-4 h-8 w-0.5 bg-gradient-to-b to-transparent" />
             )}
           </div>
         ))}

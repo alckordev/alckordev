@@ -33,8 +33,9 @@ export default async function Layout({ children, params }: Props) {
         className={cn(
           sans.variable,
           mono.variable,
-          "bg-background min-h-screen scroll-smooth font-sans antialiased",
-          "selection:bg-accent/50 selection:text-accent-foreground",
+          "min-h-screen scroll-smooth font-sans antialiased",
+          "bg-neutral-100 text-neutral-950 [.dark_&]:bg-neutral-950 [.dark_&]:text-neutral-100",
+          "selection:bg-accent-500/50 selection:text-neutral-950 [.dark_&]:selection:text-neutral-100",
           "transition-colors duration-300",
         )}
       >
