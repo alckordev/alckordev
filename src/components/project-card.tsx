@@ -1,8 +1,23 @@
 import { cn } from "@/lib/cn";
-import { RiArrowRightUpLine, RiGithubLine, RiStarLine } from "@remixicon/react";
-import Image from "next/image";
+import { GitHubRepository } from "@/types/github";
+import {
+  RiArrowRightUpLine,
+  RiGithubLine,
+  RiStackLine,
+  RiStarLine,
+} from "@remixicon/react";
+import { useTranslations } from "next-intl";
 
-export const ProjectCard = () => {
+interface ProjectCardProps {
+  repo: GitHubRepository;
+}
+
+export const ProjectCard = ({ repo }: ProjectCardProps) => {
+  const t = useTranslations();
+
+  const isRecentlyUpdated =
+    Date.now() - new Date(repo.updatedAt).getTime() < 30 * 24 * 60 * 60 * 1000;
+
   return (
     <div
       className={cn(
@@ -18,23 +33,24 @@ export const ProjectCard = () => {
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <div className="flex-shrink-0">
-              <Image
+              {/* <Image
                 src="https://placehold.co/32"
                 alt="Project logo"
                 width={32}
                 height={32}
                 className="h-8 w-8 rounded-md"
-              />
+              /> */}
+              <RiStackLine className="h-4 w-4" />
             </div>
 
             <div className="min-w-0 flex-1">
               <a
-                href="/"
+                href={repo.homepageUrl || repo.url}
                 target="_blank"
                 rel="noopener"
                 className="group/title hover:text-accent-500 flex items-center gap-2 font-semibold transition-colors"
               >
-                <span className="truncate">culqi-nodejs</span>
+                <span className="truncate">{repo.name}</span>
                 <RiArrowRightUpLine className="h-3.5 w-3.5 flex-shrink-0 opacity-60 transition-all duration-200 group-hover/title:translate-x-0.5 group-hover/title:-translate-y-0.5 group-hover/title:opacity-100" />
               </a>
             </div>
@@ -42,10 +58,10 @@ export const ProjectCard = () => {
 
           <div className="flex flex-shrink-0 items-center gap-2">
             <a
-              href="/"
+              href={repo.url}
               target="_blank"
               rel="noopener"
-              title="View on GitHub"
+              title={t("view_on_github")}
               className={cn(
                 "flex h-8 w-8 items-center justify-center rounded-md transition-colors",
                 "hover:bg-neutral-200 [.dark_&]:hover:bg-neutral-900",
@@ -63,35 +79,41 @@ export const ProjectCard = () => {
               )}
             >
               <RiStarLine className="text-accent-500 h-3 w-3" />
-              <span>127</span>
+              <span>{repo.stargazerCount}</span>
             </div>
           </div>
         </div>
 
         <p className="line-clamp-2 text-sm text-neutral-500">
-          🍞 A beautiful notification library for React and modern web apps with
-          TypeScript support.
+          {repo.description}
         </p>
 
         <div className="flex items-center justify-between">
           <div className="flex flex-wrap gap-1.5">
-            {["TypeScript", "React", "Tailwind"].map((tech) => (
+            {repo.languages.edges.map((edge, i) => (
               <span
-                key={tech}
+                key={i}
                 className={cn(
-                  "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium text-neutral-500",
+                  "inline-flex items-center space-x-2 rounded-md px-2 py-1 text-xs font-medium text-neutral-500",
                   "bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
                   "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
                 )}
               >
-                {tech}
+                <span>{edge.node.name}</span>
               </span>
             ))}
           </div>
 
           <div className="flex items-center gap-2 text-xs text-neutral-500">
-            <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-            <span>Updated</span>
+            <div
+              className={cn(
+                "h-2 w-2 rounded-full",
+                isRecentlyUpdated
+                  ? "animate-pulse bg-green-500"
+                  : "bg-blue-500",
+              )}
+            />
+            <span>{isRecentlyUpdated ? t("updated") : t("stable")}</span>
           </div>
         </div>
       </div>

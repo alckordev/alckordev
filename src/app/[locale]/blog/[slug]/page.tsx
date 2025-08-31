@@ -92,7 +92,7 @@ export default async function Article({
                   {frontmatter.topics.map((topic) => (
                     <Link
                       key={topic.slug}
-                      href={`/blog/tags/${topic.slug}`}
+                      href={`/topics/${topic.slug}`}
                       className={cn(
                         "group inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors",
                         "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",

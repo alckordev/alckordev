@@ -15,10 +15,10 @@ export function ArticleCard({ article }: ArticleCardProps) {
   return (
     <article
       className={cn(
-        "group/card relative overflow-hidden rounded-lg backdrop-blur-sm duration-300",
+        "group/card relative overflow-hidden rounded-lg backdrop-blur-sm transition-all duration-300",
         "bg-neutral-50/50 hover:bg-neutral-50 [.dark_&]:bg-neutral-950/50 [.dark_&]:hover:bg-neutral-950",
         "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
-        "hover:shadow-accent-500/5 hover:shadow-lg",
+        "hover:shadow-accent-500/5 hover:-translate-y-1 hover:shadow-lg",
       )}
     >
       <div className="from-accent-500/5 to-accent-500/5 absolute inset-0 bg-gradient-to-r via-transparent opacity-0 transition-opacity duration-300 group-hover/card:opacity-100" />
@@ -68,7 +68,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
             {article.topics?.map((tag) => (
               <Link
                 key={tag.slug}
-                href={`/blog/topics/${tag.slug}`}
+                href={`/topics/${tag.slug}`}
                 className={cn(
                   "group inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors",
                   "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",

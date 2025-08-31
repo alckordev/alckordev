@@ -36,7 +36,6 @@ export function InfiniteArticlesList({
         </div>
       ))}
 
-      {/* Loading indicator / Observer target */}
       <div ref={observerRef} className="flex justify-center py-8">
         {isLoading && (
           <div className="flex items-center gap-2 text-neutral-500">

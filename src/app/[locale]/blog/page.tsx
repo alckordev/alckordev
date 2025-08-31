@@ -120,7 +120,10 @@ export default async function Blog() {
       )}
 
       {posts.length === 0 && (
-        <section className="py-12 text-center">
+        <section
+          className="animate-fade-up py-16 text-center"
+          style={{ animationDelay: "300ms" }}
+        >
           <div className="mx-auto max-w-md space-y-4">
             <RiBookOpenLine className="mx-auto h-12 w-12 opacity-30" />
             <h3 className="text-lg font-semibold">{t("no_posts_found")}</h3>

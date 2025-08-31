@@ -3,6 +3,7 @@ import { ProjectCard } from "@/components/project-card";
 import { Timeline } from "@/components/timeline";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
+import { getGitHubRepositories } from "@/lib/server/github";
 import { getPostsInfo } from "@/lib/server/mdx";
 import { RiArrowRightLine, RiSparklingLine } from "@remixicon/react";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -10,6 +11,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 export default async function Home() {
   const locale = await getLocale();
   const t = await getTranslations();
+
+  const repos = await getGitHubRepositories();
 
   const posts = getPostsInfo(`blog/${locale}`)
     .sort(
@@ -20,7 +23,6 @@ export default async function Home() {
 
   return (
     <div className="space-y-16 md:space-y-20">
-      {/* Hero Section */}
       <section className="relative md:px-4">
         <div className="animate-fade-up max-w-3xl">
           <div className="mb-6 flex items-center gap-3">
@@ -70,7 +72,6 @@ export default async function Home() {
         <div className="from-accent-500/10 absolute bottom-0 left-0 -z-10 h-24 w-24 rounded-full bg-gradient-to-tr to-transparent blur-2xl" />
       </section>
 
-      {/* Projects Section */}
       <section className="group space-y-6">
         <div className="flex items-center justify-between md:px-4">
           <div className="space-y-1">
@@ -81,29 +82,28 @@ export default async function Home() {
               {t("featured_projects_description")}
             </p>
           </div>
-          <Link
+          {/* <Link
             href="/projects"
             className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors"
           >
             <span>{t("view_all")}</span>
             <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
-          </Link>
+          </Link> */}
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, i) => (
+          {repos.map((repo, i) => (
             <div
               key={i}
               className="animate-fade-up"
               style={{ animationDelay: `${i * 100 + 200}ms` }}
             >
-              <ProjectCard />
+              <ProjectCard repo={repo} />
             </div>
           ))}
         </div>
       </section>
 
-      {/* Experience Section */}
       <section className="space-y-6">
         <div className="space-y-1 md:px-4">
           <h2 className="text-2xl font-semibold tracking-tight">
@@ -119,7 +119,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Latest Posts Section */}
       <section className="space-y-6">
         <div className="flex items-center justify-between md:px-4">
           <div className="space-y-1">

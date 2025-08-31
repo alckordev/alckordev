@@ -14,11 +14,11 @@ export const Timeline = () => {
         {experiences.map((exp, i) => (
           <div key={i} className="group relative pl-12">
             <div className="absolute top-4 left-0.25 flex h-8 w-8 items-center justify-center">
-              <div className="border-accent-500 bg-background group-hover:border-accent-500 group-hover:shadow-accent-500/25 h-5 w-5 rounded-full border-2 transition-all duration-300 group-hover:scale-125 group-hover:shadow-lg">
+              <div className="border-accent-500 group-hover:border-accent-500 group-hover:shadow-accent-500/25 h-5 w-5 rounded-full border-2 bg-neutral-100 transition-all duration-300 group-hover:scale-125 group-hover:shadow-lg [.dark_&]:bg-neutral-950">
                 <div className="bg-accent-500/20 group-hover:bg-accent-500/40 h-full w-full rounded-full transition-all duration-300" />
               </div>
               <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <RiBriefcaseLine className="text-accent h-4 w-4" />
+                <RiBriefcaseLine className="text-accent-500 h-4 w-4" />
               </div>
             </div>
 
