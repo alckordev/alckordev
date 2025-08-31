@@ -3,12 +3,12 @@ import { CodeBlock } from "@/components/code-block";
 import { highlight } from "@/lib/shiki-shared";
 import Link from "next/link";
 import { BundledLanguage } from "shiki/bundle/web";
+import { cn } from "./cn";
 
 export const components: MDXComponents = {
   // Links
   a: ({ href, children, ...props }) => {
     const isExternal = href?.startsWith("http");
-    const isAnchor = href?.startsWith("#");
 
     if (isExternal) {
       return (
@@ -16,19 +16,7 @@ export const components: MDXComponents = {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-accent decoration-accent/50 hover:decoration-accent inline-flex items-center gap-1 underline underline-offset-2 transition-colors"
-          {...props}
-        >
-          {children}
-        </a>
-      );
-    }
-
-    if (isAnchor) {
-      return (
-        <a
-          href={href}
-          className="text-accent decoration-accent/50 hover:decoration-accent underline underline-offset-2 transition-colors"
+          className="text-accent-500 decoration-accent-500/50 hover:decoration-accent-500 underline underline-offset-2 transition-colors"
           {...props}
         >
           {children}
@@ -39,7 +27,7 @@ export const components: MDXComponents = {
     return (
       <Link
         href={href || "#"}
-        className="text-accent decoration-accent/50 hover:decoration-accent underline underline-offset-2 transition-colors"
+        className="text-accent-500 decoration-accent-500/50 hover:decoration-accent-500 underline underline-offset-2 transition-colors"
         {...props}
       >
         {children}
@@ -51,7 +39,7 @@ export const components: MDXComponents = {
   h1: ({ children, id, ...props }) => (
     <h1
       id={id}
-      className="group text-foreground relative mt-10 mb-6 scroll-mt-24 text-3xl font-bold tracking-tight first:mt-0 md:text-4xl"
+      className="group relative mt-10 mb-6 scroll-mt-24 text-3xl font-bold tracking-tight first:mt-0 md:text-4xl"
       {...props}
     >
       {children}
@@ -61,7 +49,7 @@ export const components: MDXComponents = {
   h2: ({ children, id, ...props }) => (
     <h2
       id={id}
-      className="group text-foreground relative mt-8 mb-4 scroll-mt-24 text-2xl font-semibold tracking-tight md:text-3xl"
+      className="group relative mt-8 mb-4 scroll-mt-24 text-2xl font-semibold tracking-tight md:text-3xl"
       {...props}
     >
       {children}
@@ -71,7 +59,7 @@ export const components: MDXComponents = {
   h3: ({ children, id, ...props }) => (
     <h3
       id={id}
-      className="group text-foreground relative mt-6 mb-3 scroll-mt-24 text-xl font-semibold tracking-tight md:text-2xl"
+      className="group relative mt-6 mb-3 scroll-mt-24 text-xl font-semibold tracking-tight md:text-2xl"
       {...props}
     >
       {children}
@@ -81,7 +69,7 @@ export const components: MDXComponents = {
   h4: ({ children, id, ...props }) => (
     <h4
       id={id}
-      className="group text-foreground relative mt-5 mb-2 scroll-mt-24 text-lg font-semibold tracking-tight"
+      className="group relative mt-5 mb-2 scroll-mt-24 text-lg font-semibold tracking-tight"
       {...props}
     >
       {children}
@@ -91,7 +79,7 @@ export const components: MDXComponents = {
   h5: ({ children, id, ...props }) => (
     <h5
       id={id}
-      className="group text-foreground relative mt-4 mb-2 scroll-mt-24 text-base font-semibold tracking-tight"
+      className="group relative mt-4 mb-2 scroll-mt-24 text-base font-semibold tracking-tight"
       {...props}
     >
       {children}
@@ -101,7 +89,7 @@ export const components: MDXComponents = {
   h6: ({ children, id, ...props }) => (
     <h6
       id={id}
-      className="group text-foreground relative mt-3 mb-2 scroll-mt-24 text-sm font-semibold tracking-tight"
+      className="group relative mt-3 mb-2 scroll-mt-24 text-sm font-semibold tracking-tight"
       {...props}
     >
       {children}
@@ -110,23 +98,20 @@ export const components: MDXComponents = {
 
   // Paragraphs
   p: ({ children, ...props }) => (
-    <p
-      className="text-foreground mb-6 leading-normal [&:not(:first-child)]:mt-6"
-      {...props}
-    >
+    <p className="mb-6 leading-normal [&:not(:first-child)]:mt-6" {...props}>
       {children}
     </p>
   ),
 
   // Lists
   ul: ({ children, ...props }) => (
-    <ul className="text-foreground mb-6 space-y-2 [&>li]:mt-2" {...props}>
+    <ul className="mb-6 space-y-2 [&>li]:mt-2" {...props}>
       {children}
     </ul>
   ),
 
   ol: ({ children, ...props }) => (
-    <ol className="text-foreground mb-6 space-y-2 [&>li]:mt-2" {...props}>
+    <ol className="mb-6 space-y-2 [&>li]:mt-2" {...props}>
       {children}
     </ol>
   ),
@@ -137,7 +122,7 @@ export const components: MDXComponents = {
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
         fill="currentColor"
-        className="text-accent my-1 h-4 w-4"
+        className="text-accent-500 my-1 h-4 w-4"
       >
         <path d="M16.52 6a2 2 0 0 1 1.561 .75l3.7 4.625a1 1 0 0 1 0 1.25l-3.7 4.624a2 2 0 0 1 -1.561 .751h-10.52a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3z" />
       </svg>
@@ -148,7 +133,7 @@ export const components: MDXComponents = {
   // Blockquotes
   blockquote: ({ children, ...props }) => (
     <blockquote
-      className="border-accent/50 bg-secondary/30 text-muted-foreground relative my-6 border-l-4 py-4 pr-4 pl-6 italic"
+      className="border-accent-500/50 bg-secondary/30 text-muted-foreground relative my-6 border-l-4 py-4 pr-4 pl-6 italic"
       {...props}
     >
       {/* <RiDoubleQuotesL className="text-accent/50 absolute top-2 left-2 h-4 w-4" /> */}
@@ -159,7 +144,7 @@ export const components: MDXComponents = {
   // Horizontal rule
   hr: ({ ...props }) => (
     <hr
-      className="via-border my-8 h-px border-0 bg-gradient-to-r from-transparent to-transparent"
+      className="my-8 h-px border-0 bg-gradient-to-r from-transparent via-neutral-500/20 to-transparent"
       {...props}
     />
   ),
@@ -168,7 +153,7 @@ export const components: MDXComponents = {
   table: ({ children, ...props }) => (
     <div className="my-6 overflow-x-auto">
       <table
-        className="border-border/50 w-full border-collapse border text-sm"
+        className="w-full border-collapse border border-neutral-500/50 text-sm"
         {...props}
       >
         {children}
@@ -177,7 +162,7 @@ export const components: MDXComponents = {
   ),
 
   thead: ({ children, ...props }) => (
-    <thead className="bg-secondary/30" {...props}>
+    <thead className="bg-neutral-500/10" {...props}>
       {children}
     </thead>
   ),
@@ -186,7 +171,7 @@ export const components: MDXComponents = {
 
   tr: ({ children, ...props }) => (
     <tr
-      className="border-border/50 hover:bg-secondary/20 border-b transition-colors"
+      className="border-b border-neutral-500/50 transition-colors hover:bg-neutral-500/5"
       {...props}
     >
       {children}
@@ -195,7 +180,7 @@ export const components: MDXComponents = {
 
   th: ({ children, ...props }) => (
     <th
-      className="border-border/50 text-foreground border px-4 py-2 text-left font-semibold"
+      className="border border-neutral-500/10 px-4 py-2 text-left font-semibold"
       {...props}
     >
       {children}
@@ -203,10 +188,7 @@ export const components: MDXComponents = {
   ),
 
   td: ({ children, ...props }) => (
-    <td
-      className="border-border/50 text-foreground border px-4 py-2"
-      {...props}
-    >
+    <td className="border border-neutral-500/10 px-4 py-2" {...props}>
       {children}
     </td>
   ),
@@ -219,10 +201,8 @@ export const components: MDXComponents = {
   ),
 
   code: async ({ children, className, ...props }) => {
-    // Extract language from className (format: language-js, language-typescript, etc.)
     const language = className?.replace(/language-/, "") as BundledLanguage;
 
-    // If it's a code block (has language), pre-render with Shiki
     if (language && typeof children === "string") {
       const initial = await highlight(children, language);
       return (
@@ -232,10 +212,12 @@ export const components: MDXComponents = {
       );
     }
 
-    // Otherwise, it's inline code
     return (
       <code
-        className="border-accent/30 bg-accent/30 text-accent hover:border-accent/40 hover:bg-accent/35 [.dark_&]:border-accent/45 [.dark_&]:bg-accent/18 [.dark_&]:text-accent [.dark_&]:hover:border-accent/55 [.dark_&]:hover:bg-accent/23 relative inline-block rounded-md border px-1.5 py-0.25 font-mono text-xs font-medium transition-all duration-200"
+        className={cn(
+          "relative inline-block rounded-md border px-1.5 font-mono text-sm font-medium transition-all duration-200",
+          "bg-accent-500/10 text-accent-500 border-accent-500/30",
+        )}
         {...props}
       >
         {children}
@@ -245,13 +227,13 @@ export const components: MDXComponents = {
 
   // Strong and emphasis
   strong: ({ children, ...props }) => (
-    <strong className="text-foreground font-semibold" {...props}>
+    <strong className="font-semibold" {...props}>
       {children}
     </strong>
   ),
 
   em: ({ children, ...props }) => (
-    <em className="text-foreground italic" {...props}>
+    <em className="italic" {...props}>
       {children}
     </em>
   ),

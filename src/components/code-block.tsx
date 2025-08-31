@@ -4,6 +4,7 @@ import { JSX, useLayoutEffect, useState } from "react";
 import { BundledLanguage } from "shiki/bundle/web";
 import { highlight } from "@/lib/shiki-shared";
 import { CopyButton } from "./copy-button";
+import { RiLoaderLine } from "@remixicon/react";
 
 interface CodeBlockProps {
   children: string;
@@ -29,10 +30,10 @@ export function CodeBlock({ children, lang, title, initial }: CodeBlockProps) {
 
   if (isLoading) {
     return (
-      <div className="group border-border/50 bg-card my-6 overflow-hidden rounded-lg border shadow-lg [.dark_&]:shadow-black/20">
-        <div className="border-border/30 bg-secondary/50 flex items-center justify-center p-8">
-          <div className="text-muted-foreground flex items-center gap-2 text-sm">
-            <div className="border-accent h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+      <div className="group my-6 overflow-hidden rounded-lg border border-neutral-500/10 bg-neutral-100 shadow-lg [.dark_&]:bg-neutral-900 [.dark_&]:shadow-black/20">
+        <div className="flex items-center justify-center border-neutral-500/10 bg-neutral-100/10 p-8 [.dark_&]:bg-neutral-900/10">
+          <div className="flex items-center gap-2 text-sm text-neutral-500">
+            <RiLoaderLine className="h-5 w-5 animate-spin" />
             <span>Highlighting code...</span>
           </div>
         </div>
@@ -41,107 +42,28 @@ export function CodeBlock({ children, lang, title, initial }: CodeBlockProps) {
   }
 
   return (
-    <div className="group border-border/50 bg-card my-6 overflow-hidden rounded-lg border shadow-lg [.dark_&]:shadow-black/20">
-      <div className="border-border/30 bg-secondary/50 flex items-center justify-between border-b px-4 py-2">
+    <div className="group my-6 overflow-hidden rounded-lg border border-neutral-500/10 bg-neutral-100 shadow-lg [.dark_&]:bg-neutral-900 [.dark_&]:shadow-black/20">
+      <div className="flex items-center justify-between border-b border-neutral-500/10 bg-neutral-100/10 px-4 py-2 [.dark_&]:bg-neutral-900/10">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <div className="bg-accent h-2 w-2 rounded-full"></div>
+            <div className="bg-accent-500 h-2 w-2 animate-pulse rounded-full"></div>
           </div>
-          {title && (
-            <span className="text-muted-foreground text-sm">{title}</span>
-          )}
+          {title && <span className="text-sm text-neutral-500">{title}</span>}
           {!title && lang && (
-            <span className="text-muted-foreground font-mono text-xs">
-              {lang}
-            </span>
+            <span className="font-mono text-xs text-neutral-500">{lang}</span>
           )}
         </div>
         <CopyButton text={code} />
       </div>
 
-      <div className="bg-secondary/20 relative flex">
-        <div className="bg-secondary/20 text-muted-foreground flex-shrink-0 px-3 py-4 text-right font-mono text-xs">
+      <div className="relative flex bg-neutral-100/20 [.dark_&]:bg-neutral-950/20">
+        <div className="flex-shrink-0 bg-neutral-100/20 px-3 py-4 text-right font-mono text-xs text-neutral-500 [.dark_&]:bg-neutral-950/20">
           {lines.map((_, i) => (
             <div key={i} className="leading-6">
               {i + 1}
             </div>
           ))}
         </div>
-
-        <div className="overflow-x-auto p-4 text-sm leading-6 [&_code]:!bg-transparent [&_pre]:!bg-transparent [&_pre]:!p-0">
-          {nodes}
-        </div>
-      </div>
-    </div>
-  );
-
-  // return (
-  //   <div className="group border-accent/20 from-card/80 to-card/40 shadow-accent/5 hover:border-accent/30 hover:shadow-accent/10 relative my-6 overflow-hidden rounded-xl border bg-gradient-to-br shadow-lg backdrop-blur-sm transition-all duration-300">
-  //     {(title || lang) && (
-  //       <div className="border-accent/10 from-accent/5 to-accent/10 flex items-center justify-between border-b bg-gradient-to-r px-4 py-3">
-  //         <div className="flex items-center gap-3">
-  //           {title && (
-  //             <span className="text-foreground text-sm font-semibold">
-  //               {title}
-  //             </span>
-  //           )}
-  //           {!title && lang && (
-  //             <div className="flex items-center gap-2">
-  //               <div className="bg-accent h-2 w-2 rounded-full"></div>
-  //               <span className="text-accent font-mono text-xs font-medium uppercase">
-  //                 {lang}
-  //               </span>
-  //             </div>
-  //           )}
-  //         </div>
-  //         <CopyButton text={code} />
-  //       </div>
-  //     )}
-
-  //     <div className="relative">
-  //       {!title && !lang && (
-  //         <div className="absolute top-3 right-3 z-10">
-  //           <CopyButton text={code} />
-  //         </div>
-  //       )}
-
-  //       <div className="overflow-x-auto p-6 text-sm leading-7 [&_code]:!bg-transparent [&_pre]:!bg-transparent [&_pre]:!p-0">
-  //         {nodes}
-  //       </div>
-  //     </div>
-
-  //     <div className="from-accent/50 via-accent to-accent/50 h-1 bg-gradient-to-r"></div>
-  //   </div>
-  // );
-
-  return (
-    <div className="group border-border/50 bg-card/30 relative my-6 overflow-hidden rounded-lg border">
-      {/* Header with title and copy button */}
-      {(title || lang) && (
-        <div className="border-border/30 bg-secondary/20 flex items-center justify-between border-b px-4 py-2">
-          <div className="flex items-center gap-2">
-            {title && (
-              <span className="text-foreground text-sm font-medium">
-                {title}
-              </span>
-            )}
-            {!title && lang && (
-              <span className="text-muted-foreground font-mono text-xs uppercase">
-                {lang}
-              </span>
-            )}
-          </div>
-          <CopyButton text={code} />
-        </div>
-      )}
-
-      {/* Code content */}
-      <div className="relative">
-        {!title && !lang && (
-          <div className="absolute top-2 right-2 z-10">
-            <CopyButton text={code} />
-          </div>
-        )}
 
         <div className="overflow-x-auto p-4 text-sm leading-6 [&_code]:!bg-transparent [&_pre]:!bg-transparent [&_pre]:!p-0">
           {nodes}

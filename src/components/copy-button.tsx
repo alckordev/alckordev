@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { RiFileCopyLine, RiCheckLine } from "@remixicon/react";
+import { cn } from "@/lib/cn";
 
 interface CopyButtonProps {
   text: string;
@@ -23,7 +24,10 @@ export function CopyButton({ text }: CopyButtonProps) {
   return (
     <button
       onClick={handleCopy}
-      className="bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground flex h-8 w-8 cursor-pointer items-center justify-center rounded-md opacity-0 transition-all group-hover:opacity-100"
+      className={cn(
+        "flex h-8 w-8 cursor-pointer items-center justify-center rounded-md opacity-0 transition-all group-hover:opacity-100",
+        "bg-neutral-500/10 text-neutral-500 hover:bg-neutral-500/20 hover:text-neutral-950 [.dark_&]:hover:text-neutral-100",
+      )}
       title={copied ? "Copied!" : "Copy code"}
       type="button"
     >

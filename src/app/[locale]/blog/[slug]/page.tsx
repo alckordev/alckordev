@@ -12,7 +12,7 @@ import {
   RiTimeLine,
   RiTwitterXLine,
 } from "@remixicon/react";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { evaluate, EvaluateOptions } from "next-mdx-remote-client/rsc";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
@@ -25,6 +25,8 @@ export default async function Article({
   params: Promise<{ slug: string }>;
 }) {
   const locale = await getLocale();
+  const t = await getTranslations();
+
   const { slug } = await params;
 
   const source = await getPostSource(`blog/${locale}/${slug}`);
@@ -50,29 +52,26 @@ export default async function Article({
 
   return (
     <div className="relative">
-      {/* Back Navigation */}
       <nav className="mb-8">
         <Link
           href="/blog"
-          className="group text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+          className="group hover:text-accent-500 inline-flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors"
         >
           <RiArrowLeftLine className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          <span>Back to Blog</span>
+          <span>{t("back_to_blog")}</span>
         </Link>
       </nav>
 
       <article className="space-y-8">
-        {/* Article Header */}
         <header className="space-y-6">
           <div className="space-y-4">
-            <h1 className="text-foreground text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
               {frontmatter.title}
             </h1>
           </div>
 
-          {/* Article Meta */}
-          <div className="border-border/50 flex flex-wrap items-center gap-4 border-b pb-6">
-            <div className="text-muted-foreground flex items-center gap-1 text-sm">
+          <div className="flex flex-wrap items-center gap-4 border-b border-neutral-500/20 pb-6">
+            <div className="flex items-center gap-1 text-sm text-neutral-500">
               <RiCalendarLine className="h-4 w-4" />
               <time dateTime={frontmatter.publishedAt}>
                 {new Date(frontmatter.publishedAt).toLocaleDateString(locale, {
@@ -82,21 +81,24 @@ export default async function Article({
                 })}
               </time>
             </div>
-
-            <div className="text-muted-foreground flex items-center gap-1 text-sm">
+            <div className="flex items-center gap-1 text-sm text-neutral-500">
               <RiTimeLine className="h-4 w-4" />
               <span>{Math.ceil(scope.readingTime || 0)} min read</span>
             </div>
-
             {frontmatter.topics && frontmatter.topics.length > 0 && (
               <div className="flex items-center gap-2">
-                <RiPriceTag3Line className="text-muted-foreground h-4 w-4" />
+                <RiPriceTag3Line className="h-4 w-4 text-neutral-500" />
                 <div className="flex flex-wrap gap-1">
                   {frontmatter.topics.map((topic) => (
                     <Link
                       key={topic.slug}
                       href={`/blog/tags/${topic.slug}`}
-                      className="border-border/50 bg-secondary/30 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent rounded-md border px-2 py-1 text-xs font-medium transition-colors"
+                      className={cn(
+                        "group inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors",
+                        "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
+                        "hover:text-accent-500! text-neutral-500",
+                        "hover:border-accent-500/30! border-neutral-300/50 [.dark_&]:border-neutral-800/50",
+                      )}
                     >
                       {topic.name}
                     </Link>
@@ -107,18 +109,13 @@ export default async function Article({
           </div>
         </header>
 
-        {/* Article Content */}
-        <div className="prose prose-neutral [.dark_&]:prose-invert max-w-none">
-          {content}
-        </div>
+        <div className="max-w-none">{content}</div>
 
-        {/* Article Footer */}
-        <footer className="border-border/50 border-t pt-8">
+        <footer className="border-t border-neutral-500/20 pt-8">
           <div className="space-y-6">
-            {/* Share Section */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center gap-3">
               <h3 className="text-foreground text-lg font-semibold">
-                Share this article
+                {t("share_this_article")}
               </h3>
               <div className="flex items-center gap-2">
                 <a
@@ -127,9 +124,10 @@ export default async function Article({
                   rel="noopener noreferrer"
                   className={cn(
                     "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
-                    "border-border/50 hover:border-accent/50 border",
-                    "text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all duration-200",
-                    "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
+                    "hover:border-accent-500/50 border border-neutral-300/50 [.dark_&]:border-neutral-800/50 [.dark_&]:hover:border-transparent",
+                    "hover:bg-accent-500/10 [.dark_&]:hover:text-accent-500 text-neutral-500 hover:text-neutral-950",
+                    "before:from-accent-500/20 before:to-accent-500/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
+                    "transition-all duration-200",
                   )}
                   title="Share on Twitter"
                 >
@@ -139,14 +137,19 @@ export default async function Article({
                   href="/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border-border/50 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
+                  className={cn(
+                    "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
+                    "hover:border-accent-500/50 border border-neutral-300/50 [.dark_&]:border-neutral-800/50 [.dark_&]:hover:border-transparent",
+                    "hover:bg-accent-500/10 [.dark_&]:hover:text-accent-500 text-neutral-500 hover:text-neutral-950",
+                    "before:from-accent-500/20 before:to-accent-500/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
+                    "transition-all duration-200",
+                  )}
                   title="Share on LinkedIn"
                 >
                   <RiLinkedinLine className="h-4 w-4" />
                 </a>
               </div>
             </div>
-
             <SupportCTA />
           </div>
         </footer>

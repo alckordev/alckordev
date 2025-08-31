@@ -34,5 +34,9 @@
   "years_experience": "+{count} years of experience",
   "thoughts": "Thoughts",
   "tutorials": "Tutorials",
-  "present": "Present"
+  "present": "Present",
+  "back_to_blog": "Back to Blog",
+  "share_this_article": "Share this article",
+  "support": "Support",
+  "support_description": "Enjoyed this article? Consider supporting my work!"
 }
