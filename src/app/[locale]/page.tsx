@@ -21,7 +21,7 @@ export default async function Home() {
   return (
     <div className="space-y-16 md:space-y-20">
       {/* Hero Section */}
-      <section className="relative">
+      <section className="relative md:px-4">
         <div className="animate-fade-up max-w-3xl">
           <div className="mb-6 flex items-center gap-3">
             <span className="animate-wiggle animate-infinite text-2xl">👋</span>
@@ -56,7 +56,7 @@ export default async function Home() {
               )}
             >
               <RiSparklingLine className="text-accent-500 h-4 w-4 animate-pulse" />
-              <span className="text-sm">
+              <span className="flex-1 text-sm">
                 {t("current_focus")}{" "}
                 <span className="font-medium text-neutral-950 [.dark_&]:text-neutral-100">
                   Astro, Next.js, Nest.js & TypeScript
@@ -72,7 +72,7 @@ export default async function Home() {
 
       {/* Projects Section */}
       <section className="group space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between md:px-4">
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">
               {t("featured_projects")}
@@ -105,7 +105,7 @@ export default async function Home() {
 
       {/* Experience Section */}
       <section className="space-y-6">
-        <div className="space-y-1">
+        <div className="space-y-1 md:px-4">
           <h2 className="text-2xl font-semibold tracking-tight">
             {t("experience")}
           </h2>
@@ -121,7 +121,7 @@ export default async function Home() {
 
       {/* Latest Posts Section */}
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between md:px-4">
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">
               {t("latest_posts")}

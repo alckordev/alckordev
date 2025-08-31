@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/cn";
 import { Frontmatter } from "@/types/mdx";
 import { RiArrowRightLine, RiCalendarLine, RiTimeLine } from "@remixicon/react";
 import { useLocale, useTranslations } from "next-intl";
@@ -12,13 +13,18 @@ export function ArticleCard({ article }: ArticleCardProps) {
   const t = useTranslations();
 
   return (
-    <article className="group border-border/50 bg-card/30 hover:border-border hover:bg-card/60 relative overflow-hidden rounded-lg border backdrop-blur-sm transition-all duration-300 hover:shadow-md">
-      {/* Subtle gradient overlay on hover */}
-      <div className="from-accent/5 to-accent/5 absolute inset-0 bg-gradient-to-r via-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+    <article
+      className={cn(
+        "group/card relative overflow-hidden rounded-lg backdrop-blur-sm duration-300",
+        "bg-neutral-50/50 hover:bg-neutral-50 [.dark_&]:bg-neutral-950/50 [.dark_&]:hover:bg-neutral-950",
+        "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+        "hover:shadow-accent-500/5 hover:shadow-lg",
+      )}
+    >
+      <div className="from-accent-500/5 to-accent-500/5 absolute inset-0 bg-gradient-to-r via-transparent opacity-0 transition-opacity duration-300 group-hover/card:opacity-100" />
 
       <div className="relative space-y-4 p-4">
-        {/* Article metadata */}
-        <div className="text-muted-foreground flex items-center gap-4 text-xs">
+        <div className="flex items-center gap-4 text-xs text-neutral-600 [.dark_&]:text-neutral-400">
           <div className="flex items-center gap-1">
             <RiCalendarLine className="h-4 w-4" />
             <time>
@@ -37,59 +43,67 @@ export function ArticleCard({ article }: ArticleCardProps) {
               })}
             </span>
           </div>
-          {/* <div className="bg-accent/10 text-accent ml-auto rounded-full px-2 py-0.5 font-medium">
+          <div
+            className={cn(
+              "bg-accent-500/10 text-accent-500 ml-auto rounded-full px-2 py-0.5 font-medium",
+            )}
+          >
             {t("new")}
-          </div> */}
+          </div>
         </div>
 
-        {/* Title and description */}
         <div className="space-y-2">
           <Link href={`/blog/${article.slug}`} className="group/title block">
-            <h3 className="text-foreground group-hover/title:text-accent line-clamp-2 text-lg leading-tight font-semibold transition-colors">
+            <h3 className="group-hover/title:text-accent-500 line-clamp-2 text-lg leading-tight font-semibold transition-colors">
               {article.title}
             </h3>
           </Link>
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
+          <p className="line-clamp-2 text-sm leading-relaxed text-neutral-600 [.dark_&]:text-neutral-400">
             {article.abstract}
           </p>
         </div>
 
-        {/* Tags and read more */}
         <div className="flex items-center justify-between">
           <div className="flex flex-wrap gap-1.5">
             {article.topics?.map((tag) => (
               <Link
                 key={tag.slug}
                 href={`/blog/topics/${tag.slug}`}
-                className="border-border/30 bg-secondary/20 text-muted-foreground hover:border-accent/30 hover:bg-accent/10 hover:text-accent inline-flex items-center rounded-md border px-2 py-1 text-xs font-medium transition-colors"
+                className={cn(
+                  "inline-flex items-center rounded-md border px-2 py-1 text-xs font-medium transition-colors",
+                  "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
+                  "hover:text-accent-500! text-neutral-600 [.dark_&]:text-neutral-400",
+                  "hover:border-accent-500/30! border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+                )}
               >
                 {tag.name}
               </Link>
             ))}
           </div>
 
-          {/* Read more button */}
           <Link
             href={`/blog/${article.slug}`}
-            className="group/read text-muted-foreground hover:text-accent hidden items-center gap-1 text-sm font-medium transition-colors md:flex"
+            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors [.dark_&]:text-neutral-400"
           >
             <span>{t("read_more")}</span>
-            <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/read:translate-x-1" />
+            <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
           </Link>
         </div>
 
-        {/* Mobile read more */}
         <Link
           href={`/blog/${article.slug}`}
-          className="border-border/50 bg-secondary/30 text-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent flex items-center justify-center gap-2 rounded-md border py-2 text-sm font-medium transition-colors md:hidden"
+          className={cn(
+            "group/link hover:text-accent-500 flex items-center justify-center gap-2 rounded-md border py-2 text-sm font-medium transition-colors md:hidden",
+            "hover:bg-accent-500/10! bg-neutral-300/30 [.dark_&]:bg-neutral-800/30",
+            "hover:border-accent-500/50! border-neutral-300/50 [.dark_&]:border-neutral-800/50",
+          )}
         >
           <span>{t("read_more")}</span>
-          <RiArrowRightLine className="h-4 w-4" />
+          <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
         </Link>
       </div>
 
-      {/* Hover indicator */}
-      <div className="from-accent via-accent/50 to-accent absolute right-0 bottom-0 left-0 h-0.5 scale-x-0 bg-gradient-to-r transition-transform duration-300 group-hover:scale-x-100" />
+      <div className="from-accent-500 via-accent-500/50 to-accent-500 absolute right-0 bottom-0 left-0 h-0.5 scale-x-0 bg-gradient-to-r transition-transform duration-300 group-hover/card:scale-x-100" />
     </article>
   );
 }

@@ -15,7 +15,7 @@ export function Header() {
     <header
       className={cn(
         "sticky top-0 z-50",
-        "bg-neutral-100/50 backdrop-blur-xl [.dark_&]:bg-neutral-950/50",
+        "bg-neutral-100/10 backdrop-blur-md [.dark_&]:bg-neutral-950/10",
         "border-b border-neutral-300/30 [.dark_&]:border-neutral-800/30",
         "transition-colors duration-300",
       )}
