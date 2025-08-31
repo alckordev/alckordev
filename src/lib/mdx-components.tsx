@@ -224,7 +224,7 @@ export const components: MDXComponents = {
     // Extract language from className (format: language-js, language-typescript, etc.)
     const language = className?.replace(/language-/, "") as BundledLanguage;
 
-    console.log(props.title);
+    console.log("title", props.title);
 
     // If it's a code block (has language), pre-render with Shiki
     if (language && typeof children === "string") {
