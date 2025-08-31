@@ -13,7 +13,7 @@ export function Header() {
 
   return (
     <header className="border-border/50 bg-background/50 sticky top-0 z-50 border-b backdrop-blur-xl transition-colors duration-300">
-      <nav className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
+      <nav className="mx-auto flex max-w-4xl items-center justify-between p-4">
         {/* Logo/Brand */}
         <Link
           href="/"
@@ -38,16 +38,14 @@ export function Header() {
               rel="noopener noreferrer"
               className={cn(
                 "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
-                "text-muted-foreground transition-all duration-200",
-                "hover:bg-secondary/60 hover:text-foreground",
-                "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
-                "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100",
+                "border-border/50 hover:border-accent/50 border",
+                "text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all duration-200",
+                "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
               )}
             >
               <Icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
             </a>
           ))}
-
           {/* Theme Toggle */}
           <button
             type="button"
@@ -57,11 +55,11 @@ export function Header() {
                 : t("switch_to_light_mode")
             }
             className={cn(
-              "group relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg",
-              "text-muted-foreground transition-all duration-200",
-              "hover:bg-secondary/60 hover:text-foreground",
-              "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
-              "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100",
+              "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
+              "border-border/50 hover:border-accent/50 border",
+              "text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all duration-200",
+              "cursor-pointer",
+              "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
             )}
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           >

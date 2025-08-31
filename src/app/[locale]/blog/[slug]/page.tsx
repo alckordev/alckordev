@@ -1,4 +1,6 @@
+import { SupportCTA } from "@/components/support-cta";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/cn";
 import { components } from "@/lib/mdx-components";
 import { getPostSource } from "@/lib/server/mdx";
 import { Frontmatter, Scope } from "@/types/mdx";
@@ -59,142 +61,96 @@ export default async function Article({
         </Link>
       </nav>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4 xl:gap-12">
-        {/* Main Content */}
-        <main className="lg:col-span-3">
-          <article className="space-y-8">
-            {/* Article Header */}
-            <header className="space-y-6">
-              <div className="space-y-4">
-                <h1 className="text-foreground text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
-                  {frontmatter.title}
-                </h1>
-              </div>
+      <article className="space-y-8">
+        {/* Article Header */}
+        <header className="space-y-6">
+          <div className="space-y-4">
+            <h1 className="text-foreground text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+              {frontmatter.title}
+            </h1>
+          </div>
 
-              {/* Article Meta */}
-              <div className="border-border/50 flex flex-wrap items-center gap-4 border-b pb-6">
-                <div className="text-muted-foreground flex items-center gap-1 text-sm">
-                  <RiCalendarLine className="h-4 w-4" />
-                  <time dateTime={frontmatter.publishedAt}>
-                    {new Date(frontmatter.publishedAt).toLocaleDateString(
-                      locale,
-                      {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      },
-                    )}
-                  </time>
-                </div>
-
-                <div className="text-muted-foreground flex items-center gap-1 text-sm">
-                  <RiTimeLine className="h-4 w-4" />
-                  <span>{Math.ceil(scope.readingTime || 0)} min read</span>
-                </div>
-
-                {frontmatter.topics && frontmatter.topics.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <RiPriceTag3Line className="text-muted-foreground h-4 w-4" />
-                    <div className="flex flex-wrap gap-1">
-                      {frontmatter.topics.map((topic) => (
-                        <Link
-                          key={topic.slug}
-                          href={`/blog/tags/${topic.slug}`}
-                          className="border-border/50 bg-secondary/30 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent rounded-md border px-2 py-1 text-xs font-medium transition-colors"
-                        >
-                          {topic.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </header>
-
-            {/* Article Content */}
-            <div className="prose prose-neutral dark:prose-invert max-w-none">
-              {content}
+          {/* Article Meta */}
+          <div className="border-border/50 flex flex-wrap items-center gap-4 border-b pb-6">
+            <div className="text-muted-foreground flex items-center gap-1 text-sm">
+              <RiCalendarLine className="h-4 w-4" />
+              <time dateTime={frontmatter.publishedAt}>
+                {new Date(frontmatter.publishedAt).toLocaleDateString(locale, {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </time>
             </div>
 
-            {/* Article Footer */}
-            <footer className="border-border/50 border-t pt-8">
-              <div className="space-y-6">
-                {/* Share Section */}
-                <div className="flex items-center justify-between">
-                  <h3 className="text-foreground text-lg font-semibold">
-                    Share this article
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <a
-                      // href={twitterShareUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border-border/50 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
-                      title="Share on Twitter"
-                    >
-                      <RiTwitterXLine className="h-4 w-4" />
-                    </a>
-                    <a
-                      // href={linkedinShareUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border-border/50 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
-                      title="Share on LinkedIn"
-                    >
-                      <RiLinkedinLine className="h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
+            <div className="text-muted-foreground flex items-center gap-1 text-sm">
+              <RiTimeLine className="h-4 w-4" />
+              <span>{Math.ceil(scope.readingTime || 0)} min read</span>
+            </div>
 
-                {/* Back to Blog */}
-                <div className="border-border/50 bg-secondary/20 rounded-lg border p-6">
-                  <div className="space-y-3 text-center">
-                    <h3 className="text-foreground text-lg font-semibold">
-                      Enjoyed this article?
-                    </h3>
-                    <p className="text-muted-foreground text-sm">
-                      Check out more articles about web development, React, and
-                      modern JavaScript.
-                    </p>
+            {frontmatter.topics && frontmatter.topics.length > 0 && (
+              <div className="flex items-center gap-2">
+                <RiPriceTag3Line className="text-muted-foreground h-4 w-4" />
+                <div className="flex flex-wrap gap-1">
+                  {frontmatter.topics.map((topic) => (
                     <Link
-                      href="/blog"
-                      className="bg-accent text-accent-foreground hover:bg-accent/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+                      key={topic.slug}
+                      href={`/blog/tags/${topic.slug}`}
+                      className="border-border/50 bg-secondary/30 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent rounded-md border px-2 py-1 text-xs font-medium transition-colors"
                     >
-                      <span>More Articles</span>
-                      <RiArrowLeftLine className="h-4 w-4 rotate-180" />
+                      {topic.name}
                     </Link>
-                  </div>
+                  ))}
                 </div>
-              </div>
-            </footer>
-          </article>
-
-          <pre>{JSON.stringify(scope.toc, null, 2)}</pre>
-        </main>
-
-        {/* Sidebar */}
-        <aside className="lg:col-span-1">
-          <div className="sticky top-24 space-y-6">
-            {/* Table of Contents */}
-            {scope.toc && (
-              <div className="border-border/50 bg-card/30 rounded-lg border p-4">
-                <h3 className="text-foreground mb-4 text-sm font-semibold">
-                  Table of Contents
-                </h3>
-                <nav className="space-y-1">
-                  {/* TOC will be rendered here based on your remarkFlexibleToc configuration */}
-                  <div className="text-muted-foreground text-sm">
-                    {/* This would need to be implemented based on your TOC structure */}
-                    <p className="text-xs opacity-75">
-                      TOC implementation needed
-                    </p>
-                  </div>
-                </nav>
               </div>
             )}
           </div>
-        </aside>
-      </div>
+        </header>
+
+        {/* Article Content */}
+        <div className="prose prose-neutral [.dark_&]:prose-invert max-w-none">
+          {content}
+        </div>
+
+        {/* Article Footer */}
+        <footer className="border-border/50 border-t pt-8">
+          <div className="space-y-6">
+            {/* Share Section */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-foreground text-lg font-semibold">
+                Share this article
+              </h3>
+              <div className="flex items-center gap-2">
+                <a
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg",
+                    "border-border/50 hover:border-accent/50 border",
+                    "text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all duration-200",
+                    "before:from-accent/20 before:to-accent/20 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r before:opacity-0 before:transition-opacity before:duration-200 hover:before:opacity-100 [.dark_&]:before:hidden",
+                  )}
+                  title="Share on Twitter"
+                >
+                  <RiTwitterXLine className="h-4 w-4" />
+                </a>
+                <a
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border-border/50 text-muted-foreground hover:border-accent/50 hover:bg-accent/10 hover:text-accent flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
+                  title="Share on LinkedIn"
+                >
+                  <RiLinkedinLine className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+
+            <SupportCTA />
+          </div>
+        </footer>
+      </article>
     </div>
   );
 }

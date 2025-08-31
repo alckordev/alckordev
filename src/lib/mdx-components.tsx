@@ -1,8 +1,6 @@
-// src/lib/mdx-components.tsx
 import { MDXComponents } from "next-mdx-remote-client/rsc";
 import { CodeBlock } from "@/components/code-block";
 import { highlight } from "@/lib/shiki-shared";
-// import { RiDoubleQuotesL } from "@remixicon/react";
 import Link from "next/link";
 import { BundledLanguage } from "shiki/bundle/web";
 
@@ -224,8 +222,6 @@ export const components: MDXComponents = {
     // Extract language from className (format: language-js, language-typescript, etc.)
     const language = className?.replace(/language-/, "") as BundledLanguage;
 
-    console.log("title", props.title);
-
     // If it's a code block (has language), pre-render with Shiki
     if (language && typeof children === "string") {
       const initial = await highlight(children, language);
@@ -239,7 +235,7 @@ export const components: MDXComponents = {
     // Otherwise, it's inline code
     return (
       <code
-        className="border-accent/20 bg-accent/10 text-accent hover:border-accent/30 hover:bg-accent/15 dark:border-accent/30 dark:bg-accent/5 dark:text-accent relative inline-block rounded-md border px-1.5 py-0.25 font-mono text-xs font-medium transition-all duration-200"
+        className="border-accent/30 bg-accent/30 text-accent hover:border-accent/40 hover:bg-accent/35 [.dark_&]:border-accent/45 [.dark_&]:bg-accent/18 [.dark_&]:text-accent [.dark_&]:hover:border-accent/55 [.dark_&]:hover:bg-accent/23 relative inline-block rounded-md border px-1.5 py-0.25 font-mono text-xs font-medium transition-all duration-200"
         {...props}
       >
         {children}

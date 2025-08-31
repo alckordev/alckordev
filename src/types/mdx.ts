@@ -23,6 +23,6 @@ export type Toc = {
 
 export type Scope = {
   readingTime?: number;
-  toc?: Toc;
+  toc?: Toc[];
   // [key: string]: unknown;
 };

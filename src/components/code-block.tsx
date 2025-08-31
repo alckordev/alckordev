@@ -29,8 +29,8 @@ export function CodeBlock({ children, lang, title, initial }: CodeBlockProps) {
 
   if (isLoading) {
     return (
-      <div className="group border-border/50 bg-card/30 relative my-6 overflow-hidden rounded-lg border">
-        <div className="flex items-center justify-center p-8">
+      <div className="group border-border/50 bg-card my-6 overflow-hidden rounded-lg border shadow-lg [.dark_&]:shadow-black/20">
+        <div className="border-border/30 bg-secondary/50 flex items-center justify-center p-8">
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <div className="border-accent h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
             <span>Highlighting code...</span>
@@ -41,7 +41,7 @@ export function CodeBlock({ children, lang, title, initial }: CodeBlockProps) {
   }
 
   return (
-    <div className="group border-border/50 bg-card my-6 overflow-hidden rounded-lg border shadow-lg dark:shadow-black/20">
+    <div className="group border-border/50 bg-card my-6 overflow-hidden rounded-lg border shadow-lg [.dark_&]:shadow-black/20">
       <div className="border-border/30 bg-secondary/50 flex items-center justify-between border-b px-4 py-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">

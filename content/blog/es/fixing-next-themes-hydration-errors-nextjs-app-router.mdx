@@ -8,8 +8,7 @@ topics:
 ---
 
 Los errores de **hydration** (o _hydration mismatch_) aparecen cuando el HTML renderizado en el servidor no coincide con lo que React pinta en el cliente.  
-Con **next-themes** y **App Router** (Next 13/14) esto sucede porque el componente `<ThemeProvider />` lee `window.matchMedia`, `localStorage`, etc. —APIs que no existen durante el SSR—.  
-El resultado típico es:
+Con **next-themes** y **App Router** (Next 13/14) esto sucede porque el componente `<ThemeProvider />` lee `window.matchMedia`, `localStorage`, etc.
 
 A continuación veremos:
 
@@ -55,6 +54,8 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
 }
 ```
 
+---
+
 ## 3. Integración en Layout
 
 `src/app/layout.tsx`
@@ -82,6 +83,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 ```
 
 Ahora tu árbol React en el servidor no incluye `ThemeProvider`, evitando el desajuste.
+
+---
 
 ## 4. Consumir el hook useTheme
 
@@ -112,6 +115,8 @@ export const ThemeSwitcher = () => {
 ```
 
 Coloca `<ThemeSwitcher />` en tu navbar o en cualquier parte del cliente y funcionará sin parpadeos ni warnings.
+
+---
 
 ## 5. Recomendaciones y buenas prácticas
 
