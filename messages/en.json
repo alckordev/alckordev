@@ -57,5 +57,9 @@
   "related_topics": "Related topics",
   "articles_on": "Articles on {topic}",
   "topic_description": "Explore all articles about",
-  "topic_tagline": "From the basics to advanced techniques"
+  "topic_tagline": "From the basics to advanced techniques",
+  "privacy_policy": "Privacy Policy",
+  "privacy_policy_description": "How your data is handled on the website.",
+  "back_to_home": "Back to Home",
+  "terms_of_service": "Terms of Service"
 }

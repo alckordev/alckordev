@@ -20,9 +20,7 @@ export function Footer() {
       )}
     >
       <div className="mx-auto max-w-4xl px-4 py-8">
-        {/* Main footer content */}
         <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
-          {/* Left side - Copyright */}
           <div className="flex items-center space-x-2 text-sm">
             <span>© {currentYear} alckor.dev</span>
             <span className="text-neutral-600/30 [.dark_&]:text-neutral-400/30">
@@ -35,7 +33,6 @@ export function Footer() {
             </span>
           </div>
 
-          {/* Right side - Tech stack */}
           <div className="flex items-center space-x-3 text-xs">
             <div className="flex items-center space-x-1">
               <Image
@@ -76,7 +73,6 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom section - Links */}
         <div
           className={cn(
             "mt-6 flex flex-col items-center justify-center space-y-2 pt-6 md:flex-row md:space-y-0 md:space-x-6",
@@ -88,12 +84,6 @@ export function Footer() {
             className="hover:text-accent-500 text-sm transition-colors duration-200"
           >
             {t("blog")}
-          </Link>
-          <Link
-            href="/projects"
-            className="hover:text-accent-500 text-sm transition-colors duration-200"
-          >
-            {t("projects")}
           </Link>
           <a
             href="mailto:tu@email.com"

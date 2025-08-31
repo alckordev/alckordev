@@ -85,14 +85,14 @@ export function NewsletterCTA() {
             <label className="text-xs leading-relaxed" htmlFor="policy">
               I agree to receive email updates and accept the{" "}
               <Link
-                href="/privacy"
+                href="/privacy-policy"
                 className="text-accent-500 hover:text-accent-500/80 underline underline-offset-2"
               >
                 Privacy Policy
               </Link>{" "}
               and{" "}
               <Link
-                href="/terms"
+                href="/terms-of-service"
                 className="text-accent-500 hover:text-accent-500/80 underline underline-offset-2"
               >
                 Terms of Service

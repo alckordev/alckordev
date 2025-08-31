@@ -1,4 +1,3 @@
-// src/app/api/articles/route.ts
 import { getPostsInfo } from "@/lib/server/mdx";
 import { NextRequest, NextResponse } from "next/server";
 
