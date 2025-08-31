@@ -25,7 +25,8 @@
   --radius: 0.5rem;
 }
 
-.dark {
+.dark,
+[color-scheme="dark"] {
   /* Dark theme variables */
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
@@ -125,4 +126,12 @@
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+[type="checkbox"]:checked {
+  print-color-adjust: exact;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
 }

@@ -25,7 +25,7 @@ export default async function Home() {
         <div className="animate-fade-up max-w-3xl">
           <div className="mb-6 flex items-center gap-3">
             <span className="animate-wiggle animate-infinite text-2xl">👋</span>
-            <span className="text-sm font-medium text-neutral-600 [.dark_&]:text-neutral-400">
+            <span className="text-sm font-medium text-neutral-500">
               {t("greeting")}
             </span>
           </div>
@@ -40,7 +40,7 @@ export default async function Home() {
             Developer
           </h1>
 
-          <div className="max-w-2xl space-y-4 text-lg leading-relaxed text-neutral-600 [.dark_&]:text-neutral-400">
+          <div className="max-w-2xl space-y-4 text-lg leading-relaxed text-neutral-500">
             <p>
               <span className="text-accent-500 font-semibold">
                 {t("years_experience", { count: 10 })}
@@ -77,13 +77,13 @@ export default async function Home() {
             <h2 className="text-2xl font-semibold tracking-tight">
               {t("featured_projects")}
             </h2>
-            <p className="text-sm text-neutral-400 [.dark_&]:text-neutral-600">
+            <p className="text-sm text-neutral-500">
               {t("featured_projects_description")}
             </p>
           </div>
           <Link
             href="/projects"
-            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors [.dark_&]:text-neutral-400"
+            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors"
           >
             <span>{t("view_all")}</span>
             <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
@@ -109,7 +109,7 @@ export default async function Home() {
           <h2 className="text-2xl font-semibold tracking-tight">
             {t("experience")}
           </h2>
-          <p className="text-sm text-neutral-400 [.dark_&]:text-neutral-600">
+          <p className="text-sm text-neutral-500">
             {t("experience_description")}
           </p>
         </div>
@@ -126,13 +126,13 @@ export default async function Home() {
             <h2 className="text-2xl font-semibold tracking-tight">
               {t("latest_posts")}
             </h2>
-            <p className="text-sm text-neutral-400 [.dark_&]:text-neutral-600">
+            <p className="text-sm text-neutral-500">
               {t("latest_posts_description")}
             </p>
           </div>
           <Link
             href="/blog"
-            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors [.dark_&]:text-neutral-400"
+            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors"
           >
             <span>{t("view_all")}</span>
             <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />

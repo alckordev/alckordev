@@ -24,7 +24,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
       <div className="from-accent-500/5 to-accent-500/5 absolute inset-0 bg-gradient-to-r via-transparent opacity-0 transition-opacity duration-300 group-hover/card:opacity-100" />
 
       <div className="relative space-y-4 p-4">
-        <div className="flex items-center gap-4 text-xs text-neutral-600 [.dark_&]:text-neutral-400">
+        <div className="flex items-center gap-4 text-xs text-neutral-500">
           <div className="flex items-center gap-1">
             <RiCalendarLine className="h-4 w-4" />
             <time>
@@ -58,7 +58,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
               {article.title}
             </h3>
           </Link>
-          <p className="line-clamp-2 text-sm leading-relaxed text-neutral-600 [.dark_&]:text-neutral-400">
+          <p className="line-clamp-2 text-sm leading-relaxed text-neutral-500">
             {article.abstract}
           </p>
         </div>
@@ -70,10 +70,10 @@ export function ArticleCard({ article }: ArticleCardProps) {
                 key={tag.slug}
                 href={`/blog/topics/${tag.slug}`}
                 className={cn(
-                  "inline-flex items-center rounded-md border px-2 py-1 text-xs font-medium transition-colors",
+                  "group inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors",
                   "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
-                  "hover:text-accent-500! text-neutral-600 [.dark_&]:text-neutral-400",
-                  "hover:border-accent-500/30! border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+                  "hover:text-accent-500! text-neutral-500",
+                  "hover:border-accent-500/30! border-neutral-300/50 [.dark_&]:border-neutral-800/50",
                 )}
               >
                 {tag.name}
@@ -83,7 +83,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
           <Link
             href={`/blog/${article.slug}`}
-            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors [.dark_&]:text-neutral-400"
+            className="group/link hover:text-accent-500! hidden items-center gap-2 text-sm font-medium text-neutral-500 transition-colors md:flex"
           >
             <span>{t("read_more")}</span>
             <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />

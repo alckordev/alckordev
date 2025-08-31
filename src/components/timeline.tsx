@@ -62,7 +62,7 @@ export const Timeline = () => {
                 </a>
               </div>
 
-              <p className="mt-3 text-sm leading-relaxed text-neutral-600 [.dark_&]:text-neutral-400">
+              <p className="mt-3 text-sm leading-relaxed text-neutral-500">
                 {exp.description}
               </p>
             </div>

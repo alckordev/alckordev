@@ -49,7 +49,7 @@ export const ProjectCard = () => {
               className={cn(
                 "flex h-8 w-8 items-center justify-center rounded-md transition-colors",
                 "hover:bg-neutral-200 [.dark_&]:hover:bg-neutral-900",
-                "text-neutral-600 [.dark_&]:text-neutral-400",
+                "text-neutral-500",
               )}
             >
               <RiGithubLine className="h-4 w-4" />
@@ -68,7 +68,7 @@ export const ProjectCard = () => {
           </div>
         </div>
 
-        <p className="line-clamp-2 text-sm text-neutral-600 [.dark_&]:text-neutral-400">
+        <p className="line-clamp-2 text-sm text-neutral-500">
           🍞 A beautiful notification library for React and modern web apps with
           TypeScript support.
         </p>
@@ -79,7 +79,7 @@ export const ProjectCard = () => {
               <span
                 key={tech}
                 className={cn(
-                  "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium text-neutral-600 [.dark_&]:text-neutral-400",
+                  "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium text-neutral-500",
                   "bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
                   "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
                 )}
@@ -89,7 +89,7 @@ export const ProjectCard = () => {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-neutral-600 [.dark_&]:text-neutral-400">
+          <div className="flex items-center gap-2 text-xs text-neutral-500">
             <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
             <span>Updated</span>
           </div>
