@@ -61,5 +61,14 @@
   "privacy_policy": "Política de privacidad",
   "privacy_policy_description": "Cómo se manejan sus datos en el sitio web.",
   "back_to_home": "Volver al inicio",
-  "terms_of_service": "Términos de servicio"
+  "terms_of_service": "Términos de servicio",
+  "email_validation": "Debe ingresar una dirección de correo electrónico válida",
+  "policy_validation": "Debes aceptar las políticas y los términos",
+  "subscribe": "Suscríbete",
+  "policy_label": "Acepto recibir actualizaciones por correo electrónico y acepto la <privacy>Política de Privacidad</privacy> y los <terms>Términos de Servicio</terms>. Puedes darte de baja en cualquier momento.",
+  "stay_updated": "Mantente actualizado",
+  "stay_updated_description": "Recibe notificaciones cuando publique nuevos artículos sobre desarrollo web moderno, patrones en React y productividad para desarrolladores.",
+  "subscribe_success": "¡Excelente! Te mantendré informado. 😉",
+  "subscribe_already": "¡Excelente! \nYa estás suscrito con ese correo electrónico. \n😉",
+  "server_error": "¡Ups! \nAlgo salió mal. \n😭"
 }

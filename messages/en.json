@@ -61,5 +61,14 @@
   "privacy_policy": "Privacy Policy",
   "privacy_policy_description": "How your data is handled on the website.",
   "back_to_home": "Back to Home",
-  "terms_of_service": "Terms of Service"
+  "terms_of_service": "Terms of Service",
+  "email_validation": "You must enter a valid email address",
+  "policy_validation": "You must accept the policies and terms",
+  "subscribe": "Subscribe",
+  "policy_label": "I agree to receive email updates and accept the <privacy>Privacy Policy</privacy> and <terms>Terms of Service</terms>. You can unsubscribe at any time.",
+  "stay_updated": "Stay Updated",
+  "stay_updated_description": "Get notified when I publish new articles about modern web development, React patterns, and developer productivity.",
+  "subscribe_success": "Great! I’ll keep you posted. 😉",
+  "subscribe_already": "Great! You’re already subscribed with that email. 😉",
+  "server_error": "Oops! Something went wrong. 😭"
 }
