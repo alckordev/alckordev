@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { getAllTopics, getPostsInfo } from "@/lib/server/mdx";
 import { getOpenGraph, getTwitter } from "@/lib/server/og";
-import { RiBookOpenLine, RiPriceTag3Line } from "@remixicon/react";
+import { RiPriceTag3Line } from "@remixicon/react";
 import { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -21,7 +21,7 @@ export async function generateMetadata({
   const topics = getAllTopics(`blog/${locale}`);
   const topic = topics.find((t) => t.slug === slug);
 
-  const title = t("seo_title", { topic: topic?.name ?? "" });
+  const title = t("seo_title", { topic: topic?.name ?? "404" });
   const description = t("seo_description", { topic: topic?.name ?? "" });
 
   return {
@@ -96,7 +96,7 @@ export default async function Topic({
         <div className="from-accent-500/10 absolute bottom-0 left-0 -z-10 h-24 w-24 rounded-full bg-gradient-to-tr to-transparent blur-2xl" />
       </section>
 
-      {posts.length > 0 ? (
+      {posts.length > 0 && (
         <section className="space-y-8">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-semibold tracking-tight">
@@ -106,53 +106,6 @@ export default async function Topic({
           </div>
 
           <InfiniteArticlesList articles={posts} itemsPerPage={3} />
-        </section>
-      ) : (
-        /* Empty state */
-        <section
-          className="animate-fade-up py-16 text-center"
-          style={{ animationDelay: "300ms" }}
-        >
-          <div className="mx-auto max-w-md space-y-6">
-            <div className="bg-muted/50 mx-auto flex h-20 w-20 items-center justify-center rounded-full">
-              <RiPriceTag3Line className="text-muted-foreground h-10 w-10" />
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="text-foreground text-xl font-semibold">
-                No hay artículos para este topic
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Aún no hay artículos publicados sobre {topic.name}. Vuelve
-                pronto para ver nuevo contenido.
-              </p>
-            </div>
-
-            <div className="flex flex-col justify-center gap-3 sm:flex-row">
-              <Link
-                href="/topics"
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
-                  "bg-accent hover:bg-accent/90 text-white hover:scale-105",
-                )}
-              >
-                <RiPriceTag3Line className="h-4 w-4" />
-                Explorar otros topics
-              </Link>
-
-              <Link
-                href="/blog"
-                className={cn(
-                  "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
-                  "border-border/50 text-muted-foreground hover:text-foreground border",
-                  "hover:border-accent/30 hover:bg-accent/10",
-                )}
-              >
-                <RiBookOpenLine className="h-4 w-4" />
-                Ver todos los artículos
-              </Link>
-            </div>
-          </div>
         </section>
       )}
 
@@ -172,7 +125,7 @@ export default async function Topic({
             {relatedTopics.map((topic) => (
               <Link
                 key={topic.slug}
-                href={`/blog/tags/${topic.slug}`}
+                href={`/topics/${topic.slug}`}
                 className={cn(
                   "group flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                   "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",

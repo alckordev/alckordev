@@ -82,7 +82,7 @@ export default async function Blog() {
             {topics.map((topic) => (
               <Link
                 key={topic.slug}
-                href={`/blog/tags/${topic.slug}`}
+                href={`/topics/${topic.slug}`}
                 className={cn(
                   "group flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                   "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
