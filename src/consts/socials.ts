@@ -9,22 +9,22 @@ import {
 export const socials: Social[] = [
   {
     name: "Facebook",
-    url: "/",
+    url: "https://www.facebook.com/alckordev",
     icon: RiFacebookLine,
   },
   {
     name: "Twitter X",
-    url: "/",
+    url: "https://x.com/alckordev",
     icon: RiTwitterXLine,
   },
   {
     name: "Github",
-    url: "/",
+    url: "https://github.com/alckordev",
     icon: RiGithubLine,
   },
   {
     name: "LinkedIn",
-    url: "/",
+    url: "https://www.linkedin.com/in/alckordev",
     icon: RiLinkedinLine,
   },
 ];
