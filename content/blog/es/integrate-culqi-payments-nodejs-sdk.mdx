@@ -1,0 +1,199 @@
+---
+title: "Integrar pagos de Culqi con el SDK de Node.js"
+abstract: "Aprende a usar el paquete `culqi-nodejs` para tokenizar tarjetas, crear cargos únicos y configurar pagos recurrentes (planes y suscripciones) de forma sencilla y segura en tus aplicaciones Node.js."
+publishedAt: "2025-07-30 19:00:00"
+topics:
+  - name: Culqi
+    slug: culqi
+  - name: Node.js
+    slug: nodejs
+---
+
+En este artículo veremos cómo usar **culqi-nodejs**, un _wrapper_ de las APIs de Culqi para Node.js. Con él podrás:
+
+- Tokenizar de forma segura los datos de tarjetas.
+- Crear **cargos únicos** (pagos puntuales).
+- Configurar **pagos recurrentes** mediante planes y suscripciones.
+
+Al final tendrás un flujo completo end-to-end listo para producción.
+
+## Instalación
+
+Instala el paquete desde npm:
+
+```bash
+npm install culqi-nodejs
+```
+
+Luego define tus claves en variables de entorno:
+
+```tsx
+CULQI_PUBLIC_KEY = "pk_test_XXXXXXXXXXXXX";
+CULQI_SECRET_KEY = "sk_test_XXXXXXXXXXXXX";
+```
+
+> [!TIP]
+> Tu `CULQI_SECRET_KEY` no debe llegar al cliente ni repositorios públicos.
+
+## Inicializar el cliente
+
+Antes de cualquier llamada, inicializa el cliente Culqi:
+
+```tsx
+import { CulqiClient } from "culqi-nodejs";
+
+const culqi = CulqiClient.init({
+  publicKey: process.env.CULQI_PUBLIC_KEY!,
+  secretKey: process.env.CULQI_SECRET_KEY!,
+  apiVersion: "2", // Culqi API version
+});
+```
+
+## Tokenización
+
+La **tokenización** captura datos sensibles de tarjeta en el navegador (o frontend móvil) y devuelve un token seguro (sin exponer datos reales).
+Puedes usar los helpers de Culqi en frontend o crearlo directamente desde tu backend si ya cuentas con la llave pública (con mayor carga de compliance PCI).
+
+```tsx
+const token = await culqi.tokens.create({
+  card_number: "4111111111111111",
+  cvv: "123",
+  expiration_month: "07",
+  expiration_year: "2027",
+  email: "cliente@dominio.com",
+});
+
+console.log("Token:", token.id);
+// e.g.: tkn_test_XXXXXXXXXXXX
+```
+
+> [!IMPORTANT]
+> Si tokenizas en backend, tu servidor procesa datos de tarjeta y debes certificarte PCI-DSS SAQ-D.
+
+## Crear un cargo único
+
+Con el id del token puedes procesar un cargo único:
+
+```tsx
+const charge = await culqi.charges.create({
+  amount: 1000, // in cents (e.g. S/ 10.00 = 1000)
+  currency_code: "PEN", // ISO currency code
+  source_id: token.id, // the token generated above
+  email: "cliente@dominio.com",
+});
+
+console.log("Charge:", charge);
+// Check `charge.outcome.code === "AUT0000"`
+```
+
+## Pagos recurrentes
+
+Para pagos periódicos (suscripciones) necesitas:
+
+- Crear un plan
+- Registrar al cliente
+- Asociar tarjeta al cliente
+- Crear la suscripción
+
+### Crear un plan
+
+Define nombre, monto, intervalo y ciclos iniciales:
+
+```tsx
+const plan = await culqi.plans.create({
+  name: "Monthly Plan",
+  short_name: "monthly-plan",
+  description: "Premium monthly access",
+  amount: 5000, // S/ 50.00
+  currency: "PEN",
+  interval_unit_time: 3, // 3 = monthly
+  interval_count: 1, // every 1 month
+  initial_cycles: {
+    count: 0,
+    has_initial_charge: false,
+    amount: 0,
+    interval_unit_time: 1,
+  },
+});
+
+console.log("Plan:", plan.id);
+// e.g.: pln_test_XXXXXXXXXXXXXXXX
+```
+
+### Registrar al cliente
+
+Crea un recurso customer con los datos del usuario:
+
+```tsx
+const customer = await culqi.customers.create({
+  first_name: "Jane",
+  last_name: "Doe",
+  email: "jane@example.com",
+  address: "123 Main St",
+  address_city: "Lima",
+  country_code: "PE",
+  phone_number: "987654321",
+});
+
+console.log("Customer:", customer.id);
+// e.g.: cus_test_XXXXXXXXXXXXXXXX
+```
+
+### Asociar tarjeta al cliente
+
+Tokeniza o reutiliza un token para crear una card vinculada al cliente:
+
+```tsx
+const token2 = await culqi.tokens.create({
+  /* … */
+});
+
+const card = await culqi.cards.create({
+  customer_id: customer.id,
+  token_id: token2.id,
+  validate: true, // validate card
+});
+
+console.log("Card:", card.id);
+// e.g.: crd_test_XXXXXXXXXXXXXXXX
+```
+
+### Crear la suscripción
+
+Finalmente, genera la suscripción:
+
+```tsx
+const subscription = await culqi.subscriptions.create({
+  card_id: card.id,
+  plan_id: plan.id,
+  tyc: true, // terms acceptance
+});
+
+console.log("Subscription:", subscription.id);
+// e.g.: sub_test_XXXXXXXXXXXXXXXX
+```
+
+## Manejo de errores
+
+Envuelve tus llamadas en `try/catch` y maneja respuestas de Culqi:
+
+```tsx
+try {
+  await culqi.charges.create({
+    /* ... */
+  });
+} catch (err: any) {
+  console.error("Error Culqi:", err.message);
+}
+```
+
+## Conclusión
+
+El SDK `culqi-nodejs` te abstrae la complejidad de las APIs REST de Culqi, ofreciendo un flujo natural en Node.js para todo tipo de pagos. Recuerda:
+
+- **Tokeniza:** reduce tu alcance PCI y protege a tus clientes.
+- **Cargos únicos:** para compras puntuales.
+- **Planes y suscripciones:** para ingresos recurrentes.
+
+¡Listo! Ya tienes todo lo necesario para integrar Culqi en tus proyectos Node.js de forma segura y eficiente.
+Si te gustó este tutorial, compártelo y déjame tus dudas en comentarios. ¡Gracias por leer!

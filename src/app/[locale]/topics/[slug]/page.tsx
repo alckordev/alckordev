@@ -1,114 +1,146 @@
-import { BlogPostList } from "@/components/blog-post-list";
-import { routing } from "@/i18n/routing";
-import { getOpenGraph, getPostsInfo, getTwitter } from "@/lib/server";
-import { Params } from "@/type";
-import { Title } from "@mantine/core";
+import { InfiniteArticlesList } from "@/components/infinite-articles-list";
+import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/cn";
+import { getAllTopics, getPostsInfo } from "@/lib/server/mdx";
+import { getOpenGraph, getTwitter } from "@/lib/server/og";
+import { RiPriceTag3Line } from "@remixicon/react";
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import React from "react";
-import { cache } from "react";
-import slugify from "slugify";
-import topics from "@/assets/data/topics.json";
+import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-
-const getPostsInfoCached = cache(getPostsInfo);
 
 export async function generateMetadata({
   params,
 }: {
-  params: Params;
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { locale, slug } = await params;
-  const t = await getTranslations({ locale });
+  const locale = await getLocale();
+  const t = await getTranslations("seo_topic");
 
-  const topic = topics.find(
-    (t) =>
-      slugify(t, {
-        remove: /[*+~.()'"!:@]/g,
-        lower: true,
-        strict: false,
-        trim: true,
-      }) === slug
-  );
+  const { slug } = await params;
 
-  const title = `${topic} - Isco • ${t("software_developer")}`;
-  const description = t("articles_about", { topic: topic || "" });
+  const topics = getAllTopics(`blog/${locale}`);
+  const topic = topics.find((t) => t.slug === slug);
+
+  const title = t("seo_title", { topic: topic?.name ?? "" });
+  const description = t("seo_description", { topic: topic?.name ?? "" });
 
   return {
     title,
     description,
-    category: t("software_developer"),
     openGraph: {
       ...getOpenGraph(title, description, locale),
       url: `${process.env.SITE_URL}/${locale}/topics/${slug}`,
     },
-    twitter: getTwitter(),
+    twitter: getTwitter(title, description),
   };
 }
 
-export async function generateStaticParams() {
-  const params: { locale: string; slug: string }[] = [];
+export default async function Topic({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const locale = await getLocale();
+  const t = await getTranslations();
+  const { slug } = await params;
 
-  for (const locale of routing.locales) {
-    const posts = await getPostsInfo(`posts/${locale}`);
-    const topics = new Set(posts.flatMap((p) => p.topics ?? []));
+  const topics = getAllTopics(`blog/${locale}`);
 
-    for (const topic of topics) {
-      params.push({
-        locale,
-        slug: slugify(topic, {
-          remove: /[*+~.()'"!:@]/g,
-          lower: true,
-          strict: false,
-          trim: true,
-        }),
-      });
-    }
+  const topic = topics.find((t) => t.slug === slug);
+
+  if (!topic) {
+    notFound();
   }
 
-  return params;
-}
-
-export default async function Page({ params }: { params: Params }) {
-  const { locale, slug } = await params;
-
-  const data = await getPostsInfoCached(`posts/${locale}`);
-
-  const filtered = data
-    .filter((p) =>
-      p.topics?.some(
-        (t) =>
-          slugify(t, {
-            remove: /[*+~.()'"!:@]/g,
-            lower: true,
-            strict: false,
-            trim: true,
-          }) === slug
-      )
-    )
-    .toSorted(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-    );
-
-  const topic = topics.find(
-    (t) =>
-      slugify(t, {
-        remove: /[*+~.()'"!:@]/g,
-        lower: true,
-        strict: false,
-        trim: true,
-      }) === slug
+  const allPosts = getPostsInfo(`blog/${locale}`).sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
   );
 
-  if (!topic) notFound();
+  const posts = allPosts.filter((post) =>
+    post.topics?.some((topic) => topic.slug === slug),
+  );
+
+  const relatedTopics = topics
+    .filter((t) => t.slug !== slug)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 
   return (
-    <React.Fragment>
-      <Title order={4} ms={20}>
-        {topic}
-      </Title>
-      <BlogPostList data={filtered} locale={locale} />
-    </React.Fragment>
+    <div className="space-y-12 md:space-y-16">
+      <section className="relative">
+        <div className="animate-fade-up">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="bg-accent-500/10 rounded-lg p-2">
+              <RiPriceTag3Line className="text-accent-500 h-5 w-5" />
+            </div>
+            <div className="space-y-1">
+              <span className="text-sm font-medium text-neutral-500">
+                {t("topic")}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold">{topic.name}</span>
+              </div>
+            </div>
+          </div>
+          <p className="max-w-2xl text-lg leading-relaxed text-neutral-500">
+            {t("topic_description")}{" "}
+            <span className="text-accent-500 font-medium">
+              {topic.name.toLowerCase()}
+            </span>
+            . {t("topic_tagline")}.
+          </p>
+        </div>
+
+        <div className="from-accent-500/20 to-accent-500/5 absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-gradient-to-br blur-3xl" />
+        <div className="from-accent-500/10 absolute bottom-0 left-0 -z-10 h-24 w-24 rounded-full bg-gradient-to-tr to-transparent blur-2xl" />
+      </section>
+
+      {posts.length > 0 && (
+        <section className="space-y-8">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold tracking-tight">
+              {t("articles_on", { topic: topic.name })}
+            </h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-neutral-500/20 to-transparent" />
+          </div>
+
+          <InfiniteArticlesList articles={posts} itemsPerPage={3} />
+        </section>
+      )}
+
+      {relatedTopics.length > 0 && (
+        <section
+          className="animate-fade-up space-y-6"
+          style={{ animationDelay: "400ms" }}
+        >
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-semibold tracking-tight">
+              {t("related_topics")}
+            </h2>
+            <div className="h-px flex-1 bg-gradient-to-r from-neutral-500/20 to-transparent" />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {relatedTopics.map((topic) => (
+              <Link
+                key={topic.slug}
+                href={`/topics/${topic.slug}`}
+                className={cn(
+                  "group flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                  "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
+                  "hover:text-accent-500! text-neutral-500",
+                  "hover:border-accent-500/30! border-neutral-300/50 [.dark_&]:border-neutral-800/50",
+                )}
+              >
+                <RiPriceTag3Line className="h-3 w-3" />
+                <span>{topic.name}</span>
+                <span className="text-[10px] opacity-60">({topic.count})</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

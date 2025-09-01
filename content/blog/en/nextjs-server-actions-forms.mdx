@@ -1,0 +1,302 @@
+---
+title: "Forms with Server Actions, Zod, and React Hook Form (No API Routes) in Next.js App Router"
+abstract: "Build forms in Next.js 13/14 with Server Actions: Zod v4 validation, submission state with useActionState/useFormStatus, revalidation, and a React Hook Form variant — all without API Routes."
+publishedAt: "2025-08-10 19:00:00"
+topics:
+  - name: Next.js
+    slug: nextjs
+  - name: Server Actions
+    slug: server-actions
+  - name: Zod
+    slug: zod
+---
+
+Next.js **Server Actions** let you handle forms **without** creating API Routes or using `fetch`. The browser posts the `<form>` directly to the server, where your action processes the data, validates it, persists it, and decides what to return.
+
+**Key benefits**
+
+- Less boilerplate (no `/api/*`).
+- CSRF protected by default.
+- Built-in revalidation and redirects.
+- Combine **server-side validation** (Zod v4) with **client-side UX** (React Hook Form).
+
+In this post you’ll see the full flow with copy-paste-ready code:
+
+1. Validation schema with Zod v4
+2. Server Action with typed error mapping
+3. Native form with `useActionState` + `useFormStatus`
+4. Variant with **React Hook Form**
+5. Revalidation/redirect and best practices
+
+## 1) Validation schema (Zod v4)
+
+```tsx
+// src/lib/schemas/contact.ts
+import z from "zod/v4";
+
+export const ContactSchema = z.object({
+  name: z.string().min(2),
+  email: z.email(),
+  message: z.string().min(10),
+});
+
+export type ContactInput = z.infer<typeof ContactSchema>;
+```
+
+> [!TIP]
+> Zod v4, The no-argument signature of flatten() is deprecated. When you need readable messages, pass a mapper: (issue) => issue.message.
+
+## 2. Server Action: validate, persist, and return state
+
+```tsx
+// src/actions/contact.ts
+"use server";
+
+import { ContactInput, ContactSchema } from "@/lib/schemas/contact";
+import { revalidatePath } from "next/cache";
+
+export type ContactFormState = {
+  ok: boolean;
+  message?: string;
+  errors?: Partial<Record<keyof ContactInput, string>>;
+};
+
+export async function submitContact(
+  _prevState: ContactFormState,
+  formData: FormData,
+): Promise<ContactFormState> {
+  const raw = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    message: formData.get("message"),
+  };
+
+  const result = ContactSchema.safeParse(raw);
+
+  if (!result.success) {
+    const { fieldErrors, formErrors } = result.error.flatten(
+      (issue) => issue.message,
+    );
+
+    const errors = Object.fromEntries(
+      Object.entries(fieldErrors).map(([k, v]) => [k, v?.[0] ?? ""]),
+    ) as Partial<Record<keyof ContactInput, string>>;
+
+    return { ok: false, errors, message: formErrors[0] };
+  }
+
+  console.log(result.data);
+  // await db.contact.create({ data: result.data });
+
+  revalidatePath("/contact");
+
+  // redirect("/contact/success");
+
+  return { ok: true, message: "Success!" };
+}
+```
+
+Key points:
+
+- The returned state `({ ok, message, errors })` is used on the client to render messages and field-level errors.
+- `revalidatePath("/contact")` refreshes cache/ISR when needed.
+
+## 3. Page and native form (useActionState + useFormStatus)
+
+```tsx
+// src/app/contact/page.tsx
+import ContactForm from "./_components/contact-form";
+import ContactFormRHF from "./_components/contact-form-rhf";
+
+export default function Contact() {
+  return (
+    <section className="container mx-auto max-w-2xl py-12">
+      <h1 className="mb-6 text-2xl font-semibold">Contact us</h1>
+      {/* Native form (uncomment to try it): */}
+      {/* <ContactForm /> */}
+      {/* React Hook Form variant: */}
+      <ContactFormRHF />
+    </section>
+  );
+}
+```
+
+Native form (no RHF), with submission and response state:
+
+```tsx
+// src/app/contact/_components/contact-form.tsx
+"use client";
+
+import { useFormStatus } from "react-dom";
+import { submitContact, type ContactFormState } from "@/actions/contact";
+import { useActionState } from "react";
+
+const initialState: ContactFormState = { ok: false };
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+    >
+      {pending ? "Sending..." : "Send"}
+    </button>
+  );
+}
+
+export default function ContactForm() {
+  const [state, dispatch] = useActionState(submitContact, initialState);
+
+  return (
+    <form action={dispatch} className="space-y-4">
+      <div>
+        <label className="mb-1 block text-sm">Name</label>
+        <input name="name" className="w-full rounded border px-3 py-2" />
+        {state.errors?.name && (
+          <p className="mt-1 text-sm text-red-600">{state.errors.name}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm">Email</label>
+        <input
+          name="email"
+          type="email"
+          className="w-full rounded border px-3 py-2"
+        />
+        {state.errors?.email && (
+          <p className="mt-1 text-sm text-red-600">{state.errors.email}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm">Message</label>
+        <textarea
+          name="message"
+          rows={5}
+          className="w-full rounded border px-3 py-2"
+        />
+        {state.errors?.message && (
+          <p className="mt-1 text-sm text-red-600">{state.errors.message}</p>
+        )}
+      </div>
+
+      {state.message && (
+        <p
+          className={`text-sm ${state.ok ? "text-green-700" : "text-red-600"}`}
+        >
+          {state.message}
+        </p>
+      )}
+
+      <SubmitButton />
+    </form>
+  );
+}
+```
+
+- `useActionState(action, initialState)` wires the form to the Server Action and gives you server→client state.
+- `useFormStatus()` exposes `pending` to disable the button and show a loading state.
+
+## 4. React Hook Form variant (live validation + Server Action)
+
+```tsx
+// src/app/contact/_components/contact-form-rhf.tsx
+"use client";
+
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ContactSchema, type ContactInput } from "@/lib/schemas/contact";
+import { submitContact } from "@/actions/contact";
+
+export default function ContactFormRHF() {
+  const [isPending, startTransition] = useTransition();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isValid },
+    reset,
+  } = useForm<ContactInput>({
+    resolver: zodResolver(ContactSchema),
+  });
+
+  const onSubmit = handleSubmit((values) => {
+    const fd = new FormData();
+    fd.set("name", values.name);
+    fd.set("email", values.email);
+    fd.set("message", values.message);
+
+    startTransition(async () => {
+      const res = await submitContact({ ok: false }, fd);
+      if (res.ok) reset();
+      alert(res.message);
+    });
+  });
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div>
+        <label className="mb-1 block text-sm">Name</label>
+        <input
+          {...register("name")}
+          className="w-full rounded border px-3 py-2"
+        />
+        {errors.name && (
+          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm">Email</label>
+        <input
+          type="email"
+          {...register("email")}
+          className="w-full rounded border px-3 py-2"
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm">Message</label>
+        <textarea
+          rows={5}
+          {...register("message")}
+          className="w-full rounded border px-3 py-2"
+        />
+        {errors.message && (
+          <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting || isPending || !isValid}
+        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+      >
+        {isSubmitting || isPending ? "Sending..." : "Send"}
+      </button>
+    </form>
+  );
+}
+```
+
+Here RHF validates on the client (snappy UX) and, on submit, creates a `FormData` and calls the same Server Action (`submitContact`) —no API Route required.
+
+## 5. Revalidation, redirect, and tips
+
+- **Revalidation:** use `revalidatePath("/contact")` if your action updates data visible on that route.
+- **Redirect:** for post-submit flow, call `redirect("/contact/success")` inside the action (then don’t return state).
+- **Accessibility:** add `aria-invalid`, `aria-describedby`, and proper `id`/`htmlFor` on inputs/labels.
+- **UI:** replace `alert()` with a toast/snackbar.
+
+## Conclusion
+
+- Server Actions simplify forms in Next.js: fewer layers, built-in security, and great DX.
+- Zod v4 gives robust validation (with clear error mapping) and RHF adds smooth client-side UX.
+- With `useActionState`/`useFormStatus` you control submission/loading states; with `revalidatePath`/`redirect` you close the loop effortlessly.

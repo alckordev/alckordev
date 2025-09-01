@@ -1,16 +1,15 @@
+import { Frontmatter } from "@/types/mdx";
 import fs from "fs";
-import path from "path";
 import { getFrontmatter } from "next-mdx-remote-client/utils";
-import { Frontmatter, PostInfo } from "@/type";
+import path from "path";
+import readingTime from "reading-time";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const CONTENT_DIR = path.join(process.cwd(), "content");
 
 /* ──────────────────────────────── helpers ──────────────────────────────── */
 
-/** Return the absolute path for a given slug (.mdx) */
-const mdxPath = (slug: string) => path.join(DATA_DIR, `${slug}.mdx`);
+const mdxPath = (slug: string) => path.join(CONTENT_DIR, `${slug}.mdx`);
 
-/** Read an .mdx file; return undefined if it does not exist */
 const readMdx = (slug: string): string | undefined => {
   const filePath = mdxPath(slug);
   return fs.existsSync(filePath)
@@ -18,38 +17,86 @@ const readMdx = (slug: string): string | undefined => {
     : undefined;
 };
 
-/** Type‑guard to filter out undefined values */
-const isPostInfo = (value: PostInfo | undefined): value is PostInfo =>
+const isPostInfo = (value: Frontmatter | undefined): value is Frontmatter =>
   value !== undefined;
 
 /* ────────────────────────────── public API ─────────────────────────────── */
 
-/** Get raw markdown source for a single slug (async) */
 export const getPostSource = async (
-  slug: string
+  slug: string,
 ): Promise<string | undefined> => readMdx(slug);
 
-/** Get front‑matter for one post */
-export const getPostInfo = (slug: string): PostInfo | undefined => {
+export const getPostInfo = (slug: string): Frontmatter | undefined => {
   const source = readMdx(slug);
-  if (!source) return;
+  if (!source) return undefined;
 
   const { frontmatter } = getFrontmatter<Frontmatter>(source);
   return {
     ...frontmatter,
     slug: path.basename(slug, ".mdx"),
+    readingTime: readingTime(source).minutes,
   };
 };
 
-/** List all slugs inside a directory (e.g. "es" or "en") */
-export const listSlugs = (dir = ""): string[] =>
-  fs
-    .readdirSync(path.join(DATA_DIR, dir))
+export const listSlugs = (dir = ""): string[] => {
+  const targetDir = path.join(CONTENT_DIR, dir);
+
+  if (!fs.existsSync(targetDir)) {
+    return [];
+  }
+
+  return fs
+    .readdirSync(targetDir)
     .filter((f) => f.endsWith(".mdx"))
     .map((f) => path.posix.join(dir, path.basename(f, ".mdx")));
+};
 
-/** Get front‑matter for every post under `dir` */
-export const getPostsInfo = async (dir = ""): Promise<PostInfo[]> => {
+export const getPostsInfo = (dir = ""): Frontmatter[] => {
   const slugs = listSlugs(dir);
-  return slugs.map(getPostInfo).filter(isPostInfo); // -> guaranteed PostInfo[]
+  return slugs.map(getPostInfo).filter(isPostInfo);
+};
+
+export const getRecentPosts = (dir = "", limit?: number): Frontmatter[] => {
+  const posts = getPostsInfo(dir);
+
+  const sorted = posts.sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+
+  return limit ? sorted.slice(0, limit) : sorted;
+};
+
+export const getPostsByTopic = (topicSlug: string, dir = ""): Frontmatter[] => {
+  const posts = getPostsInfo(dir);
+
+  return posts.filter((post) =>
+    post.topics?.some((topic) => topic.slug === topicSlug),
+  );
+};
+
+export const getAllTopics = (
+  dir = "",
+): { name: string; slug: string; count: number }[] => {
+  const posts = getPostsInfo(dir);
+  const topicCounts = new Map<string, { name: string; count: number }>();
+
+  posts.forEach((post) => {
+    post.topics?.forEach((topic) => {
+      const existing = topicCounts.get(topic.slug);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        topicCounts.set(topic.slug, { name: topic.name, count: 1 });
+      }
+    });
+  });
+
+  return Array.from(topicCounts.entries())
+    .map(([slug, { name, count }]) => ({
+      slug,
+      name,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count);
 };

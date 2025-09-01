@@ -1,35 +1,4 @@
 {
-  "cSpell.words": [
-    "Alckor",
-    "alckordev",
-    "appsettings",
-    "aspnet",
-    "autoplay",
-    "bdrs",
-    "catppuccin",
-    "Chakra",
-    "corejs",
-    "daisyui",
-    "dont",
-    "embla",
-    "Español",
-    "fbdb",
-    "Fira",
-    "Laravel",
-    "mantine",
-    "mapbox",
-    "mytheon",
-    "placehold",
-    "remixicon",
-    "ridemountainpig",
-    "Shiki",
-    "shikijs",
-    "Supabase",
-    "svgl",
-    "Symfony",
-    "Tecnologías",
-    "Tiktok",
-    "Turborepo"
-  ],
-  "cSpell.ignorePaths": ["messages/es.json", "data/*/es"]
+  "cSpell.words": ["blockquotes", "cascadia", "catppuccin", "jsxs", "roboto"],
+  "cSpell.ignorePaths": ["messages/es.json", "content/*/es"]
 }

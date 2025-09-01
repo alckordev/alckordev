@@ -16,13 +16,9 @@ const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY!;
 const MAILCHIMP_SERVER = process.env.MAILCHIMP_SERVER!;
 const MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID!;
 
-// if (!MAILCHIMP_API_KEY || !MAILCHIMP_SERVER || !MAILCHIMP_LIST_ID) {
-//   throw new Error("Missing Mailchimp configuration in environment");
-// }
-
 const getAuthHeader = () => {
   const token = Buffer.from(`anystring:${MAILCHIMP_API_KEY}`).toString(
-    "base64"
+    "base64",
   );
   return `Basic ${token}`;
 };
@@ -35,7 +31,7 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid input", details: parsed.error.issues },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -53,7 +49,7 @@ export async function POST(req: Request) {
           email_address,
           status,
         }),
-      }
+      },
     );
 
     const data = await fetched.json();
@@ -61,7 +57,7 @@ export async function POST(req: Request) {
     if (!fetched.ok) {
       return NextResponse.json(
         { error: "Mailchimp error", ...data },
-        { status: fetched.status }
+        { status: fetched.status },
       );
     }
 
@@ -71,13 +67,13 @@ export async function POST(req: Request) {
         email: data.email_address,
         id: data.id,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     console.error("subscribe error:", err);
     return NextResponse.json(
       { error: "Internal error", details: String(err) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,54 +1,59 @@
-import "@mantine/core/styles.css";
-import "@mantine/code-highlight/styles.css";
-import "@mantine/carousel/styles.css";
-import "@mantine/spotlight/styles.css";
-import "@mantine/notifications/styles.css";
-import "@/assets/css/global.css";
-import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
-import { Notifications } from "@mantine/notifications";
-import { Provider } from "@/components/provider";
-import { HighlightProvider } from "@/components/highlight-provider";
+import "@/styles/globals.css";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
-import { LayoutWithParamsProps } from "@/type";
-import { Content, Footer, Header } from "@/components/layouts";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { routing } from "@/i18n/routing";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { cn } from "@/lib/cn";
 
-export default async function Layout({
-  children,
-  params,
-}: LayoutWithParamsProps) {
+const sans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+
+type Props = {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+};
+
+export default async function Layout({ children, params }: Props) {
   const { locale } = await params;
 
   if (!hasLocale(routing.locales, locale)) notFound();
 
   return (
-    <html lang={locale} {...mantineHtmlProps}>
-      <head>
-        <ColorSchemeScript defaultColorScheme="dark" />
-        <link
-          rel="icon"
-          type="image/svg+xml"
-          href="/images/iso.svg"
-          sizes="any"
-        />
-      </head>
-      <body>
+    <html lang={locale} suppressHydrationWarning>
+      <body
+        className={cn(
+          sans.variable,
+          mono.variable,
+          "min-h-screen scroll-smooth font-sans antialiased",
+          "bg-neutral-100 text-neutral-950 [.dark_&]:bg-neutral-950 [.dark_&]:text-neutral-100",
+          "selection:bg-accent-500/50 selection:text-neutral-950 [.dark_&]:selection:text-neutral-100",
+          "transition-colors duration-300",
+        )}
+      >
         <NextIntlClientProvider>
-          <Provider>
-            <Notifications position="top-center" limit={3} />
-            <HighlightProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="relative flex min-h-screen flex-col">
+              <div className="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,hsl(var(--border)/0.2)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.2)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] bg-[size:6rem_6rem]">
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.1)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.1)_1px,transparent_1px)] bg-[size:2rem_2rem]" />
+              </div>
+
               <Header />
-              <Content>
-                {children}
-                <Analytics />
-                <SpeedInsights />
-              </Content>
+
+              <main className="flex-1 px-4 py-8 md:py-12">
+                <div className="mx-auto max-w-4xl">{children}</div>
+              </main>
+
               <Footer />
-            </HighlightProvider>
-          </Provider>
+            </div>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
