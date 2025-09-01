@@ -33,7 +33,7 @@ export async function generateMetadata({
 
   const source = getPostInfo(`blog/${locale}/${slug}`);
 
-  const title = t("seo_title", { article: source?.title! });
+  const title = t("seo_title", { article: source?.title ?? "" });
   const description = source?.abstract || t("seo_description");
   const publishedAt = source?.publishedAt
     ? new Date(source.publishedAt)

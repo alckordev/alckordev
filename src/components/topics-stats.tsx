@@ -1,7 +1,12 @@
 import { cn } from "@/lib/cn";
+import { Topic } from "@/types/mdx";
 import { useTranslations } from "next-intl";
 
-export const TopicsStats = ({ topics }: { topics: any[] }) => {
+export const TopicsStats = ({
+  topics,
+}: {
+  topics: (Topic & { count: number })[];
+}) => {
   const t = useTranslations();
 
   const totalArticles = topics.reduce((acc, topic) => acc + topic.count, 0);

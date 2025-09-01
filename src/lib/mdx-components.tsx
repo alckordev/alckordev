@@ -239,12 +239,12 @@ export const components: MDXComponents = {
   ),
 
   // Images
-  img: ({ src, alt, ...props }) => (
-    <img
-      src={src}
-      alt={alt}
-      className="border-border/50 bg-secondary/20 my-6 rounded-lg border shadow-sm transition-shadow hover:shadow-md"
-      {...props}
-    />
-  ),
+  // img: ({ src, alt, ...props }) => (
+  //   <img
+  //     src={src}
+  //     alt={alt}
+  //     className="border-border/50 bg-secondary/20 my-6 rounded-lg border shadow-sm transition-shadow hover:shadow-md"
+  //     {...props}
+  //   />
+  // ),
 };

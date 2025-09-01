@@ -1,9 +1,10 @@
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
+import { Topic } from "@/types/mdx";
 import { RiPriceTag3Line } from "@remixicon/react";
 import { useTranslations } from "next-intl";
 
-export const TopicCard = ({ topic }: { topic: any }) => {
+export const TopicCard = ({ topic }: { topic: Topic & { count: number } }) => {
   const t = useTranslations();
 
   return (
