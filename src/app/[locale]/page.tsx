@@ -5,8 +5,25 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { getGitHubRepositories } from "@/lib/server/github";
 import { getPostsInfo } from "@/lib/server/mdx";
+import { getOpenGraph, getTwitter } from "@/lib/server/og";
 import { RiArrowRightLine, RiSparklingLine } from "@remixicon/react";
+import { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations("seo_home");
+
+  const title = t("seo_title");
+  const description = t("seo_description");
+
+  return {
+    title,
+    description,
+    openGraph: getOpenGraph(title, description, locale),
+    twitter: getTwitter(title, description),
+  };
+}
 
 export default async function Home() {
   const locale = await getLocale();

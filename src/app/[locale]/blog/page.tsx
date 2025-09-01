@@ -7,16 +7,23 @@ import { RiBookOpenLine, RiPriceTag3Line } from "@remixicon/react";
 import { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cn } from "@/lib/cn";
+import { getOpenGraph, getTwitter } from "@/lib/server/og";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations();
+  const locale = await getLocale();
+  const t = await getTranslations("seo_blog");
 
-  const title = `Blog - Isco`;
-  const description = t("blog_description");
+  const title = t("seo_title");
+  const description = t("seo_description");
 
   return {
     title,
     description,
+    openGraph: {
+      ...getOpenGraph(title, description, locale),
+      url: `${process.env.SITE_URL}/${locale}/blog`,
+    },
+    twitter: getTwitter(title, description),
   };
 }
 

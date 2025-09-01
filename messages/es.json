@@ -70,5 +70,33 @@
   "stay_updated_description": "Recibe notificaciones cuando publique nuevos artículos sobre desarrollo web moderno, patrones en React y productividad para desarrolladores.",
   "subscribe_success": "¡Excelente! Te mantendré informado. 😉",
   "subscribe_already": "¡Excelente! \nYa estás suscrito con ese correo electrónico. \n😉",
-  "server_error": "¡Ups! \nAlgo salió mal. \n😭"
+  "server_error": "¡Ups! \nAlgo salió mal. \n😭",
+  "seo_home": {
+    "seo_title": "Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "+10 años de experiencia. Me apasionan las tecnologías web modernas, las arquitecturas escalables y la mentoría de equipos de desarrollo para crear software con impacto."
+  },
+  "seo_blog": {
+    "seo_title": "Blog - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Exploraciones profundas en desarrollo web moderno, patrones de React, mejores prácticas con TypeScript y las últimas herramientas que hacen que crear software de calidad sea más agradable."
+  },
+  "seo_article": {
+    "seo_title": "{title} - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Explora artículos sobre desarrollo web moderno, patrones en React, productividad para desarrolladores y mejores prácticas en programación."
+  },
+  "seo_topics": {
+    "seo_title": "Temas y categorías - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Explora artículos organizados por temas y categorías sobre desarrollo web moderno, React, productividad para desarrolladores y mejores prácticas en programación."
+  },
+  "seo_topic": {
+    "seo_title": "{topic} - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Descubre artículos sobre {topic}. Desde conceptos básicos hasta técnicas avanzadas en desarrollo web, React, productividad y mejores prácticas en programación."
+  },
+  "seo_privacy": {
+    "seo_title": "Política de Privacidad - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Consulta nuestra Política de Privacidad para conocer cómo recopilamos, usamos y protegemos tu información personal al interactuar con nuestro sitio web."
+  },
+  "seo_terms": {
+    "seo_title": "Términos de Servicio - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Revisa nuestros Términos de Servicio para comprender las condiciones de uso, responsabilidades y derechos al utilizar nuestro sitio web."
+  }
 }

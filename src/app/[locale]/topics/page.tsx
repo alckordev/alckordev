@@ -1,10 +1,28 @@
 import { TopicCard } from "@/components/topic-card";
 import { TopicsStats } from "@/components/topics-stats";
-import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/cn";
 import { getAllTopics } from "@/lib/server/mdx";
+import { getOpenGraph, getTwitter } from "@/lib/server/og";
 import { RiBookOpenLine, RiPriceTag3Line } from "@remixicon/react";
+import { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations("seo_topics");
+
+  const title = t("seo_title");
+  const description = t("seo_description");
+
+  return {
+    title,
+    description,
+    openGraph: {
+      ...getOpenGraph(title, description, locale),
+      url: `${process.env.SITE_URL}/${locale}/topics`,
+    },
+    twitter: getTwitter(title, description),
+  };
+}
 
 export default async function Topics() {
   const locale = await getLocale();

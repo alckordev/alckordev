@@ -2,6 +2,7 @@ import { InfiniteArticlesList } from "@/components/infinite-articles-list";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { getAllTopics, getPostsInfo } from "@/lib/server/mdx";
+import { getOpenGraph, getTwitter } from "@/lib/server/og";
 import { RiBookOpenLine, RiPriceTag3Line } from "@remixicon/react";
 import { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -12,23 +13,25 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
   const locale = await getLocale();
-  const t = await getTranslations();
+  const t = await getTranslations("seo_topic");
+
+  const { slug } = await params;
 
   const topics = getAllTopics(`blog/${locale}`);
   const topic = topics.find((t) => t.slug === slug);
 
-  if (!topic) {
-    return {
-      title: "Topic not found",
-      description: "The requested topic could not be found.",
-    };
-  }
+  const title = t("seo_title", { topic: topic?.name! });
+  const description = t("seo_description", { topic: topic?.name! });
 
   return {
-    title: `${topic.name} - ${t("topic")}`,
-    description: `${t("topic_description")} ${topic.name}. ${t("topic_tagline")}.`,
+    title,
+    description,
+    openGraph: {
+      ...getOpenGraph(title, description, locale),
+      url: `${process.env.SITE_URL}/${locale}/topics/${slug}`,
+    },
+    twitter: getTwitter(title, description),
   };
 }
 

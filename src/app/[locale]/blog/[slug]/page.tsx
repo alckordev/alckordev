@@ -2,7 +2,8 @@ import { SupportCTA } from "@/components/support-cta";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { components } from "@/lib/mdx-components";
-import { getPostSource } from "@/lib/server/mdx";
+import { getPostInfo, getPostSource } from "@/lib/server/mdx";
+import { getOpenGraph, getTwitter } from "@/lib/server/og";
 import { Frontmatter, Scope } from "@/types/mdx";
 import {
   RiArrowLeftLine,
@@ -12,12 +13,46 @@ import {
   RiTimeLine,
   RiTwitterXLine,
 } from "@remixicon/react";
+import { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { evaluate, EvaluateOptions } from "next-mdx-remote-client/rsc";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
 import remarkFlexibleToc from "remark-flexible-toc";
 import remarkGfm from "remark-gfm";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations("seo_article");
+
+  const { slug } = await params;
+
+  const source = getPostInfo(`blog/${locale}/${slug}`);
+
+  const title = t("seo_title", { article: source?.title! });
+  const description = source?.abstract || t("seo_description");
+  const publishedAt = source?.publishedAt
+    ? new Date(source.publishedAt)
+    : new Date();
+
+  return {
+    title,
+    description,
+    openGraph: {
+      ...getOpenGraph(title, description, locale),
+      url: `${process.env.SITE_URL}/${locale}/blog/${slug}`,
+      type: "article",
+      authors: "@alckordev",
+      publishedTime: publishedAt.toISOString(),
+      tags: source?.topics?.map((t) => t.name).join(", "),
+    },
+    twitter: getTwitter(title, description),
+  };
+}
 
 export default async function Article({
   params,

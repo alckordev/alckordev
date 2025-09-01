@@ -1,5 +1,6 @@
 import { components } from "@/lib/mdx-components";
 import { getPostSource } from "@/lib/server/mdx";
+import { getOpenGraph, getTwitter } from "@/lib/server/og";
 import { Frontmatter, Scope } from "@/types/mdx";
 import { RiArrowLeftLine, RiCalendarLine, RiTimeLine } from "@remixicon/react";
 import { Metadata } from "next";
@@ -13,19 +14,19 @@ import remarkGfm from "remark-gfm";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
-  const t = await getTranslations({ locale });
+  const t = await getTranslations("seo_privacy");
 
-  const title = `${t("privacy_policy")} - Isco`;
-  const description = t("privacy_policy_description");
+  const title = t("seo_title");
+  const description = t("seo_description");
 
   return {
     title,
     description,
-    // openGraph: {
-    //   ...getOpenGraph(title, description, locale),
-    //   url: `${process.env.SITE_URL}/${locale}/privacy-policy`,
-    // },
-    // twitter: getTwitter(),
+    openGraph: {
+      ...getOpenGraph(title, description, locale),
+      url: `${process.env.SITE_URL}/${locale}/privacy-policy`,
+    },
+    twitter: getTwitter(title, description),
   };
 }
 

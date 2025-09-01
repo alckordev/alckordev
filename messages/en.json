@@ -70,5 +70,33 @@
   "stay_updated_description": "Get notified when I publish new articles about modern web development, React patterns, and developer productivity.",
   "subscribe_success": "Great! I’ll keep you posted. 😉",
   "subscribe_already": "Great! You’re already subscribed with that email. 😉",
-  "server_error": "Oops! Something went wrong. 😭"
+  "server_error": "Oops! Something went wrong. 😭",
+  "seo_home": {
+    "seo_title": "Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "+10 years of experience. I'm passionate about modern web technologies, scalable architectures, and mentoring development teams to build impactful software."
+  },
+  "seo_blog": {
+    "seo_title": "Blog - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Deep dives into modern web development, React patterns, TypeScript best practices, and the latest tools that make building great software more enjoyable."
+  },
+  "seo_article": {
+    "seo_title": "{article} - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Discover articles on modern web development, React patterns, developer productivity, and best practices in programming."
+  },
+  "seo_topics": {
+    "seo_title": "Topics & categories - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Browse articles organized by topics and categories on modern web development, React, developer productivity, and programming best practices."
+  },
+  "seo_topic": {
+    "seo_title": "{topic} - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Explore articles about {topic}. From the basics to advanced techniques in web development, React, developer productivity, and programming best practices."
+  },
+  "seo_privacy": {
+    "seo_title": "Privacy Policy - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Read our Privacy Policy to understand how we collect, use, and protect your personal information when you interact with our website"
+  },
+  "seo_terms": {
+    "seo_title": "Terms of Service - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_description": "Review our Terms of Service to understand the conditions of use, responsibilities, and rights when using our website."
+  }
 }
