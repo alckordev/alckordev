@@ -21,7 +21,7 @@ export async function generateMetadata({
   const topics = getAllTopics(`blog/${locale}`);
   const topic = topics.find((t) => t.slug === slug);
 
-  const title = t("seo_title", { topic: topic?.name ?? "" });
+  const title = t("seo_title", { topic: topic?.name ?? "404" });
   const description = t("seo_description", { topic: topic?.name ?? "" });
 
   return {

@@ -1,4 +1,4 @@
-<img width="1600" height="350" alt="banner" src="https://github.com/user-attachments/assets/88c0ea8d-7332-4570-be72-9a87cc2025cc" />
+<img width="1400" height="350" alt="image" src="https://github.com/user-attachments/assets/e6a6c5f3-89a3-4313-b482-d227079e68ba" />
 
 # Isco / alckordev
 
