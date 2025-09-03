@@ -43,13 +43,15 @@ export function ArticleCard({ article }: ArticleCardProps) {
               })}
             </span>
           </div>
-          <div
-            className={cn(
-              "bg-accent-500/10 text-accent-500 ml-auto rounded-full px-2 py-0.5 font-medium",
-            )}
-          >
-            {t("new")}
-          </div>
+          {article.highlighted && (
+            <div
+              className={cn(
+                "bg-accent-500/10 text-accent-500 ml-auto rounded-full px-2 py-0.5 font-medium",
+              )}
+            >
+              {t("new")}
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">

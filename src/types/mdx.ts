@@ -11,6 +11,7 @@ export type Frontmatter = {
   topics?: Topic[];
   featured?: boolean;
   readingTime?: number;
+  highlighted?: boolean;
 };
 
 export type Toc = {
