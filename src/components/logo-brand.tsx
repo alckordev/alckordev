@@ -26,7 +26,7 @@ export const LogoBrand = () => {
         <span className="text-neutral-950 [.dark_&]:text-neutral-100">
           alckor
         </span>
-        <span className="text-accent-500">.dev</span>
+        <span className="text-accent-500">dev</span>
       </span>
     </Link>
   );
