@@ -8,10 +8,10 @@ import { Frontmatter, Scope } from "@/types/mdx";
 import {
   RiArrowLeftLine,
   RiCalendarLine,
-  RiLinkedinLine,
+  // RiLinkedinLine,
   RiPriceTag3Line,
   RiTimeLine,
-  RiTwitterXLine,
+  // RiTwitterXLine,
 } from "@remixicon/react";
 import { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";

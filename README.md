@@ -10,7 +10,8 @@
 
 ## Latest posts
 
-- 🗒️ [Forms with Server Actions, Zod, and React Hook Form (No API Routes) in Next.js App Router](https://www.alckor.dev/blog/nextjs-server-actions-forms)
-- 🗒️ [How to Fix Hydration Errors with next-themes in Next.js (App Router)](https://www.alckor.dev/blog/next-themes-hydration-error-nextjs-app-router)
-- 🗒️ [API Versioning with NestJS](https://www.alckor.dev/blog/versioning-api-with-nestjs)
-- 🗒️ [Integrate Culqi Payments with the Node.js SDK](https://www.alckor.dev/blog/integrate-culqi-payments-nodejs-sdk)
+- 🗒️ [Git and GitHub: Complete Guide to Commands and Best Practices for Daily Development](https://alckor.dev/en/blog/git-github-complete-guide)
+- 🗒️ [Forms with Server Actions, Zod, and React Hook Form (No API Routes) in Next.js App Router](https://alckor.dev/en/blog/nextjs-server-actions-forms)
+- 🗒️ [How to Fix Hydration Errors with next-themes in Next.js (App Router)](https://alckor.dev/en/blog/next-themes-hydration-error-nextjs-app-router)
+- 🗒️ [API Versioning with NestJS](https://alckor.dev/en/blog/versioning-api-with-nestjs)
+- 🗒️ [Integrate Culqi Payments with the Node.js SDK](https://alckor.dev/en/blog/integrate-culqi-payments-nodejs-sdk)

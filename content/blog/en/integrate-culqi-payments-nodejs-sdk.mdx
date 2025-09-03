@@ -7,15 +7,19 @@ topics:
     slug: culqi
   - name: Node.js
     slug: nodejs
+  - name: Payments
+    slug: payments
+  - name: API
+    slug: api
 ---
 
-In this article we’ll explore **culqi-nodejs**, an _wrapper_ around the Culqi APIs for Node.js. With it you can:
+In this article we'll explore **culqi-nodejs**, a _wrapper_ around the Culqi APIs for Node.js. With it you can:
 
-- Tokenize card data securely.
-- Create **one-time charges**.
-- Configure **recurring payments** via plans and subscriptions.
+- Tokenize card data securely
+- Create **one-time charges** for individual transactions
+- Configure **recurring payments** via plans and subscriptions
 
-By the end, you’ll have a complete end-to-end payment flow ready for production.
+By the end, you'll have a complete end-to-end payment flow ready for production.
 
 ## Installation
 
@@ -52,15 +56,15 @@ const culqi = CulqiClient.init({
 ## Tokenization
 
 **Tokenization** captures sensitive card data in the browser (or mobile frontend) and returns a secure token—no real card data hits your servers.
-You can use Culqi’s frontend helpers or generate the token server-side if you already have the public key (but that increases your PCI scope).
+You can use Culqi's frontend helpers or generate the token server-side if you already have the public key (but that increases your PCI scope).
 
 ```tsx
 const token = await culqi.tokens.create({
-  card_number: "4111111111111111",
-  cvv: "123",
-  expiration_month: "07",
-  expiration_year: "2027",
-  email: "customer@example.com",
+  card_number: "4111111111111111", // Test Visa card number
+  cvv: "123", // Security code
+  expiration_month: "07", // Expiration month
+  expiration_year: "2027", // Expiration year
+  email: "customer@example.com", // Customer email (required by Culqi)
 });
 
 console.log("Token:", token.id);
@@ -79,16 +83,16 @@ const charge = await culqi.charges.create({
   amount: 1000, // in cents (e.g. S/ 10.00 = 1000)
   currency_code: "PEN", // ISO currency code
   source_id: token.id, // the token generated above
-  email: "cliente@dominio.com",
+  email: "cliente@dominio.com", // customer email
 });
 
 console.log("Charge:", charge);
-// Check `charge.outcome.code === "AUT0000"`
+// Check `charge.outcome.code === "AUT0000"` to confirm success
 ```
 
 ## Recurring Payments
 
-For subscriptions you’ll need to:
+For subscriptions you'll need to:
 
 - Create a plan
 - Register the customer
@@ -101,18 +105,18 @@ Define name, amount, interval, and initial cycles:
 
 ```tsx
 const plan = await culqi.plans.create({
-  name: "Monthly Plan",
-  short_name: "monthly-plan",
-  description: "Premium monthly access",
-  amount: 5000, // S/ 50.00
-  currency: "PEN",
-  interval_unit_time: 1, // 1 = monthly
-  interval_count: 1, // every 1 month
+  name: "Monthly Plan", // Descriptive plan name
+  short_name: "monthly-plan", // Unique short identifier
+  description: "Premium monthly access", // Detailed description
+  amount: 5000, // S/ 50.00 in cents
+  currency: "PEN", // Plan currency
+  interval_unit_time: 1, // 1 = monthly, 2 = yearly
+  interval_count: 1, // every 1 month (frequency)
   initial_cycles: {
-    count: 0,
-    has_initial_charge: false,
-    amount: 0,
-    interval_unit_time: 1,
+    count: 0, // Number of special initial cycles
+    has_initial_charge: false, // Whether there's a different initial charge
+    amount: 0, // Initial cycle amount (if applicable)
+    interval_unit_time: 1, // Time unit for initial cycle
   },
 });
 
@@ -126,13 +130,13 @@ Create a `customer` resource with user data:
 
 ```tsx
 const customer = await culqi.customers.create({
-  first_name: "Jane",
-  last_name: "Doe",
-  email: "jane@example.com",
-  address: "123 Main St",
-  address_city: "Lima",
-  country_code: "PE",
-  phone_number: "987654321",
+  first_name: "Jane", // Customer's first name
+  last_name: "Doe", // Customer's last name
+  email: "jane@example.com", // Unique customer email
+  address: "123 Main St", // Physical address
+  address_city: "Lima", // City of residence
+  country_code: "PE", // ISO country code (Peru)
+  phone_number: "987654321", // Contact phone number
 });
 
 console.log("Customer:", customer.id);
@@ -144,14 +148,14 @@ console.log("Customer:", customer.id);
 Tokenize (or reuse a token) to create a card linked to the customer:
 
 ```tsx
-const token2 = await culqi.tokens.create({
-  /* … */
+const token = await culqi.tokens.create({
+  /* … same parameters as before */
 });
 
 const card = await culqi.cards.create({
-  customer_id: customer.id,
-  token_id: token2.id,
-  validate: true, // validate card
+  customer_id: customer.id, // ID of previously created customer
+  token_id: token2.id, // Token of card to associate
+  validate: true, // validate card when creating
 });
 
 console.log("Card:", card.id);
@@ -164,9 +168,9 @@ Finally, generate the subscription:
 
 ```tsx
 const subscription = await culqi.subscriptions.create({
-  card_id: card.id,
-  plan_id: plan.id,
-  tyc: true, // terms acceptance
+  card_id: card.id, // ID of card associated with customer
+  plan_id: plan.id, // ID of subscription plan
+  tyc: true, // terms and conditions acceptance (required)
 });
 
 console.log("Subscription:", subscription.id);
@@ -180,20 +184,23 @@ Wrap your calls in `try/catch` and handle Culqi errors gracefully:
 ```tsx
 try {
   await culqi.charges.create({
-    /* ... */
+    /* ... charge parameters */
   });
 } catch (err: any) {
-  console.error("Error Culqi:", err.message);
+  console.error("Culqi Error:", err.message);
+  // Here you can implement specific logic based on error type
+  // err.type can be: 'card_error', 'invalid_request_error', etc.
 }
 ```
 
 ## Conclusion
 
-The `culqi-nodejs` SDK abstracts away the complexity of Culqi’s REST APIs, providing a natural Node.js-friendly flow for all payment types. Remember:
+The `culqi-nodejs` SDK abstracts away the complexity of Culqi's REST APIs, providing a natural Node.js-friendly flow for all payment types. Remember:
 
-- **Tokenize:** minimize your PCI scope and protect customers.
-- **One-time charges:** for single purchases.
-- **Plans & subscriptions:** for recurring revenue.
+- **Tokenize:** minimize your PCI scope and protect customers
+- **One-time charges:** for single purchases
+- **Plans & subscriptions:** for recurring revenue
 
-You’re all set to integrate Culqi into your Node.js projects securely and efficiently.
-If you found this guide helpful, share it and leave your questions in the comments. Thanks for reading!
+You're all set to integrate Culqi into your Node.js projects securely and efficiently.
+
+If you found this guide helpful, share it. Thanks for reading!

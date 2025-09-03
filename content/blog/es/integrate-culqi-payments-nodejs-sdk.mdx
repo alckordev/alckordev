@@ -1,21 +1,25 @@
 ---
-title: "Integrar pagos de Culqi con el SDK de Node.js"
-abstract: "Aprende a usar el paquete `culqi-nodejs` para tokenizar tarjetas, crear cargos únicos y configurar pagos recurrentes (planes y suscripciones) de forma sencilla y segura en tus aplicaciones Node.js."
+title: "Integra Pagos con Culqi usando el SDK de Node.js"
+abstract: "Aprende a usar el paquete `culqi-nodejs` para tokenizar tarjetas, crear cobros únicos y configurar pagos recurrentes (planes y suscripciones) de forma fácil y segura en tus aplicaciones Node.js."
 publishedAt: "2025-07-30 19:00:00"
 topics:
   - name: Culqi
     slug: culqi
   - name: Node.js
     slug: nodejs
+  - name: Pagos
+    slug: payments
+  - name: API
+    slug: api
 ---
 
-En este artículo veremos cómo usar **culqi-nodejs**, un _wrapper_ de las APIs de Culqi para Node.js. Con él podrás:
+En este artículo exploraremos **culqi-nodejs**, un _wrapper_ alrededor de las APIs de Culqi para Node.js. Con él puedes:
 
-- Tokenizar de forma segura los datos de tarjetas.
-- Crear **cargos únicos** (pagos puntuales).
-- Configurar **pagos recurrentes** mediante planes y suscripciones.
+- Tokenizar datos de tarjetas de forma segura
+- Crear **cobros únicos** para transacciones individuales
+- Configurar **pagos recurrentes** mediante planes y suscripciones
 
-Al final tendrás un flujo completo end-to-end listo para producción.
+Al finalizar, tendrás un flujo completo de pagos de extremo a extremo listo para producción.
 
 ## Instalación
 
@@ -25,7 +29,7 @@ Instala el paquete desde npm:
 npm install culqi-nodejs
 ```
 
-Luego define tus claves en variables de entorno:
+Luego configura tus claves en variables de entorno:
 
 ```tsx
 CULQI_PUBLIC_KEY = "pk_test_XXXXXXXXXXXXX";
@@ -33,11 +37,11 @@ CULQI_SECRET_KEY = "sk_test_XXXXXXXXXXXXX";
 ```
 
 > [!TIP]
-> Tu `CULQI_SECRET_KEY` no debe llegar al cliente ni repositorios públicos.
+> Nunca expongas tu `CULQI_SECRET_KEY` en código del cliente o repositorios públicos.
 
-## Inicializar el cliente
+## Inicializar el Cliente
 
-Antes de cualquier llamada, inicializa el cliente Culqi:
+Antes de realizar cualquier llamada, inicializa el cliente de Culqi:
 
 ```tsx
 import { CulqiClient } from "culqi-nodejs";
@@ -45,155 +49,158 @@ import { CulqiClient } from "culqi-nodejs";
 const culqi = CulqiClient.init({
   publicKey: process.env.CULQI_PUBLIC_KEY!,
   secretKey: process.env.CULQI_SECRET_KEY!,
-  apiVersion: "2", // Culqi API version
+  apiVersion: "2", // Versión de la API de Culqi
 });
 ```
 
 ## Tokenización
 
-La **tokenización** captura datos sensibles de tarjeta en el navegador (o frontend móvil) y devuelve un token seguro (sin exponer datos reales).
-Puedes usar los helpers de Culqi en frontend o crearlo directamente desde tu backend si ya cuentas con la llave pública (con mayor carga de compliance PCI).
+La **tokenización** captura los datos sensibles de la tarjeta en el navegador (o frontend móvil) y devuelve un token seguro—ningún dato real de tarjeta llega a tus servidores.
+Puedes usar los helpers de frontend de Culqi o generar el token del lado del servidor si ya tienes la clave pública (pero eso aumenta tu alcance PCI).
 
 ```tsx
 const token = await culqi.tokens.create({
-  card_number: "4111111111111111",
-  cvv: "123",
-  expiration_month: "07",
-  expiration_year: "2027",
-  email: "cliente@dominio.com",
+  card_number: "4111111111111111", // Número de tarjeta de prueba Visa
+  cvv: "123", // Código de seguridad
+  expiration_month: "07", // Mes de vencimiento
+  expiration_year: "2027", // Año de vencimiento
+  email: "customer@example.com", // Email del cliente (requerido por Culqi)
 });
 
 console.log("Token:", token.id);
-// e.g.: tkn_test_XXXXXXXXXXXX
+// Por ejemplo: tkn_test_XXXXXXXXXXXX
 ```
 
 > [!IMPORTANT]
-> Si tokenizas en backend, tu servidor procesa datos de tarjeta y debes certificarte PCI-DSS SAQ-D.
+> Si tokenizas en el backend, tu servidor procesa datos de tarjetas reales y debe cumplir con PCI-DSS SAQ-D.
 
-## Crear un cargo único
+## Crear un Cobro Único
 
-Con el id del token puedes procesar un cargo único:
+Usa el ID del token para procesar un cobro único:
 
 ```tsx
 const charge = await culqi.charges.create({
-  amount: 1000, // in cents (e.g. S/ 10.00 = 1000)
-  currency_code: "PEN", // ISO currency code
-  source_id: token.id, // the token generated above
-  email: "cliente@dominio.com",
+  amount: 1000, // en centavos (ej. S/ 10.00 = 1000)
+  currency_code: "PEN", // Código de moneda ISO
+  source_id: token.id, // el token generado anteriormente
+  email: "customer@example.com", // Email del cliente
 });
 
-console.log("Charge:", charge);
-// Check `charge.outcome.code === "AUT0000"`
+console.log("Cobro:", charge);
+// Verificar que `charge.outcome.code === "AUT0000"` para confirmar el éxito
 ```
 
-## Pagos recurrentes
+## Pagos Recurrentes
 
-Para pagos periódicos (suscripciones) necesitas:
+Para suscripciones necesitarás:
 
 - Crear un plan
-- Registrar al cliente
-- Asociar tarjeta al cliente
+- Registrar el cliente
+- Asociar una tarjeta al cliente
 - Crear la suscripción
 
-### Crear un plan
+### Crear un Plan
 
 Define nombre, monto, intervalo y ciclos iniciales:
 
 ```tsx
 const plan = await culqi.plans.create({
-  name: "Monthly Plan",
-  short_name: "monthly-plan",
-  description: "Premium monthly access",
-  amount: 5000, // S/ 50.00
-  currency: "PEN",
-  interval_unit_time: 3, // 3 = monthly
-  interval_count: 1, // every 1 month
+  name: "Plan Mensual", // Nombre descriptivo del plan
+  short_name: "monthly-plan", // Identificador corto único
+  description: "Acceso mensual premium", // Descripción detallada
+  amount: 5000, // S/ 50.00 en centavos
+  currency: "PEN", // Moneda del plan
+  interval_unit_time: 1, // 1 = mensual, 2 = anual
+  interval_count: 1, // cada 1 mes (frecuencia)
   initial_cycles: {
-    count: 0,
-    has_initial_charge: false,
-    amount: 0,
-    interval_unit_time: 1,
+    count: 0, // Número de ciclos iniciales especiales
+    has_initial_charge: false, // Si hay un cobro inicial diferente
+    amount: 0, // Monto del ciclo inicial (si aplica)
+    interval_unit_time: 1, // Unidad de tiempo para ciclo inicial
   },
 });
 
 console.log("Plan:", plan.id);
-// e.g.: pln_test_XXXXXXXXXXXXXXXX
+// Por ejemplo: pln_test_XXXXXXXXXXXXXXXX
 ```
 
-### Registrar al cliente
+### Registrar el Cliente
 
-Crea un recurso customer con los datos del usuario:
+Crea un recurso `customer` con los datos del usuario:
 
 ```tsx
 const customer = await culqi.customers.create({
-  first_name: "Jane",
-  last_name: "Doe",
-  email: "jane@example.com",
-  address: "123 Main St",
-  address_city: "Lima",
-  country_code: "PE",
-  phone_number: "987654321",
+  first_name: "Jane", // Nombres del cliente
+  last_name: "Doe", // Apellidos del cliente
+  email: "jane@example.com", // Email único del cliente
+  address: "123 Main St", // Dirección física
+  address_city: "Lima", // Ciudad de residencia
+  country_code: "PE", // Código ISO del país (Perú)
+  phone_number: "987654321", // Teléfono de contacto
 });
 
-console.log("Customer:", customer.id);
-// e.g.: cus_test_XXXXXXXXXXXXXXXX
+console.log("Cliente:", customer.id);
+// Por ejemplo: cus_test_XXXXXXXXXXXXXXXX
 ```
 
-### Asociar tarjeta al cliente
+### Asociar una Tarjeta
 
-Tokeniza o reutiliza un token para crear una card vinculada al cliente:
+Tokeniza (o reutiliza un token) para crear una tarjeta vinculada al cliente:
 
 ```tsx
-const token2 = await culqi.tokens.create({
-  /* … */
+const token = await culqi.tokens.create({
+  /* … mismos parámetros que antes */
 });
 
 const card = await culqi.cards.create({
-  customer_id: customer.id,
-  token_id: token2.id,
-  validate: true, // validate card
+  customer_id: customer.id, // ID del cliente creado anteriormente
+  token_id: token2.id, // Token de la tarjeta a asociar
+  validate: true, // validar la tarjeta al crearla
 });
 
-console.log("Card:", card.id);
-// e.g.: crd_test_XXXXXXXXXXXXXXXX
+console.log("Tarjeta:", card.id);
+// Por ejemplo: crd_test_XXXXXXXXXXXXXXXX
 ```
 
-### Crear la suscripción
+### Crear la Suscripción
 
 Finalmente, genera la suscripción:
 
 ```tsx
 const subscription = await culqi.subscriptions.create({
-  card_id: card.id,
-  plan_id: plan.id,
-  tyc: true, // terms acceptance
+  card_id: card.id, // ID de la tarjeta asociada al cliente
+  plan_id: plan.id, // ID del plan de suscripción
+  tyc: true, // aceptación de términos y condiciones (requerido)
 });
 
-console.log("Subscription:", subscription.id);
-// e.g.: sub_test_XXXXXXXXXXXXXXXX
+console.log("Suscripción:", subscription.id);
+// Por ejemplo: sub_test_XXXXXXXXXXXXXXXX
 ```
 
-## Manejo de errores
+## Manejo de Errores
 
-Envuelve tus llamadas en `try/catch` y maneja respuestas de Culqi:
+Envuelve tus llamadas en `try/catch` y maneja los errores de Culqi de forma elegante:
 
 ```tsx
 try {
   await culqi.charges.create({
-    /* ... */
+    /* ... parámetros del cobro */
   });
 } catch (err: any) {
   console.error("Error Culqi:", err.message);
+  // Aquí puedes implementar lógica específica según el tipo de error
+  // err.type puede ser: 'card_error', 'invalid_request_error', etc.
 }
 ```
 
 ## Conclusión
 
-El SDK `culqi-nodejs` te abstrae la complejidad de las APIs REST de Culqi, ofreciendo un flujo natural en Node.js para todo tipo de pagos. Recuerda:
+El SDK `culqi-nodejs` abstrae la complejidad de las APIs REST de Culqi, proporcionando un flujo natural y amigable para Node.js para todos los tipos de pagos. Recuerda:
 
-- **Tokeniza:** reduce tu alcance PCI y protege a tus clientes.
-- **Cargos únicos:** para compras puntuales.
-- **Planes y suscripciones:** para ingresos recurrentes.
+- **Tokenizar:** minimiza tu alcance PCI y protege a los clientes
+- **Cobros únicos:** para compras individuales
+- **Planes y suscripciones:** para ingresos recurrentes
 
-¡Listo! Ya tienes todo lo necesario para integrar Culqi en tus proyectos Node.js de forma segura y eficiente.
-Si te gustó este tutorial, compártelo y déjame tus dudas en comentarios. ¡Gracias por leer!
+Ya estás listo para integrar Culqi en tus proyectos Node.js de forma segura y eficiente.
+
+Si esta guía te resultó útil, compártela. ¡Gracias por leer!

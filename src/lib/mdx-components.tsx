@@ -4,6 +4,7 @@ import { highlight } from "@/lib/shiki-shared";
 import Link from "next/link";
 import { BundledLanguage } from "shiki/bundle/web";
 import { cn } from "./cn";
+import { Blockquote } from "@/components/blockquote";
 
 export const components: MDXComponents = {
   // Links
@@ -132,13 +133,10 @@ export const components: MDXComponents = {
 
   // Blockquotes
   blockquote: ({ children, ...props }) => (
-    <blockquote
-      className="border-accent-500/50 bg-secondary/30 text-muted-foreground relative my-6 border-l-4 py-4 pr-4 pl-6 italic"
-      {...props}
-    >
+    <Blockquote {...props}>
       {/* <RiDoubleQuotesL className="text-accent/50 absolute top-2 left-2 h-4 w-4" /> */}
-      <div className="relative">{children}</div>
-    </blockquote>
+      {children}
+    </Blockquote>
   ),
 
   // Horizontal rule

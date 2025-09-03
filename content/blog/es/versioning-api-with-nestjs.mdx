@@ -58,10 +58,10 @@ import { VersioningType } from "@nestjs/common";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global prefix "api"
+  // Prefijo global "api"
   app.setGlobalPrefix("api");
 
-  // Enable URI versioning: /api/v{version}/{route}
+  // Habilitar versionado en la URI: /api/v{version}/{route}
   app.enableVersioning({
     type: VersioningType.URI,
     prefix: "v",
@@ -148,7 +148,7 @@ nest g service api/v2/products
 nest g controller api/v2/products
 ```
 
-`src/api/v2/products/products.controller.t`s:
+`src/api/v2/products/products.controller.ts`:
 
 ```ts
 import { Controller, Get } from "@nestjs/common";
@@ -160,7 +160,7 @@ export class ProductsController {
 
   @Get()
   findAll() {
-    // New structure or extra fields in V2
+    // Nueva estructura o campos adicionales en V2
     return this.service
       .findAll()
       .map((p) => ({ ...p, description: "Added  in V2" }));
@@ -205,7 +205,7 @@ El cliente incluirá: `X-API-Version: 2`
 ```ts
 app.enableVersioning({
   type: VersioningType.MEDIA_TYPE,
-  key: "v", // Accept: application/json;v=2
+  key: "v", // Accepta: application/json;v=2
   defaultVersion: "1",
 });
 ```
@@ -216,7 +216,7 @@ app.enableVersioning({
 app.enableVersioning({
   type: VersioningType.CUSTOM,
   factory: (request) => {
-    // extract version from cookie or query param
+    // extraer la versión desde la cookie o parámetro de consulta
     return request.headers["api-version"] || "1";
   },
 });
