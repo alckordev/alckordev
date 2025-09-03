@@ -1,0 +1,392 @@
+---
+title: "Git y GitHub: Guía Completa de Comandos y Buenas Prácticas para el Desarrollo Diario"
+abstract: "Una guía práctica y completa sobre Git y GitHub que cubre desde comandos básicos hasta flujos de trabajo avanzados, con ejemplos reales y mejores prácticas para desarrolladores."
+publishedAt: "2025-09-02 19:00:00"
+topics:
+  - name: Git
+    slug: git
+  - name: GitHub
+    slug: github
+  - name: Control de Versiones
+    slug: version-control
+  - name: Desarrollo
+    slug: development
+---
+
+Git es el sistema de control de versiones más utilizado en el mundo del desarrollo de software, y GitHub se ha convertido en la plataforma principal para alojar repositorios y colaborar en proyectos. Esta guía te proporcionará todo lo que necesitas saber para dominar ambas herramientas en tu trabajo diario.
+
+## 🚀 Inicialización y Configuración
+
+### Configuración inicial
+
+Antes de empezar a trabajar con Git, es importante configurar tu identidad:
+
+```bash
+git config --global user.name "Tu Nombre"
+git config --global user.email "tu@email.com"
+git config --global init.defaultBranch main
+```
+
+### Inicialización de repositorios
+
+```bash
+# Inicializa un nuevo repositorio Git
+git init
+
+# Clona un repositorio desde una URL
+git clone <repo-url>
+```
+
+**💡 Buena práctica:** Siempre usa `main` como rama principal en lugar de `master` para seguir las convenciones modernas.
+
+## 🔄 Flujo de Trabajo Diario
+
+### Verificar el estado y cambios
+
+```bash
+# Muestra el estado de los cambios
+git status
+
+# Muestra diferencias detalladas
+git diff
+
+# Muestra diferencias de archivos en staging
+git diff --staged
+```
+
+### Gestión de cambios
+
+```bash
+# Añade cambios al área de preparación
+git add <archivo>
+git add .  # Añade todos los cambios
+
+# Confirma los cambios con un mensaje
+git commit -m "Mensaje descriptivo"
+
+# Confirma y añade archivos modificados en un solo paso
+git commit -am "Mensaje"
+```
+
+**✅ Mejores prácticas para commits:**
+
+- Usa mensajes claros y descriptivos
+- Mantén commits pequeños y enfocados
+- Usa el presente imperativo: "Add feature" en lugar de "Added feature"
+- Sigue el formato: `tipo(scope): descripción`
+
+Ejemplos de buenos mensajes:
+
+```bash
+git commit -m "feat(auth): add login validation"
+git commit -m "fix(api): handle null response in user service"
+git commit -m "docs: update installation guide"
+```
+
+## 🌿 Gestión de Ramas
+
+### Operaciones básicas con ramas
+
+```bash
+# Lista las ramas
+git branch
+
+# Crea una nueva rama
+git branch <nombre-rama>
+
+# Cambia a una rama
+git switch <nombre-rama>
+# o git checkout <nombre-rama>
+
+# Crea y cambia a una nueva rama
+git switch -c <nombre-rama>
+# o git checkout -b <nombre-rama>
+
+# Elimina una rama
+git branch -d <nombre-rama>
+
+# Elimina una rama forzadamente
+git branch -D <nombre-rama>
+```
+
+### Estrategias de nomenclatura para ramas
+
+**Formato recomendado:** `tipo/descripcion-breve`
+
+```bash
+git switch -c feature/user-authentication
+git switch -c fix/login-validation-bug
+git switch -c hotfix/critical-security-patch
+git switch -c docs/update-readme
+```
+
+## 🤝 Integración y Colaboración
+
+### Fusión de ramas
+
+```bash
+# Fusiona los cambios de una rama
+git merge <rama>
+
+# Fusión sin fast-forward (crea commit de merge)
+git merge --no-ff <rama>
+```
+
+### Trabajo con repositorios remotos
+
+```bash
+# Añade un repositorio remoto
+git remote add <nombre> <url>
+
+# Lista repositorios remotos
+git remote -v
+
+# Envía cambios a un repositorio remoto
+git push <remoto> <rama>
+
+# Obtiene y fusiona cambios desde un repo remoto
+git pull <remoto> <rama>
+
+# Solo obtiene cambios sin fusionar
+git fetch <remoto>
+```
+
+**🔒 Buena práctica:** Siempre haz `git pull` antes de hacer `git push` para evitar conflictos.
+
+## 🛠️ Recuperación y Limpieza
+
+### Deshacer cambios
+
+```bash
+# Recupera cambios sin fusionar
+git fetch
+
+# Deshecha todos los cambios locales
+git reset --hard HEAD
+
+# Revierte los cambios de un commit específico
+git revert <hash-commit>
+
+# Deshace commits manteniendo cambios en working directory
+git reset --soft HEAD~1
+
+# Deshace commits eliminando cambios completamente
+git reset --hard HEAD~1
+```
+
+### Limpieza del repositorio
+
+```bash
+# Elimina archivos no rastreados
+git clean -f
+
+# Elimina archivos y directorios no rastreados
+git clean -fd
+
+# Vista previa de lo que se eliminará
+git clean -n
+```
+
+## ⚡ Comandos Avanzados y Utilidades
+
+### Historial y exploración
+
+```bash
+# Compara dos commits, ramas o archivos
+git diff <a> <b>
+
+# Muestra detalles de un commit
+git show <hash>
+
+# Historial en una línea
+git log --oneline
+
+# Historial gráfico
+git log --graph --oneline --all
+```
+
+### Stash: Guardado temporal
+
+```bash
+# Guarda cambios temporales y limpia el working tree
+git stash
+
+# Lista todos los stashes
+git stash list
+
+# Aplica el último stash
+git stash pop
+
+# Aplica un stash específico
+git stash apply stash@{0}
+
+# Elimina todos los stashes
+git stash clear
+```
+
+### Cherry-pick y rebase
+
+```bash
+# Aplica un commit específico en la rama actual
+git cherry-pick <hash>
+
+# Reaplica commits sobre otra base
+git rebase <base>
+
+# Rebase interactivo para editar historial
+git rebase -i HEAD~3
+```
+
+## 🎯 Flujos de Trabajo Recomendados
+
+### Git Flow Simplificado
+
+1. **Rama main/master:** Código de producción
+2. **Ramas feature:** Nuevas características
+3. **Ramas hotfix:** Correcciones urgentes
+
+```bash
+# Crear feature branch
+git switch -c feature/nueva-funcionalidad
+
+# Trabajar en la feature
+git add .
+git commit -m "feat: implement nueva funcionalidad"
+
+# Volver a main y merge
+git switch main
+git pull origin main
+git merge feature/nueva-funcionalidad
+git push origin main
+
+# Limpiar rama feature
+git branch -d feature/nueva-funcionalidad
+```
+
+### GitHub Flow
+
+Un flujo más simple y ágil:
+
+1. Crea una rama desde main
+2. Haz commits
+3. Abre un Pull Request
+4. Discute y revisa el código
+5. Merge a main
+
+## 📋 Buenas Prácticas Generales
+
+### Archivo .gitignore
+
+Siempre incluye un archivo `.gitignore` apropiado:
+
+```text
+# Dependencies
+node_modules/
+*.log
+
+# Build outputs
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+```
+
+### Commits semánticos
+
+Usa convenciones como Conventional Commits:
+
+- `feat:` Nueva funcionalidad
+- `fix:` Corrección de bug
+- `docs:` Cambios en documentación
+- `style:` Cambios de formato
+- `refactor:` Refactorización de código
+- `test:` Añadir o modificar tests
+- `chore:` Tareas de mantenimiento
+
+### Configuraciones útiles
+
+```bash
+# Configuraciones recomendadas
+git config --global pull.rebase true
+git config --global push.default current
+git config --global core.autocrlf input
+git config --global init.defaultBranch main
+```
+
+## 🚨 Situaciones Comunes y Soluciones
+
+### Resolver conflictos de merge
+
+```bash
+# Cuando hay conflictos
+git status
+# Edita los archivos con conflictos
+git add <archivo-resuelto>
+git commit -m "resolve merge conflicts"
+```
+
+### Cambiar el último commit
+
+```bash
+# Modificar el mensaje del último commit
+git commit --amend -m "Nuevo mensaje"
+
+# Añadir archivos al último commit
+git add archivo-olvidado.js
+git commit --amend --no-edit
+```
+
+### Recuperar trabajo perdido
+
+```bash
+# Ver historial de referencias
+git reflog
+
+# Recuperar desde el reflog
+git reset --hard HEAD@{2}
+```
+
+## 🔧 Herramientas y Extensiones
+
+### Aliases útiles
+
+```bash
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.unstage 'reset HEAD --'
+git config --global alias.last 'log -1 HEAD'
+git config --global alias.visual '!gitk'
+```
+
+### Herramientas GUI recomendadas
+
+- **GitHub Desktop:** Interfaz simple y eficaz
+- **GitKraken:** Cliente visual avanzado
+- **Sourcetree:** Cliente gratuito de Atlassian
+- **VS Code:** Integración excelente con Git
+
+## 🎓 Conclusión
+
+Dominar Git y GitHub es esencial para cualquier desarrollador moderno. Esta guía cubre los comandos y prácticas más importantes, pero recuerda que la clave está en la práctica constante y en adaptar estos flujos a las necesidades específicas de tu equipo y proyecto.
+
+**Próximos pasos:**
+
+1. Practica estos comandos en un repositorio de prueba
+2. Implementa un flujo de trabajo consistente en tu equipo
+3. Automatiza tareas repetitivas con scripts y hooks
+4. Continúa aprendiendo sobre funcionalidades avanzadas como subtrees, worktrees y más
+
+---
+
+_¿Te resultó útil esta guía? Compártela con otros desarrolladores y no olvides seguir el blog para más contenido sobre desarrollo y mejores prácticas._

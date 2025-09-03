@@ -148,7 +148,7 @@ export default async function Article({
 
         <footer className="border-t border-neutral-500/20 pt-8">
           <div className="space-y-6">
-            <div className="flex items-center justify-center gap-3">
+            {/* <div className="flex items-center justify-center gap-3">
               <h3 className="text-foreground text-lg font-semibold">
                 {t("share_this_article")}
               </h3>
@@ -184,7 +184,7 @@ export default async function Article({
                   <RiLinkedinLine className="h-4 w-4" />
                 </a>
               </div>
-            </div>
+            </div> */}
             <SupportCTA />
           </div>
         </footer>

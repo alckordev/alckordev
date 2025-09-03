@@ -37,7 +37,7 @@ export function SupportCTA() {
               className="group flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 text-sm font-medium text-white transition-all duration-300 hover:scale-105 hover:from-amber-600 hover:to-orange-600 hover:shadow-lg hover:shadow-amber-500/25"
             >
               <RiCupLine className="h-4 w-4" />
-              <span>Buy me a coffee</span>
+              <span>{t("buy_me_a_coffee")}</span>
             </a>
 
             <a
@@ -51,7 +51,7 @@ export function SupportCTA() {
               )}
             >
               <RiGithubLine className="h-4 w-4" />
-              <span>Sponsor on github</span>
+              <span>{t("sponsor_on_github")}</span>
             </a>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
-import { RiHeartFill } from "@remixicon/react";
+// import { RiHeartFill } from "@remixicon/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -27,9 +27,10 @@ export function Footer() {
               •
             </span>
             <span className="flex items-center space-x-1">
-              <span>{t("built_with")}</span>
+              {t("code_coffee_love")}
+              {/* <span>{t("built_with")}</span>
               <RiHeartFill className="animate-jump animate-infinite animate-duration-[3000ms] h-3 w-3 text-pink-500" />
-              <span>{t("for_a_better_web")}.</span>
+              <span>{t("for_a_better_web")}.</span> */}
             </span>
           </div>
 

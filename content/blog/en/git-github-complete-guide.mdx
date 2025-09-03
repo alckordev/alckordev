@@ -1,0 +1,392 @@
+---
+title: "Git and GitHub: Complete Guide to Commands and Best Practices for Daily Development"
+abstract: "A comprehensive and practical guide on Git and GitHub covering everything from basic commands to advanced workflows, with real examples and best practices for developers."
+publishedAt: "2025-09-02 19:00:00"
+topics:
+  - name: Git
+    slug: git
+  - name: GitHub
+    slug: github
+  - name: Version Control
+    slug: version-control
+  - name: Development
+    slug: development
+---
+
+Git is the most widely used version control system in software development, and GitHub has become the primary platform for hosting repositories and collaborating on projects. This guide will provide everything you need to master both tools in your daily work.
+
+## 🚀 Initialization and Setup
+
+### Initial configuration
+
+Before starting to work with Git, it's important to configure your identity:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+git config --global init.defaultBranch main
+```
+
+### Repository initialization
+
+```bash
+# Initialize a new Git repository
+git init
+
+# Clone a repository from a URL
+git clone <repo-url>
+```
+
+**💡 Best practice:** Always use `main` as the default branch instead of `master` to follow modern conventions.
+
+## 🔄 Daily Workflow
+
+### Check status and changes
+
+```bash
+# Show the status of changes
+git status
+
+# Show detailed differences
+git diff
+
+# Show differences for staged files
+git diff --staged
+```
+
+### Change management
+
+```bash
+# Add changes to staging area
+git add <file>
+git add .  # Add all changes
+
+# Commit changes with a message
+git commit -m "Descriptive message"
+
+# Commit and add modified files in one step
+git commit -am "Message"
+```
+
+**✅ Best practices for commits:**
+
+- Use clear and descriptive messages
+- Keep commits small and focused
+- Use imperative present tense: "Add feature" instead of "Added feature"
+- Follow the format: `type(scope): description`
+
+Examples of good commit messages:
+
+```bash
+git commit -m "feat(auth): add login validation"
+git commit -m "fix(api): handle null response in user service"
+git commit -m "docs: update installation guide"
+```
+
+## 🌿 Branch Management
+
+### Basic branch operations
+
+```bash
+# List branches
+git branch
+
+# Create a new branch
+git branch <branch-name>
+
+# Switch to a branch
+git switch <branch-name>
+# or git checkout <branch-name>
+
+# Create and switch to a new branch
+git switch -c <branch-name>
+# or git checkout -b <branch-name>
+
+# Delete a branch
+git branch -d <branch-name>
+
+# Force delete a branch
+git branch -D <branch-name>
+```
+
+### Branch naming strategies
+
+**Recommended format:** `type/brief-description`
+
+```bash
+git switch -c feature/user-authentication
+git switch -c fix/login-validation-bug
+git switch -c hotfix/critical-security-patch
+git switch -c docs/update-readme
+```
+
+## 🤝 Integration and Collaboration
+
+### Branch merging
+
+```bash
+# Merge changes from a branch
+git merge <branch>
+
+# Merge without fast-forward (creates merge commit)
+git merge --no-ff <branch>
+```
+
+### Working with remote repositories
+
+```bash
+# Add a remote repository
+git remote add <name> <url>
+
+# List remote repositories
+git remote -v
+
+# Push changes to a remote repository
+git push <remote> <branch>
+
+# Fetch and merge changes from a remote repo
+git pull <remote> <branch>
+
+# Only fetch changes without merging
+git fetch <remote>
+```
+
+**🔒 Best practice:** Always `git pull` before `git push` to avoid conflicts.
+
+## 🛠️ Recovery and Cleanup
+
+### Undoing changes
+
+```bash
+# Fetch changes without merging
+git fetch
+
+# Discard all local changes
+git reset --hard HEAD
+
+# Revert changes from a specific commit
+git revert <commit-hash>
+
+# Undo commits keeping changes in working directory
+git reset --soft HEAD~1
+
+# Undo commits completely removing changes
+git reset --hard HEAD~1
+```
+
+### Repository cleanup
+
+```bash
+# Remove untracked files
+git clean -f
+
+# Remove untracked files and directories
+git clean -fd
+
+# Preview what will be removed
+git clean -n
+```
+
+## ⚡ Advanced Commands and Utilities
+
+### History and exploration
+
+```bash
+# Compare two commits, branches or files
+git diff <a> <b>
+
+# Show details of a commit
+git show <hash>
+
+# One-line history
+git log --oneline
+
+# Graphical history
+git log --graph --oneline --all
+```
+
+### Stash: Temporary storage
+
+```bash
+# Save temporary changes and clean working tree
+git stash
+
+# List all stashes
+git stash list
+
+# Apply the latest stash
+git stash pop
+
+# Apply a specific stash
+git stash apply stash@{0}
+
+# Remove all stashes
+git stash clear
+```
+
+### Cherry-pick and rebase
+
+```bash
+# Apply a specific commit to current branch
+git cherry-pick <hash>
+
+# Reapply commits onto another base
+git rebase <base>
+
+# Interactive rebase to edit history
+git rebase -i HEAD~3
+```
+
+## 🎯 Recommended Workflows
+
+### Simplified Git Flow
+
+1. **Main/master branch:** Production code
+2. **Feature branches:** New features
+3. **Hotfix branches:** Urgent fixes
+
+```bash
+# Create feature branch
+git switch -c feature/new-functionality
+
+# Work on the feature
+git add .
+git commit -m "feat: implement new functionality"
+
+# Return to main and merge
+git switch main
+git pull origin main
+git merge feature/new-functionality
+git push origin main
+
+# Clean up feature branch
+git branch -d feature/new-functionality
+```
+
+### GitHub Flow
+
+A simpler and more agile flow:
+
+1. Create a branch from main
+2. Make commits
+3. Open a Pull Request
+4. Discuss and review code
+5. Merge to main
+
+## 📋 General Best Practices
+
+### .gitignore file
+
+Always include an appropriate `.gitignore` file:
+
+```text
+# Dependencies
+node_modules/
+*.log
+
+# Build outputs
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+```
+
+### Semantic commits
+
+Use conventions like Conventional Commits:
+
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation changes
+- `style:` Formatting changes
+- `refactor:` Code refactoring
+- `test:` Add or modify tests
+- `chore:` Maintenance tasks
+
+### Useful configurations
+
+```bash
+# Recommended configurations
+git config --global pull.rebase true
+git config --global push.default current
+git config --global core.autocrlf input
+git config --global init.defaultBranch main
+```
+
+## 🚨 Common Situations and Solutions
+
+### Resolving merge conflicts
+
+```bash
+# When there are conflicts
+git status
+# Edit files with conflicts
+git add <resolved-file>
+git commit -m "resolve merge conflicts"
+```
+
+### Changing the last commit
+
+```bash
+# Modify the last commit message
+git commit --amend -m "New message"
+
+# Add files to the last commit
+git add forgotten-file.js
+git commit --amend --no-edit
+```
+
+### Recovering lost work
+
+```bash
+# View reference history
+git reflog
+
+# Recover from reflog
+git reset --hard HEAD@{2}
+```
+
+## 🔧 Tools and Extensions
+
+### Useful aliases
+
+```bash
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.unstage 'reset HEAD --'
+git config --global alias.last 'log -1 HEAD'
+git config --global alias.visual '!gitk'
+```
+
+### Recommended GUI tools
+
+- **GitHub Desktop:** Simple and effective interface
+- **GitKraken:** Advanced visual client
+- **Sourcetree:** Free client from Atlassian
+- **VS Code:** Excellent Git integration
+
+## 🎓 Conclusion
+
+Mastering Git and GitHub is essential for any modern developer. This guide covers the most important commands and practices, but remember that the key is constant practice and adapting these flows to the specific needs of your team and project.
+
+**Next steps:**
+
+1. Practice these commands in a test repository
+2. Implement a consistent workflow in your team
+3. Automate repetitive tasks with scripts and hooks
+4. Continue learning about advanced features like subtrees, worktrees, and more
+
+---
+
+_Did you find this guide useful? Share it with other developers and don't forget to follow the blog for more development content and best practices._
