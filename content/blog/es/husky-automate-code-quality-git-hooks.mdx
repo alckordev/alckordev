@@ -1,0 +1,588 @@
+---
+title: "Husky: Automatiza la Calidad de tu Código con Git Hooks"
+abstract: "Aprende a usar Husky para automatizar linting, testing y validaciones en tus proyectos. Guía completa con ejemplos prácticos, configuraciones avanzadas y mejores prácticas para equipos de desarrollo."
+publishedAt: "2025-09-07 19:00:00"
+topics:
+  - name: Husky
+    slug: husky
+  - name: Git Hooks
+    slug: git-hooks
+  - name: Code Quality
+    slug: code-quality
+highlighted: true
+---
+
+¿Cuántas veces has hecho un commit y después te has dado cuenta de que olvidaste ejecutar los tests, el linter, o formatear el código? ¿O peor aún, has subido código que rompe la build en producción?
+
+**Husky** es la solución a estos problemas. Esta herramienta te permite automatizar validaciones y tareas de calidad directamente en tu flujo de Git, asegurando que el código malo nunca llegue al repositorio.
+
+En esta guía completa aprenderás todo sobre Husky: desde la instalación básica hasta configuraciones avanzadas para equipos de desarrollo profesional.
+
+## ¿Qué son los Git Hooks?
+
+Antes de sumergirnos en Husky, es importante entender qué son los **Git Hooks**.
+
+Un Git Hook es un script personalizado que se ejecuta automáticamente en respuesta a eventos específicos en el ciclo de vida de Git. Estos eventos pueden ser:
+
+- **pre-commit:** Se ejecuta antes de confirmar los cambios
+- **pre-push:** Se ejecuta antes de empujar cambios al repositorio remoto
+- **post-commit:** Se ejecuta después de confirmar un cambio
+- **commit-msg:** Valida el formato del mensaje de commit
+- **post-receive:** Se ejecuta en el repositorio remoto después de recibir cambios
+
+### Problemas que resuelven los Git Hooks:
+
+- **Código inconsistente:** Diferentes estilos entre desarrolladores
+- **Tests olvidados:** Commits sin ejecutar la suite de pruebas
+- **Bugs en producción:** Código que pasa review pero falla en runtime
+- **Commits mal formateados:** Mensajes que no siguen convenciones
+- **Dependencias vulnerables:** Packages con security issues
+
+## ¿Qué es Husky?
+
+**Husky** es una biblioteca que simplifica la configuración de Git Hooks en proyectos Node.js. En lugar de escribir scripts complejos en `.git/hooks/`, Husky permite configurar estos hooks de manera sencilla y mantenerlos versionados en tu repositorio.
+
+### Ventajas principales de Husky:
+
+- **Configuración simple:** Setup mediante comandos simples
+- **Versionado:** Los hooks se guardan en el repositorio
+- **Integración con npm:** Usa scripts de package.json
+- **Team-friendly:** Funciona igual para todos los desarrolladores
+- **Automatización total:** No dependes de recordar ejecutar checks
+
+## Instalación y Configuración Inicial
+
+### Prerrequisitos
+
+- Node.js instalado
+- Proyecto inicializado con Git
+- package.json configurado
+
+### Instalación
+
+```bash
+# Crear proyecto de ejemplo
+mkdir mi-proyecto-husky
+cd mi-proyecto-husky
+npm init -y
+git init
+
+# Instalar Husky y dependencias
+npm install --save-dev husky eslint jest @commitlint/config-conventional @commitlint/cli
+```
+
+### Inicialización de Husky
+
+```bash
+# Inicializar Husky (crea la carpeta .husky)
+npx husky init
+```
+
+Esto crea la estructura:
+
+```cpp
+mi-proyecto/
+├── .husky/
+│   └── _/
+│       ├── husky.sh
+│       └── .gitignore
+├── package.json
+```
+
+### Configurar script prepare
+
+Agrega el script `prepare` en tu `package.json`:
+
+```json
+{
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "eslint .",
+    "test": "jest",
+    "pre-commit": "npm run lint && npm run test",
+    "pre-push": "npm run release"
+  }
+}
+```
+
+## Configuración de Herramientas Complementarias
+
+### ESLint (Linting de código)
+
+Configura ESLint para mantener consistencia en el código:
+
+```bash
+# Configuración interactiva
+npx eslint --init
+```
+
+O crea manualmente `.eslintrc.json`:
+
+```json
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "rules": {
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "no-unused-vars": "error",
+    "no-console": "warn"
+  }
+}
+```
+
+### Commitlint (Validación de mensajes)
+
+Crea `commitlint.config.js` en la raíz:
+
+```javascript
+module.exports = {
+  extends: ["@commitlint/config-conventional"],
+};
+```
+
+Esto enforza mensajes de commit como:
+
+- `feat: nueva funcionalidad`
+- `fix: corrección de bug`
+- `docs: actualización de documentación`
+- `style: cambios de formato`
+- `refactor: refactorización de código`
+- `test: agregar o modificar pruebas`
+- `chore: tareas de mantenimiento`
+
+## Configuración de Git Hooks con Husky
+
+### Hook commit-msg (Validar mensajes de commit)
+
+```bash
+echo "npx --no -- commitlint --edit \$1" > .husky/commit-msg
+git add .husky/commit-msg
+```
+
+### Hook pre-commit (Antes del commit)
+
+```bash
+echo "npm run pre-commit" > .husky/pre-commit
+git add .husky/pre-commit
+```
+
+### Hook pre-push (Antes del push)
+
+```bash
+echo "npm run pre-push" > .husky/pre-push
+git add .husky/pre-push
+```
+
+## Integración con lint-staged (Recomendado)
+
+Para hacer los hooks más rápidos, usa `lint-staged` que solo procesa archivos en staging:
+
+```bash
+npm install --save-dev lint-staged prettier
+```
+
+```json
+// package.json
+{
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{css,scss,json,md}": ["prettier --write"]
+  },
+  "scripts": {
+    "prepare": "husky install"
+  }
+}
+```
+
+```bash
+# Hook optimizado con lint-staged
+echo "npx lint-staged" > .husky/pre-commit
+```
+
+## Ejemplos de Archivos de Prueba
+
+### Archivo math.js
+
+```javascript
+function isPair(number) {
+  return number % 2 === 0;
+}
+
+function sum(a, b) {
+  return a + b;
+}
+
+module.exports = {
+  isPair,
+  sum,
+};
+```
+
+### Archivo de pruebas **tests**/math.test.js
+
+```javascript
+const { isPair, sum } = require("../math.js");
+
+describe("Math operations", () => {
+  test("should identify even numbers", () => {
+    expect(isPair(2)).toBe(true);
+    expect(isPair(4)).toBe(true);
+    expect(isPair(5)).toBe(false);
+  });
+
+  test("should sum two numbers correctly", () => {
+    expect(sum(2, 3)).toBe(5);
+    expect(sum(-1, 1)).toBe(0);
+  });
+});
+```
+
+## Configuraciones Avanzadas
+
+### Hook condicional por rama
+
+```bash
+# .husky/pre-push
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+branch=$(git branch --show-current)
+
+if [ "$branch" = "main" ] || [ "$branch" = "master" ]; then
+  echo "🚨 Rama protegida detectada: $branch"
+  echo "Ejecutando validaciones completas..."
+  npm run test:full
+  npm run build
+  npm audit --audit-level moderate
+else
+  echo "🔍 Rama de feature - validaciones básicas..."
+  npm run test:unit
+fi
+```
+
+### Validación de archivos sensibles
+
+```bash
+# .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Verificar datos sensibles
+if git diff --cached | grep -E "(password|secret|key|token|api_key)" > /dev/null; then
+  echo "🚨 Posibles datos sensibles detectados!"
+  echo "Archivos con datos sensibles:"
+  git diff --cached | grep -E "(password|secret|key|token|api_key)"
+  exit 1
+fi
+
+# Verificar archivos grandes
+large_files=$(git diff --cached --name-only | xargs ls -la 2>/dev/null | awk '$5 > 1000000 { print $9 " (" $5 " bytes)" }')
+if [ -n "$large_files" ]; then
+  echo "⚠️ Archivos grandes detectados:"
+  echo "$large_files"
+  echo "¿Estás seguro de que quieres commitear estos archivos?"
+fi
+
+# Ejecutar linting normal
+npx lint-staged
+```
+
+### Hook post-merge para mantenimiento
+
+```bash
+# .husky/post-merge
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔄 Ejecutando tareas post-merge..."
+
+# Verificar cambios en package.json
+if git diff HEAD@{1} --name-only | grep -q "package.json"; then
+  echo "📦 package.json cambió - instalando dependencias..."
+  npm install
+fi
+
+# Verificar migraciones de base de datos
+if [ -d "migrations" ] && git diff HEAD@{1} --name-only | grep -q "migrations/"; then
+  echo "🗄️ Nuevas migraciones detectadas"
+  echo "💡 Considera ejecutar: npm run migrate"
+fi
+
+echo "✅ Tareas post-merge completadas"
+```
+
+## Mejores Prácticas
+
+### 1. Mantén los hooks rápidos
+
+```bash
+# ❌ Evita hooks lentos
+npm run test:e2e        # 5+ minutos
+npm run build:production # 3+ minutos
+
+# ✅ Prefiere hooks rápidos
+npx lint-staged         # 10-30 segundos
+npm run test:unit       # 30-60 segundos
+npm run type-check      # 15-30 segundos
+```
+
+### 2. Proporciona feedback claro
+
+```bash
+# .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Ejecutando validaciones pre-commit..."
+
+if ! npx lint-staged; then
+  echo ""
+  echo "❌ Linting falló!"
+  echo "💡 Ejecuta 'npm run lint:fix' para corregir automáticamente"
+  echo "💡 O omite con 'git commit --no-verify' (no recomendado)"
+  exit 1
+fi
+
+if ! npm run test:staged; then
+  echo ""
+  echo "❌ Tests fallaron!"
+  echo "💡 Revisa los errores arriba y corrige antes de commitear"
+  exit 1
+fi
+
+echo "✅ Todas las validaciones pasaron - commit permitido!"
+```
+
+### 3. Documentación en el repositorio
+
+Crea un archivo `HUSKY.md` en tu proyecto:
+
+````markdown
+# Git Hooks con Husky
+
+## Hooks configurados
+
+### pre-commit
+
+- Ejecuta ESLint con auto-fix
+- Formatea código con Prettier
+- Ejecuta tests unitarios relacionados
+
+### pre-push
+
+- Ejecuta build de producción
+- Verifica cobertura de tests
+- Auditoría de seguridad
+
+### commit-msg
+
+- Valida formato de commit (Conventional Commits)
+
+## Omitir hooks (solo emergencias)
+
+```bash
+git commit --no-verify -m "hotfix: arreglo crítico"
+```
+````
+
+## Solución de problemas
+
+Si los hooks fallan:
+
+1. Ejecuta manualmente: `npm run lint:fix`
+2. Ejecuta tests: `npm test`
+3. Verifica permisos: `chmod +x .husky/*`
+
+````
+
+### 4. Scripts de setup para nuevos desarrolladores
+
+```json
+// package.json
+{
+  "scripts": {
+    "setup": "npm install && npm run setup:hooks",
+    "setup:hooks": "npm run hooks:all && echo '✅ Git hooks configurados'",
+    "hooks:all": "npm run hooks:pre-commit && npm run hooks:pre-push && npm run hooks:commit-msg",
+    "hooks:pre-commit": "echo 'npx lint-staged' > .husky/pre-commit",
+    "hooks:pre-push": "echo 'npm run build && npm run test:coverage' > .husky/pre-push",
+    "hooks:commit-msg": "echo 'npx --no -- commitlint --edit \\$1' > .husky/commit-msg",
+    "prepare": "husky install"
+  }
+}
+````
+
+## Debugging y Troubleshooting
+
+### Problemas comunes
+
+#### Husky no se ejecuta
+
+```bash
+# Verificar instalación
+ls -la .husky/
+cat .husky/pre-commit
+
+# Verificar permisos
+chmod +x .husky/*
+
+# Verificar configuración
+cat package.json | grep prepare
+```
+
+#### Hooks fallan en CI/CD
+
+```bash
+# .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Detectar entorno CI
+if [ -n "$CI" ]; then
+  echo "🤖 Entorno CI detectado - omitiendo hooks"
+  exit 0
+fi
+
+# Ejecutar validaciones normales
+npx lint-staged
+```
+
+#### Error "command not found"
+
+```bash
+# Verificar que Node.js y npm estén en PATH
+which node
+which npm
+
+# En el hook, usar rutas absolutas si es necesario
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+export PATH="$PATH:/usr/local/bin"
+npx lint-staged
+```
+
+### Logging para debugging
+
+```bash
+# .husky/pre-commit
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Habilitar debug
+set -x
+
+echo "Debug info:"
+echo "PWD: $(pwd)"
+echo "Node: $(node --version)"
+echo "NPM: $(npm --version)"
+echo "Staged files:"
+git diff --cached --name-only
+
+# Tu lógica aquí
+npx lint-staged
+```
+
+## Flujo de Trabajo Completo
+
+### 1. Desarrollo normal
+
+```bash
+# Modificar archivos
+echo "console.log('test')" > test.js
+
+# Agregar al staging
+git add .
+
+# Commit (triggers pre-commit hook)
+git commit -m "feat: agregar archivo de test"
+# ✅ Ejecuta: lint + format + tests
+
+# Push (triggers pre-push hook)
+git push origin feature/nueva-funcionalidad
+# ✅ Ejecuta: build + tests de integración
+```
+
+### 2. Si las validaciones fallan
+
+```bash
+# Commit falla por linting
+git commit -m "feat: nueva función"
+# ❌ ESLint encontró errores
+
+# Corregir automáticamente
+npm run lint:fix
+
+# Intentar commit nuevamente
+git add .
+git commit -m "feat: nueva función"
+# ✅ Ahora pasa todas las validaciones
+```
+
+### 3. Bypass para emergencias
+
+```bash
+# Solo en casos excepcionales
+git commit --no-verify -m "hotfix: arreglo crítico de producción"
+```
+
+## Configuración para Diferentes Entornos
+
+### Desarrollo local
+
+```bash
+# Hooks completos para calidad máxima
+echo "npx lint-staged && npm run test:unit && npm run type-check" > .husky/pre-commit
+```
+
+### CI/CD
+
+```bash
+# .husky/pre-commit
+if [ "$CI" = "true" ]; then
+  echo "Skipping pre-commit in CI"
+  exit 0
+fi
+npx lint-staged
+```
+
+### Equipos grandes
+
+```bash
+# Validaciones paralelas para velocidad
+# .husky/pre-commit
+{
+  npx lint-staged &
+  npm run type-check &
+  npm run test:staged &
+  wait
+} || exit 1
+```
+
+## Conclusión
+
+Husky es una herramienta esencial para mantener la calidad del código en proyectos modernos. Su capacidad para automatizar validaciones críticas en el momento preciso lo convierte en un guardián silencioso pero poderoso de tu codebase.
+
+**Puntos clave para recordar:**
+
+- **Empieza simple:** Un hook básico es mejor que no tener nada
+- **Mantén velocidad:** Hooks lentos frustran a los developers
+- **Sé consistente:** Todos los commits deben pasar las mismas validaciones
+- **Documenta claramente:** Los nuevos miembros deben entender cada hook
+- **Permite excepciones:** `--no-verify` para emergencias reales
+
+Con Husky bien configurado, tu equipo puede enfocarse en escribir código sabiendo que la calidad está garantizada automáticamente. Es una inversión pequeña con retornos enormes en estabilidad y confianza.
+
+¿Ya usas Husky en tus proyectos? ¿Qué hooks consideras más útiles? Comparte tu experiencia en los comentarios.
+
+---
+
+_¿Te resultó útil esta guía? Compártela con otros developers y no olvides seguir el blog para más contenido sobre herramientas de desarrollo._
