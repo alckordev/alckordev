@@ -163,7 +163,7 @@ This enforces commit messages like:
 ### commit-msg Hook (Validate commit messages)
 
 ```bash
-echo "npx --no -- commitlint --edit \$1" > .husky/commit-msg
+echo "npx --no-install commitlint --edit \$1" > .husky/commit-msg
 git add .husky/commit-msg
 ```
 
@@ -414,7 +414,7 @@ If hooks fail:
     "hooks:all": "npm run hooks:pre-commit && npm run hooks:pre-push && npm run hooks:commit-msg",
     "hooks:pre-commit": "echo 'npx lint-staged' > .husky/pre-commit",
     "hooks:pre-push": "echo 'npm run build && npm run test:coverage' > .husky/pre-push",
-    "hooks:commit-msg": "echo 'npx --no -- commitlint --edit \\$1' > .husky/commit-msg",
+    "hooks:commit-msg": "echo 'npx --no-install commitlint --edit \\$1' > .husky/commit-msg",
     "prepare": "husky install"
   }
 }
