@@ -1,5 +1,6 @@
 import { Frontmatter } from "@/types/mdx";
-import fs from "fs";
+import fs from "fs/promises";
+import fsSync from "fs";
 import { getFrontmatter } from "next-mdx-remote-client/utils";
 import path from "path";
 import readingTime from "reading-time";
@@ -10,10 +11,20 @@ const CONTENT_DIR = path.join(process.cwd(), "content");
 
 const mdxPath = (slug: string) => path.join(CONTENT_DIR, `${slug}.mdx`);
 
-const readMdx = (slug: string): string | undefined => {
+const readMdxAsync = async (slug: string): Promise<string | undefined> => {
   const filePath = mdxPath(slug);
-  return fs.existsSync(filePath)
-    ? fs.readFileSync(filePath, "utf8")
+  try {
+    await fs.access(filePath);
+    return await fs.readFile(filePath, "utf8");
+  } catch {
+    return undefined;
+  }
+};
+
+const readMdxSync = (slug: string): string | undefined => {
+  const filePath = mdxPath(slug);
+  return fsSync.existsSync(filePath)
+    ? fsSync.readFileSync(filePath, "utf8")
     : undefined;
 };
 
@@ -24,10 +35,10 @@ const isPostInfo = (value: Frontmatter | undefined): value is Frontmatter =>
 
 export const getPostSource = async (
   slug: string,
-): Promise<string | undefined> => readMdx(slug);
+): Promise<string | undefined> => readMdxAsync(slug);
 
 export const getPostInfo = (slug: string): Frontmatter | undefined => {
-  const source = readMdx(slug);
+  const source = readMdxSync(slug);
   if (!source) return undefined;
 
   const { frontmatter } = getFrontmatter<Frontmatter>(source);
@@ -38,17 +49,30 @@ export const getPostInfo = (slug: string): Frontmatter | undefined => {
   };
 };
 
+const slugsCache = new Map<string, { slugs: string[]; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000;
+
 export const listSlugs = (dir = ""): string[] => {
+  const cacheKey = dir;
+  const cached = slugsCache.get(cacheKey);
+
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.slugs;
+  }
+
   const targetDir = path.join(CONTENT_DIR, dir);
 
-  if (!fs.existsSync(targetDir)) {
+  if (!fsSync.existsSync(targetDir)) {
     return [];
   }
 
-  return fs
+  const slugs = fsSync
     .readdirSync(targetDir)
     .filter((f) => f.endsWith(".mdx"))
     .map((f) => path.posix.join(dir, path.basename(f, ".mdx")));
+
+  slugsCache.set(cacheKey, { slugs, timestamp: Date.now() });
+  return slugs;
 };
 
 export const getPostsInfo = (dir = ""): Frontmatter[] => {

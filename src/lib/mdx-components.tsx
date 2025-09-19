@@ -6,6 +6,35 @@ import { BundledLanguage } from "shiki/bundle/full";
 import { cn } from "./cn";
 import { Blockquote } from "@/components/blockquote";
 import { MermaidGraph } from "@/components/mermaid";
+import { Suspense } from "react";
+
+function CodeSkeleton() {
+  return (
+    <div className="my-6 animate-pulse rounded-lg bg-neutral-200 p-4 [.dark_&]:bg-neutral-800">
+      <div className="space-y-2">
+        <div className="h-4 w-3/4 rounded bg-neutral-300 [.dark_&]:bg-neutral-700" />
+        <div className="h-4 w-1/2 rounded bg-neutral-300 [.dark_&]:bg-neutral-700" />
+        <div className="h-4 w-5/6 rounded bg-neutral-300 [.dark_&]:bg-neutral-700" />
+      </div>
+    </div>
+  );
+}
+
+async function LazyCodeBlock({
+  language,
+  code,
+}: {
+  language: BundledLanguage;
+  code: string;
+}) {
+  const highlightedCode = await highlight(code, language);
+
+  return (
+    <CodeBlock lang={language} initial={highlightedCode}>
+      {code}
+    </CodeBlock>
+  );
+}
 
 export const components: MDXComponents = {
   // Links
@@ -199,19 +228,21 @@ export const components: MDXComponents = {
     </div>
   ),
 
-  code: async ({ children, className, ...props }) => {
+  code: ({ children, className, ...props }) => {
     const language = className?.replace(/language-/, "") as BundledLanguage;
 
     if (language && typeof children === "string") {
-      const initial = await highlight(children, language);
-
       if (language === "mermaid") {
-        return <MermaidGraph graphCode={children} />;
+        return (
+          <Suspense fallback={<CodeSkeleton />}>
+            <MermaidGraph graphCode={children} />
+          </Suspense>
+        );
       } else {
         return (
-          <CodeBlock lang={language} initial={initial}>
-            {children}
-          </CodeBlock>
+          <Suspense fallback={<CodeSkeleton />}>
+            <LazyCodeBlock language={language} code={children} />
+          </Suspense>
         );
       }
     }
@@ -241,14 +272,4 @@ export const components: MDXComponents = {
       {children}
     </em>
   ),
-
-  // Images
-  // img: ({ src, alt, ...props }) => (
-  //   <img
-  //     src={src}
-  //     alt={alt}
-  //     className="border-border/50 bg-secondary/20 my-6 rounded-lg border shadow-sm transition-shadow hover:shadow-md"
-  //     {...props}
-  //   />
-  // ),
 };

@@ -65,7 +65,12 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({ graphCode }) => {
     renderMermaid();
   }, [getGraphWithConfig]);
 
-  return <div key={graphCode} className="mermaid" />;
+  return (
+    <div
+      key={graphCode}
+      className="mermaid group my-6 overflow-hidden rounded-lg border border-neutral-500/10 bg-neutral-100 p-4 shadow-lg [.dark_&]:bg-neutral-900 [.dark_&]:shadow-black/20"
+    />
+  );
 };
 
 export { MermaidGraph };
