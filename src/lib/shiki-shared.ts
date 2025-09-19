@@ -1,9 +1,7 @@
-import type { JSX } from "react";
-import type { BundledLanguage } from "shiki/bundle/web";
+import { Fragment, JSX } from "react";
+import { BundledLanguage, codeToHast } from "shiki/bundle/full";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
-import { Fragment } from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
-import { codeToHast } from "shiki/bundle/web";
 
 export async function highlight(
   code: string,
