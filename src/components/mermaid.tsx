@@ -1,33 +1,18 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import mermaid from "mermaid";
 import { useTheme } from "next-themes";
 
 type MermaidGraphProps = {
   graphCode: string;
-  paths?: string[];
 };
 
-const MermaidGraph: React.FC<MermaidGraphProps> = ({
-  graphCode,
-  paths = [],
-}) => {
+const MermaidGraph: React.FC<MermaidGraphProps> = ({ graphCode }) => {
   const { theme } = useTheme();
 
-  const getGraphWithConfig = () => {
-    const config = `
-    ---
-      config:
-        theme: '${theme === "dark" ? "dark" : "neutral"}'
-    ---\n
-    `;
-    return config + generateStyledGraphCode();
-  };
-
-  const generateStyledGraphCode = () => {
-    let styledGraphCode = graphCode;
-    let currentLinkIndex = 0;
+  const generateStyledGraphCode = useCallback(() => {
+    const styledGraphCode = graphCode;
     const linkSequence: string[] = [];
 
     // Assign indices to each link in the Mermaid graph
@@ -39,37 +24,21 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({
         const toNode = match[3].replace(/\(\(.+\)\)/, ""); // Remove extra parentheses
         const linkKey = `${fromNode}->${label}->${toNode}`;
         linkSequence.push(linkKey);
-        currentLinkIndex += 1;
       }
     });
 
-    // Process each path and apply styling
-    paths.forEach((path) => {
-      const steps = path.split(" -> ");
-      const color = "#00FF00"; // Green for nodes
-      const edgeColor = "#0000FF"; // Blue for edges
-      for (let i = 0; i < steps.length - 2; i += 2) {
-        const fromNode = steps[i];
-        const label = steps[i + 1];
-        const toNode = steps[i + 2];
-        // Apply styles to the nodes
-        styledGraphCode += `
-          style ${fromNode} fill:${color},stroke:#000000,stroke-width:2px;
-          style ${toNode} fill:${color},stroke:#000000,stroke-width:2px;
-        `;
-        // Create the linkKey and try to find it
-        const linkKey = `${fromNode}->${label}->${toNode}`;
-        const linkIndex = linkSequence.findIndex((link) => link === linkKey);
-        // Apply the link style if we find the index
-        if (linkIndex !== -1) {
-          styledGraphCode += `
-            linkStyle ${linkIndex} stroke:${edgeColor},stroke-width:2px;
-          `;
-        }
-      }
-    });
     return styledGraphCode;
-  };
+  }, [graphCode]);
+
+  const getGraphWithConfig = useCallback(() => {
+    const config = `
+    ---
+      config:
+        theme: '${theme === "dark" ? "dark" : "neutral"}'
+    ---\n
+    `;
+    return config + generateStyledGraphCode();
+  }, [theme, generateStyledGraphCode]);
 
   useEffect(() => {
     // Initialize Mermaid only on the client
@@ -94,7 +63,7 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({
       }
     };
     renderMermaid();
-  }, [graphCode, paths]);
+  }, [getGraphWithConfig]);
 
   return <div key={graphCode} className="mermaid" />;
 };
