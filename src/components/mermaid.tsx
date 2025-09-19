@@ -7,15 +7,11 @@ import { useTheme } from "next-themes";
 type MermaidGraphProps = {
   graphCode: string;
   paths?: string[];
-  onNodeClick?: (node: string) => void;
-  onEdgeClick?: (edge: string) => void;
 };
 
 const MermaidGraph: React.FC<MermaidGraphProps> = ({
   graphCode,
   paths = [],
-  onNodeClick,
-  onEdgeClick,
 }) => {
   const { theme } = useTheme();
 
@@ -78,31 +74,6 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({
   useEffect(() => {
     // Initialize Mermaid only on the client
     mermaid.initialize({ startOnLoad: true });
-
-    // Add event listeners for node and edge clicks
-    const svgElement = document.querySelector(".mermaid");
-    if (svgElement) {
-      svgElement.addEventListener("click", (event) => {
-        const target = event.target as HTMLElement;
-        if (target.closest(".node")) {
-          const nodeId = target.closest(".node")?.id;
-          if (onNodeClick && nodeId) {
-            onNodeClick(nodeId);
-          }
-        } else if (
-          target.closest(".edgeLabel") ||
-          target.closest(".edgePaths")
-        ) {
-          const edgeLabel = target.closest(".edgeLabel")?.textContent;
-          const edgePathId = target.closest("path.edge-thickness-normal")?.id;
-          if (edgeLabel) {
-            if (onEdgeClick) onEdgeClick(edgeLabel);
-          } else if (edgePathId) {
-            if (onEdgeClick) onEdgeClick(edgePathId);
-          }
-        }
-      });
-    }
   }, []);
 
   useEffect(() => {
