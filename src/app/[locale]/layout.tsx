@@ -8,6 +8,7 @@ import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { cn } from "@/lib/cn";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const sans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -58,6 +59,7 @@ export default async function Layout({ children, params }: Props) {
               <Footer />
 
               <Analytics />
+              <SpeedInsights />
             </div>
           </ThemeProvider>
         </NextIntlClientProvider>
