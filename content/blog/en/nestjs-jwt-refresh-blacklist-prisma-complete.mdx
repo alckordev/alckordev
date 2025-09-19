@@ -14,6 +14,7 @@ topics:
   - name: Security
     slug: security
 featured: true
+highlighted: true
 ---
 
 Authentication is the fundamental pillar of any modern web application. In this tutorial, you'll learn how to implement an enterprise-level authentication system in NestJS that goes beyond basic JWT, implementing advanced security measures and industry best practices.
@@ -66,6 +67,9 @@ npm install bcrypt class-validator class-transformer
 # Install Prisma
 npm install prisma @prisma/client
 
+# Install TypeScript-native time utility
+npm install @iscodex/ms-parser
+
 # Install development types
 npm install --save-dev @types/bcrypt @types/passport-jwt
 ```
@@ -75,7 +79,7 @@ npm install --save-dev @types/bcrypt @types/passport-jwt
 ```dotenv
 # .env
 DATABASE_URL="postgresql://user:password@localhost:5432/database?schema=public"
-JWT_SECRET="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+JWT_SECRET="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 JWT_EXPIRES_IN="5m"
 JWT_REFRESH_EXPIRES_IN="15d"
 ```
@@ -203,71 +207,21 @@ import { DatabaseService } from "./database.service";
 export class DatabaseModule {}
 ```
 
-## Custom Time Utility
+## Time Utility with @iscodex/ms-parser
 
-### TypeScript-native ms library
+We'll use the `@iscodex/ms-parser` package that provides TypeScript-native time parsing:
 
-```typescript
-// src/lib/ms.ts
-const s = 1000;
-const m = s * 60;
-const h = m * 60;
-const d = h * 24;
-const w = d * 7;
-const y = d * 365.25;
-
-export type StringValue =
-  | `${number}`
-  | `${number}${"ms" | "s" | "m" | "h" | "d" | "w" | "y"}`
-  | `${number} ${"ms" | "s" | "m" | "h" | "d" | "w" | "y"}`;
-
-function ms(value: StringValue): number;
-function ms(value: number): string;
-function ms(value: StringValue | number): string | number {
-  if (typeof value === "string") {
-    return parse(value);
-  }
-  return format(value);
-}
-
-function parse(str: string): number {
-  const match = /^(-?(?:\d+)?\.?\d+) *(ms|s|m|h|d|w|y)?$/i.exec(str);
-  if (!match) return 0;
-
-  const n = parseFloat(match[1]);
-  const type = (match[2] || "ms").toLowerCase();
-
-  switch (type) {
-    case "y":
-      return n * y;
-    case "w":
-      return n * w;
-    case "d":
-      return n * d;
-    case "h":
-      return n * h;
-    case "m":
-      return n * m;
-    case "s":
-      return n * s;
-    case "ms":
-      return n;
-    default:
-      return 0;
-  }
-}
-
-function format(ms: number): string {
-  const msAbs = Math.abs(ms);
-  if (msAbs >= d) return Math.round(ms / d) + "d";
-  if (msAbs >= h) return Math.round(ms / h) + "h";
-  if (msAbs >= m) return Math.round(ms / m) + "m";
-  if (msAbs >= s) return Math.round(ms / s) + "s";
-  return ms + "ms";
-}
-
-export default ms;
+```bash
+npm install @iscodex/ms-parser
 ```
+
+This package was created to solve the TypeScript type issues present in the original `ms` library, providing:
+
+- **Native TypeScript types** without needing `@types/*`
+- **Bidirectional parsing** (string ↔ milliseconds)
+- **Complete unit support** (ms, s, m, h, d, w, y)
+
+We'll use it in the `RefreshTokenService` to calculate expiration dates:
 
 ## Token Blacklist System
 
@@ -331,7 +285,7 @@ import { ConfigService } from "@nestjs/config";
 import { DatabaseService } from "~/database/database.service";
 import * as crypto from "crypto";
 import * as bcrypt from "bcrypt";
-import ms, { StringValue } from "~/lib/ms";
+import ms, { StringValue } from "@iscodex/ms-parser";
 
 @Injectable()
 export class RefreshTokenService {
