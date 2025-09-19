@@ -1,7 +1,7 @@
 "use client";
 
 import { JSX, useLayoutEffect, useState } from "react";
-import { BundledLanguage } from "shiki/bundle/web";
+import { BundledLanguage } from "shiki/bundle/full";
 import { highlight } from "@/lib/shiki-shared";
 import { CopyButton } from "./copy-button";
 import { RiLoaderLine } from "@remixicon/react";

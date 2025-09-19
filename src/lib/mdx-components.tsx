@@ -2,9 +2,10 @@ import { MDXComponents } from "next-mdx-remote-client/rsc";
 import { CodeBlock } from "@/components/code-block";
 import { highlight } from "@/lib/shiki-shared";
 import Link from "next/link";
-import { BundledLanguage } from "shiki/bundle/web";
+import { BundledLanguage } from "shiki/bundle/full";
 import { cn } from "./cn";
 import { Blockquote } from "@/components/blockquote";
+import { MermaidGraph } from "@/components/mermaid";
 
 export const components: MDXComponents = {
   // Links
@@ -203,11 +204,16 @@ export const components: MDXComponents = {
 
     if (language && typeof children === "string") {
       const initial = await highlight(children, language);
-      return (
-        <CodeBlock lang={language} initial={initial}>
-          {children}
-        </CodeBlock>
-      );
+
+      if (language === "mermaid") {
+        return <MermaidGraph graphCode={children} />;
+      } else {
+        return (
+          <CodeBlock lang={language} initial={initial}>
+            {children}
+          </CodeBlock>
+        );
+      }
     }
 
     return (
