@@ -87,7 +87,7 @@ export function Footer() {
             {t("blog")}
           </Link>
           <a
-            href="mailto:tu@email.com"
+            href="mailto:alckordev@gmail.com"
             className="hover:text-accent-500 text-sm transition-colors duration-200"
           >
             {t("contact")}
