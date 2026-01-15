@@ -1,20 +1,19 @@
-import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   /* config options here */
-  compress: true, // Habilitar compresión Gzip
-  poweredByHeader: false, // Remover X-Powered-By header
+  compress: true,
+  poweredByHeader: false,
   reactStrictMode: true,
-  swcMinify: true, // Ya viene por defecto pero asegurarse
+  // swcMinify: true,
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"
         ? { exclude: ["error", "warn"] }
-        : false, // Remover console.logs en producción (excepto error/warn)
+        : false,
   },
   experimental: {
-    optimizeCss: true, // Optimizar CSS
+    optimizeCss: true,
   },
   images: {
     remotePatterns: [
@@ -56,4 +55,9 @@ const nextConfig: NextConfig = {
 
 const withNextIntl = createNextIntlPlugin();
 
-export default withNextIntl(nextConfig);
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
+export default withBundleAnalyzer(withNextIntl(nextConfig));

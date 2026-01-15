@@ -2,7 +2,7 @@ import { MDXComponents } from "next-mdx-remote-client/rsc";
 import { CodeBlock } from "@/components/code-block";
 import { highlight } from "@/lib/shiki-shared";
 import Link from "next/link";
-import { BundledLanguage } from "shiki/bundle/full";
+import type { BundledLanguage } from "shiki/bundle/web";
 import { cn } from "./cn";
 import { Blockquote } from "@/components/blockquote";
 import { MermaidGraph } from "@/components/mermaid";
@@ -229,7 +229,7 @@ export const components: MDXComponents = {
   ),
 
   code: ({ children, className, ...props }) => {
-    const language = className?.replace(/language-/, "") as BundledLanguage;
+    const language = className?.replace(/language-/, "") as string;
 
     if (language && typeof children === "string") {
       if (language === "mermaid") {
@@ -241,7 +241,10 @@ export const components: MDXComponents = {
       } else {
         return (
           <Suspense fallback={<CodeSkeleton />}>
-            <LazyCodeBlock language={language} code={children} />
+            <LazyCodeBlock
+              language={language as BundledLanguage}
+              code={children}
+            />
           </Suspense>
         );
       }

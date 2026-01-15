@@ -37,20 +37,16 @@ export const getPostSource = async (
   slug: string,
 ): Promise<string | undefined> => readMdxAsync(slug);
 
-export const getPostInfo = (slug: string): Frontmatter | undefined => {
-  const source = readMdxSync(slug);
-  if (!source) return undefined;
-
-  const { frontmatter } = getFrontmatter<Frontmatter>(source);
-  return {
-    ...frontmatter,
-    slug: path.basename(slug, ".mdx"),
-    readingTime: readingTime(source).minutes,
-  };
-};
-
 const slugsCache = new Map<string, { slugs: string[]; timestamp: number }>();
-const CACHE_TTL = 5 * 60 * 1000;
+const frontmatterCache = new Map<
+  string,
+  {
+    data: Frontmatter;
+    timestamp: number;
+  }
+>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+const FRONTMATTER_CACHE_TTL = 10 * 60 * 1000; // 10 minutos
 
 export const listSlugs = (dir = ""): string[] => {
   const cacheKey = dir;
@@ -73,6 +69,28 @@ export const listSlugs = (dir = ""): string[] => {
 
   slugsCache.set(cacheKey, { slugs, timestamp: Date.now() });
   return slugs;
+};
+
+export const getPostInfo = (slug: string): Frontmatter | undefined => {
+  // Verificar caché de frontmatter
+  const cached = frontmatterCache.get(slug);
+  if (cached && Date.now() - cached.timestamp < FRONTMATTER_CACHE_TTL) {
+    return cached.data;
+  }
+
+  const source = readMdxSync(slug);
+  if (!source) return undefined;
+
+  const { frontmatter } = getFrontmatter<Frontmatter>(source);
+  const data = {
+    ...frontmatter,
+    slug: path.basename(slug, ".mdx"),
+    readingTime: readingTime(source).minutes,
+  };
+
+  // Guardar en caché
+  frontmatterCache.set(slug, { data, timestamp: Date.now() });
+  return data;
 };
 
 export const getPostsInfo = (dir = ""): Frontmatter[] => {
