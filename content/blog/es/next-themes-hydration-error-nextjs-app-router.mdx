@@ -8,7 +8,12 @@ topics:
 ---
 
 Los errores de **hydration** (o _hydration mismatch_) aparecen cuando el HTML renderizado en el servidor no coincide con lo que React pinta en el cliente.  
-Con **next-themes** y **App Router** (Next 13/14) esto sucede porque el componente `<ThemeProvider />` lee `window.matchMedia`, `localStorage`, etc.
+Con **next-themes** y **App Router** (Next 13/14) esto sucede porque el componente `<ThemeProvider />` lee `window.matchMedia`, `localStorage`, y otras APIs exclusivas del navegador durante el renderizado del servidor.  
+El resultado usual es una advertencia en la consola como:
+
+```
+Warning: Prop `className` did not match. Server: "light" Client: "dark"
+```
 
 A continuación veremos:
 
