@@ -1,7 +1,7 @@
 ---
 title: "Clean Architecture en Frontend: Guía Completa con React"
 abstract: "Aprende a aplicar Clean Architecture en proyectos frontend con React. Guía completa con ejemplos prácticos, estructura de carpetas, casos de uso y mejores prácticas para construir aplicaciones escalables y mantenibles."
-publishedAt: "2026-01-15 19:00:00"
+publishedAt: "2026-01-15 15:11:00"
 topics:
   - name: Clean Architecture
     slug: clean-architecture
@@ -126,45 +126,45 @@ Diferentes desarrolladores pueden trabajar en diferentes capas simultáneamente 
 
 Una estructura típica de Clean Architecture en React se vería así:
 
-```
+```cpp
 src/
 ├── domain/                    # Capa de Dominio
-│   ├── entities/            # Entidades de negocio
+│   ├── entities/              # Entidades de negocio
 │   │   └── user.entity.ts
-│   ├── repositories/        # Contratos (interfaces)
+│   ├── repositories/          # Contratos (interfaces)
 │   │   └── user.repository.port.ts
-│   ├── errors/              # Errores de dominio
+│   ├── errors/                # Errores de dominio
 │   │   └── user.errors.ts
-│   └── shared/              # Tipos compartidos
+│   └── shared/                # Tipos compartidos
 │       └── types/
 │
-├── application/              # Capa de Aplicación
-│   ├── use-cases/          # Casos de uso
+├── application/               # Capa de Aplicación
+│   ├── use-cases/             # Casos de uso
 │   │   └── users/
 │   │       └── get-users-list.use-case.ts
-│   ├── dto/                # Data Transfer Objects
+│   ├── dto/                   # Data Transfer Objects
 │   │   └── user.dto.ts
-│   ├── mappers/            # Convertidores DTO <-> Entity
+│   ├── mappers/               # Convertidores DTO <-> Entity
 │   │   └── user.mapper.ts
-│   └── validators/         # Validaciones
+│   └── validators/            # Validaciones
 │
-├── infrastructure/          # Capa de Infraestructura
-│   ├── repositories/       # Implementaciones concretas
+├── infrastructure/            # Capa de Infraestructura
+│   ├── repositories/          # Implementaciones concretas
 │   │   └── user.repository.adapter.ts
-│   ├── http/              # Cliente HTTP
+│   ├── http/                  # Cliente HTTP
 │   │   └── axios-client.adapter.ts
-│   └── storage/           # Almacenamiento
+│   └── storage/               # Almacenamiento
 │       └── token-storage.adapter.ts
 │
-└── presentation/           # Capa de Presentación
-    ├── pages/             # Páginas/vistas
+└── presentation/              # Capa de Presentación
+    ├── pages/                 # Páginas/vistas
     │   └── users/
     │       └── index.tsx
-    ├── components/        # Componentes reutilizables
-    ├── hooks/            # Hooks de presentación
+    ├── components/            # Componentes reutilizables
+    ├── hooks/                 # Hooks de presentación
     │   └── users/
     │       └── use-users.ts
-    └── providers/        # Context providers
+    └── providers/             # Context providers
         └── user-service.provider.tsx
 ```
 

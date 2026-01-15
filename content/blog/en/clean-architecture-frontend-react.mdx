@@ -1,7 +1,7 @@
 ---
 title: "Clean Architecture in Frontend: Complete Guide with React"
 abstract: "Learn how to apply Clean Architecture in frontend projects with React. Complete guide with practical examples, folder structure, use cases, and best practices for building scalable and maintainable applications."
-publishedAt: "2026-01-15 19:00:00"
+publishedAt: "2026-01-15 15:11:00"
 topics:
   - name: Clean Architecture
     slug: clean-architecture
@@ -126,45 +126,45 @@ Different developers can work on different layers simultaneously without frequen
 
 A typical Clean Architecture structure in React would look like this:
 
-```
+```cpp
 src/
 ├── domain/                    # Domain Layer
-│   ├── entities/            # Business entities
+│   ├── entities/              # Business entities
 │   │   └── user.entity.ts
-│   ├── repositories/        # Contracts (interfaces)
+│   ├── repositories/          # Contracts (interfaces)
 │   │   └── user.repository.port.ts
-│   ├── errors/              # Domain errors
+│   ├── errors/               # Domain errors
 │   │   └── user.errors.ts
-│   └── shared/              # Shared types
+│   └── shared/               # Shared types
 │       └── types/
 │
-├── application/              # Application Layer
-│   ├── use-cases/          # Use cases
+├── application/               # Application Layer
+│   ├── use-cases/            # Use cases
 │   │   └── users/
 │   │       └── get-users-list.use-case.ts
-│   ├── dto/                # Data Transfer Objects
+│   ├── dto/                  # Data Transfer Objects
 │   │   └── user.dto.ts
-│   ├── mappers/            # DTO <-> Entity converters
+│   ├── mappers/              # DTO <-> Entity converters
 │   │   └── user.mapper.ts
-│   └── validators/         # Validations
+│   └── validators/           # Validations
 │
-├── infrastructure/          # Infrastructure Layer
-│   ├── repositories/       # Concrete implementations
+├── infrastructure/            # Infrastructure Layer
+│   ├── repositories/         # Concrete implementations
 │   │   └── user.repository.adapter.ts
-│   ├── http/              # HTTP client
+│   ├── http/                 # HTTP client
 │   │   └── axios-client.adapter.ts
-│   └── storage/           # Storage
+│   └── storage/              # Storage
 │       └── token-storage.adapter.ts
 │
-└── presentation/           # Presentation Layer
-    ├── pages/             # Pages/views
+└── presentation/             # Presentation Layer
+    ├── pages/                 # Pages/views
     │   └── users/
     │       └── index.tsx
-    ├── components/        # Reusable components
-    ├── hooks/            # Presentation hooks
+    ├── components/            # Reusable components
+    ├── hooks/                # Presentation hooks
     │   └── users/
     │       └── use-users.ts
-    └── providers/        # Context providers
+    └── providers/             # Context providers
         └── user-service.provider.tsx
 ```
 
