@@ -3,6 +3,19 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  compress: true, // Habilitar compresión Gzip
+  poweredByHeader: false, // Remover X-Powered-By header
+  reactStrictMode: true,
+  swcMinify: true, // Ya viene por defecto pero asegurarse
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false, // Remover console.logs en producción (excepto error/warn)
+  },
+  experimental: {
+    optimizeCss: true, // Optimizar CSS
+  },
   images: {
     remotePatterns: [
       {

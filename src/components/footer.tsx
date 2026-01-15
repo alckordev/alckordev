@@ -41,6 +41,8 @@ export function Footer() {
                 alt="Next.js logo"
                 width={16}
                 height={16}
+                loading="lazy" // Lazy load footer images
+                fetchPriority="low"
                 className="aspect-square object-contain"
               />
               <span>Next.js</span>
@@ -51,9 +53,11 @@ export function Footer() {
             <div className="flex items-center space-x-1">
               <Image
                 src="/assets/svg/tailwindcss.svg"
-                alt="Next.js logo"
+                alt="Tailwind CSS logo"
                 width={16}
                 height={16}
+                loading="lazy" // Lazy load footer images
+                fetchPriority="low"
                 className="aspect-square object-contain"
               />
               <span>Tailwind CSS</span>
@@ -64,9 +68,11 @@ export function Footer() {
             <div className="flex items-center space-x-1">
               <Image
                 src="/assets/svg/typescript.svg"
-                alt="Next.js logo"
+                alt="TypeScript logo"
                 width={16}
                 height={16}
+                loading="lazy" // Lazy load footer images
+                fetchPriority="low"
                 className="aspect-square object-contain"
               />
               <span>TypeScript</span>
