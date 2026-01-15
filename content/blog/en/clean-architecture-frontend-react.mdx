@@ -1,0 +1,757 @@
+---
+title: "Clean Architecture in Frontend: Complete Guide with React"
+abstract: "Learn how to apply Clean Architecture in frontend projects with React. Complete guide with practical examples, folder structure, use cases, and best practices for building scalable and maintainable applications."
+publishedAt: "2026-01-15 19:00:00"
+topics:
+  - name: Clean Architecture
+    slug: clean-architecture
+  - name: React
+    slug: react
+  - name: Frontend
+    slug: frontend
+  - name: Software Architecture
+    slug: software-architecture
+  - name: TypeScript
+    slug: typescript
+featured: true
+highlighted: true
+---
+
+# Clean Architecture in Frontend: Complete Guide with React
+
+## Introduction
+
+Clean Architecture, popularized by Robert C. Martin (Uncle Bob), is a software design approach that separates concerns into independent layers. Although traditionally associated with backend applications, its principles are equally valuable in frontend projects, especially in medium to large-scale React applications.
+
+In this article, we'll explore how to apply Clean Architecture in frontend projects, its advantages, and a practical step-by-step example using React.
+
+## What is Clean Architecture?
+
+Clean Architecture organizes code into concentric layers, where each layer has specific responsibilities and depends only on inner layers. Dependencies flow inward, keeping the domain (business core) independent of frameworks, libraries, and implementation details.
+
+### The Four Main Layers
+
+1. **Domain**: The core of the application. Contains business entities, business rules, and contracts (interfaces) for repositories.
+2. **Application**: Contains use cases that orchestrate business logic. Defines how domain entities interact.
+3. **Infrastructure**: Implements concrete adapters (HTTP, storage, databases) that satisfy contracts defined in the domain.
+4. **Presentation**: The UI layer. React components, hooks, forms, and all presentation logic.
+
+## Advantages of Clean Architecture in Frontend
+
+### 1. **Framework Independence**
+
+Your business logic doesn't depend on React, Vue, Angular, or any other framework. If you need to migrate or update, you only change the presentation layer.
+
+```typescript
+// ❌ Bad: Business logic coupled to React
+function UserList() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/users')
+      .then(res => res.json())
+      .then(data => setUsers(data));
+  }, []);
+
+  // Business logic mixed with UI
+  const activeUsers = users.filter(u => u.status === 'active');
+
+  return <div>{/* ... */}</div>;
+}
+
+// ✅ Good: Logic separated into layers
+// Domain: user.entity.ts
+export interface UserEntity {
+  id: string;
+  name: string;
+  email: string;
+  status: 'active' | 'inactive';
+}
+
+// Application: get-users-list.use-case.ts
+export function createGetUsersListUseCase(repository: UserRepository) {
+  return {
+    async execute(filters?: UserFilters): Promise<UserEntity[]> {
+      const users = await repository.findAll(filters);
+      return users.filter(u => u.status === 'active');
+    }
+  };
+}
+
+// Presentation: use-users.ts
+export function useUsers() {
+  const { getUsersListUseCase } = useUserService();
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: () => getUsersListUseCase.execute()
+  });
+}
+```
+
+### 2. **Improved Testability**
+
+Each layer can be tested independently. You can test business logic without needing to render components or make real HTTP calls.
+
+```typescript
+// Test the use case without external dependencies
+describe("GetUsersListUseCase", () => {
+  it("should filter active users", async () => {
+    const mockRepository = {
+      findAll: jest.fn().mockResolvedValue([
+        { id: "1", status: "active" },
+        { id: "2", status: "inactive" },
+      ]),
+    };
+
+    const useCase = createGetUsersListUseCase(mockRepository);
+    const result = await useCase.execute();
+
+    expect(result).toHaveLength(1);
+    expect(result[0].status).toBe("active");
+  });
+});
+```
+
+### 3. **Maintainability and Scalability**
+
+Code is organized in a predictable way. New developers can quickly understand where each piece of code goes. Adding new features is easier because you know exactly where to make changes.
+
+### 4. **Logic Reusability**
+
+Business logic can be reused in different contexts (web, mobile, desktop) without modifications.
+
+### 5. **Facilitates Team Work**
+
+Different developers can work on different layers simultaneously without frequent conflicts.
+
+## Folder Structure
+
+A typical Clean Architecture structure in React would look like this:
+
+```
+src/
+├── domain/                    # Domain Layer
+│   ├── entities/            # Business entities
+│   │   └── user.entity.ts
+│   ├── repositories/        # Contracts (interfaces)
+│   │   └── user.repository.port.ts
+│   ├── errors/              # Domain errors
+│   │   └── user.errors.ts
+│   └── shared/              # Shared types
+│       └── types/
+│
+├── application/              # Application Layer
+│   ├── use-cases/          # Use cases
+│   │   └── users/
+│   │       └── get-users-list.use-case.ts
+│   ├── dto/                # Data Transfer Objects
+│   │   └── user.dto.ts
+│   ├── mappers/            # DTO <-> Entity converters
+│   │   └── user.mapper.ts
+│   └── validators/         # Validations
+│
+├── infrastructure/          # Infrastructure Layer
+│   ├── repositories/       # Concrete implementations
+│   │   └── user.repository.adapter.ts
+│   ├── http/              # HTTP client
+│   │   └── axios-client.adapter.ts
+│   └── storage/           # Storage
+│       └── token-storage.adapter.ts
+│
+└── presentation/           # Presentation Layer
+    ├── pages/             # Pages/views
+    │   └── users/
+    │       └── index.tsx
+    ├── components/        # Reusable components
+    ├── hooks/            # Presentation hooks
+    │   └── users/
+    │       └── use-users.ts
+    └── providers/        # Context providers
+        └── user-service.provider.tsx
+```
+
+## Step-by-Step Example: User Management Module
+
+Let's build a complete user management module following Clean Architecture.
+
+### Step 1: Define the Domain Entity
+
+The entity represents the business concept, without external dependencies.
+
+```typescript
+// domain/entities/user.entity.ts
+
+export interface UserEntity {
+  id: string;
+  displayName: string;
+  email: string;
+  role: "ADMIN" | "USER" | "GUEST";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export function createUserEntity(data: {
+  id: string;
+  displayName: string;
+  email: string;
+  role: "ADMIN" | "USER" | "GUEST";
+  createdAt: Date;
+  updatedAt: Date;
+}): UserEntity {
+  // Domain validations
+  if (!data.email.includes("@")) {
+    throw new Error("Invalid email format");
+  }
+
+  return {
+    id: data.id,
+    displayName: data.displayName,
+    email: data.email,
+    role: data.role,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+}
+```
+
+### Step 2: Define the Repository Contract
+
+The repository is an interface that defines what operations we need, without specifying how they're implemented.
+
+```typescript
+// domain/repositories/user.repository.port.ts
+
+import type { UserEntity } from "../entities/user.entity";
+
+export interface UserFilters {
+  role?: UserEntity["role"];
+  search?: string;
+}
+
+export interface CreateUserData {
+  displayName: string;
+  email: string;
+  role: UserEntity["role"];
+  password: string;
+}
+
+export interface UpdateUserData {
+  displayName?: string;
+  email?: string;
+  role?: UserEntity["role"];
+}
+
+export interface UserRepository {
+  findAll(filters?: UserFilters): Promise<UserEntity[]>;
+  findById(id: string): Promise<UserEntity | null>;
+  create(data: CreateUserData): Promise<UserEntity>;
+  update(id: string, data: UpdateUserData): Promise<UserEntity>;
+  delete(id: string): Promise<void>;
+}
+```
+
+### Step 3: Create the Use Case
+
+The use case orchestrates business logic using the repository.
+
+```typescript
+// application/use-cases/users/get-users-list.use-case.ts
+
+import type { UserRepository } from "@/domain/repositories/user.repository.port";
+import type { UserEntity } from "@/domain/entities/user.entity";
+import type { UserFilters } from "@/domain/repositories/user.repository.port";
+
+export interface GetUsersListUseCase {
+  execute(filters?: UserFilters): Promise<UserEntity[]>;
+}
+
+export function createGetUsersListUseCase(
+  repository: UserRepository,
+): GetUsersListUseCase {
+  return {
+    async execute(filters?: UserFilters): Promise<UserEntity[]> {
+      // Business logic: get users and apply rules
+      const users = await repository.findAll(filters);
+
+      // Example: filter inactive users if needed
+      // This business logic is in the application layer
+      return users;
+    },
+  };
+}
+```
+
+### Step 4: Create DTOs and Mappers
+
+DTOs represent the data structure coming from the server. Mappers convert between DTOs and entities.
+
+```typescript
+// application/dto/user.dto.ts
+
+export interface UserDto {
+  id: string;
+  display_name: string;
+  email: string;
+  role: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateUserDto {
+  display_name: string;
+  email: string;
+  role: string;
+  password: string;
+}
+
+export interface UpdateUserDto {
+  display_name?: string;
+  email?: string;
+  role?: string;
+}
+
+// application/mappers/user.mapper.ts
+
+import type { UserEntity } from "@/domain/entities/user.entity";
+import type { UserDto, CreateUserDto, UpdateUserDto } from "../dto/user.dto";
+
+export const UserMapper = {
+  toEntity(dto: UserDto): UserEntity {
+    return {
+      id: dto.id,
+      displayName: dto.display_name,
+      email: dto.email,
+      role: dto.role as UserEntity["role"],
+      createdAt: new Date(dto.created_at),
+      updatedAt: new Date(dto.updated_at),
+    };
+  },
+
+  toCreateDto(data: {
+    displayName: string;
+    email: string;
+    role: UserEntity["role"];
+    password: string;
+  }): CreateUserDto {
+    return {
+      display_name: data.displayName,
+      email: data.email,
+      role: data.role,
+      password: data.password,
+    };
+  },
+
+  toUpdateDto(data: {
+    displayName?: string;
+    email?: string;
+    role?: UserEntity["role"];
+  }): UpdateUserDto {
+    return {
+      display_name: data.displayName,
+      email: data.email,
+      role: data.role,
+    };
+  },
+};
+```
+
+### Step 5: Implement the Repository Adapter
+
+The adapter implements the contract using HTTP (or any other technology).
+
+```typescript
+// infrastructure/repositories/user.repository.adapter.ts
+
+import type {
+  UserRepository,
+  CreateUserData,
+  UpdateUserData,
+  UserFilters,
+} from "@/domain/repositories/user.repository.port";
+import type { UserEntity } from "@/domain/entities/user.entity";
+import type { HttpClient } from "../http/http-client.port";
+import { UserMapper } from "@/application/mappers/user.mapper";
+import type {
+  UserDto,
+  CreateUserDto,
+  UpdateUserDto,
+} from "@/application/dto/user.dto";
+import { serialize } from "@/application/utils";
+
+export function createUserRepositoryAdapter(
+  httpClient: HttpClient,
+): UserRepository {
+  return {
+    async findAll(filters?: UserFilters): Promise<UserEntity[]> {
+      const queryParams = filters ? serialize.queryParams(filters) : "";
+      const url = `/users${queryParams ? `?${queryParams}` : ""}`;
+      const dtos = await httpClient.get<UserDto[]>(url);
+      return dtos.map(UserMapper.toEntity);
+    },
+
+    async findById(id: string): Promise<UserEntity | null> {
+      const dto = await httpClient.get<UserDto>(`/users/${id}`);
+      return dto ? UserMapper.toEntity(dto) : null;
+    },
+
+    async create(data: CreateUserData): Promise<UserEntity> {
+      const createDto = UserMapper.toCreateDto(data);
+      const dto = await httpClient.post<UserDto>("/users", createDto);
+      return UserMapper.toEntity(dto);
+    },
+
+    async update(id: string, data: UpdateUserData): Promise<UserEntity> {
+      const updateDto = UserMapper.toUpdateDto(data);
+      const dto = await httpClient.put<UserDto>(`/users/${id}`, updateDto);
+      return UserMapper.toEntity(dto);
+    },
+
+    async delete(id: string): Promise<void> {
+      await httpClient.delete(`/users/${id}`);
+    },
+  };
+}
+```
+
+### Step 6: Create the Presentation Service
+
+The service exposes use cases to the presentation layer.
+
+```typescript
+// presentation/providers/user-service.provider.tsx
+
+import React, { createContext, useContext } from 'react';
+import { createGetUsersListUseCase } from '@/application/use-cases/users/get-users-list.use-case';
+import { createUserRepositoryAdapter } from '@/infrastructure/repositories/user.repository.adapter';
+import { createAxiosHttpClientAdapter } from '@/infrastructure/http/axios-client.adapter';
+import type { GetUsersListUseCase } from '@/application/use-cases/users/get-users-list.use-case';
+
+interface UserService {
+  getUsersListUseCase: GetUsersListUseCase;
+}
+
+const UserServiceContext = createContext<UserService | null>(null);
+
+export function UserServiceProvider({ children }: { children: React.ReactNode }) {
+  // Dependency injection: build the dependency chain
+  const httpClient = createAxiosHttpClientAdapter(import.meta.env.VITE_API_URL);
+  const userRepository = createUserRepositoryAdapter(httpClient);
+  const getUsersListUseCase = createGetUsersListUseCase(userRepository);
+
+  const service: UserService = {
+    getUsersListUseCase,
+  };
+
+  return (
+    <UserServiceContext.Provider value={service}>
+      {children}
+    </UserServiceContext.Provider>
+  );
+}
+
+export function useUserService(): UserService {
+  const context = useContext(UserServiceContext);
+  if (!context) {
+    throw new Error('useUserService must be used within UserServiceProvider');
+  }
+  return context;
+}
+```
+
+### Step 7: Create the Presentation Hook
+
+The hook connects React Query (or any state library) with use cases.
+
+```typescript
+// presentation/hooks/users/use-users.ts
+
+import { useQuery } from "@tanstack/react-query";
+import { useUserService } from "@/presentation/providers/user-service.provider";
+import type { UserFilters } from "@/domain/repositories/user.repository.port";
+
+export const USERS_QUERY_KEY = ["users"] as const;
+
+export function useUsers(filters?: UserFilters) {
+  const { getUsersListUseCase } = useUserService();
+
+  return useQuery({
+    queryKey: [...USERS_QUERY_KEY, filters],
+    queryFn: () => getUsersListUseCase.execute(filters),
+  });
+}
+```
+
+### Step 8: Create the UI Component
+
+Finally, the React component consumes the hook.
+
+```typescript
+// presentation/pages/users/index.tsx
+
+import { useUsers } from '@/presentation/hooks/users/use-users';
+import { DataTable } from '@/presentation/components/data-table';
+import { PageContainer } from '@/presentation/components/page-container';
+
+export default function UsersPage() {
+  const { data: users, isLoading, error } = useUsers();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <PageContainer title="Users">
+      <DataTable
+        data={users || []}
+        columns={[
+          { accessorKey: 'displayName', header: 'Name' },
+          { accessorKey: 'email', header: 'Email' },
+          { accessorKey: 'role', header: 'Role' },
+        ]}
+      />
+    </PageContainer>
+  );
+}
+```
+
+## How Layers Communicate
+
+Data flow follows this direction:
+
+```
+Presentation → Application → Domain ← Infrastructure
+     ↓              ↓           ↑            ↑
+  (Hooks)    (Use Cases)   (Entities)  (Adapters)
+```
+
+### Read Flow (Query)
+
+1. **Presentation**: Component calls the `useUsers()` hook
+2. **Presentation**: Hook calls the use case `getUsersListUseCase.execute()`
+3. **Application**: Use case calls the repository `repository.findAll()`
+4. **Infrastructure**: Adapter makes HTTP call and converts DTO to Entity
+5. **Application**: Use case returns entities
+6. **Presentation**: Hook returns data to component
+
+### Write Flow (Mutation)
+
+1. **Presentation**: User fills form and submits
+2. **Presentation**: Mutation hook calls use case `createUserUseCase.execute()`
+3. **Application**: Use case validates and calls repository `repository.create()`
+4. **Infrastructure**: Adapter converts Entity to DTO and makes POST
+5. **Application**: Use case returns new entity
+6. **Presentation**: Hook updates cache and shows feedback to user
+
+## Tips and Best Practices
+
+### 1. **Use Factory Functions Instead of Classes**
+
+If your project has `erasableSyntaxOnly` enabled in TypeScript, use factory functions:
+
+```typescript
+// ✅ Good: Factory function
+export function createGetUsersListUseCase(
+  repository: UserRepository,
+): GetUsersListUseCase {
+  return {
+    async execute(filters) {
+      return repository.findAll(filters);
+    },
+  };
+}
+
+// ❌ Avoid: Class (doesn't work with erasableSyntaxOnly)
+export class GetUsersListUseCase {
+  constructor(private repository: UserRepository) {}
+  async execute(filters) {
+    return this.repository.findAll(filters);
+  }
+}
+```
+
+### 2. **Keep Entities Immutable**
+
+Domain entities should be immutable objects or interfaces representing state at a given moment.
+
+```typescript
+// ✅ Good: Immutable entity
+export interface UserEntity {
+  readonly id: string;
+  readonly displayName: string;
+  // ...
+}
+
+// ✅ Good: Factory function that creates new instance
+export function updateUser(
+  user: UserEntity,
+  updates: Partial<UserEntity>,
+): UserEntity {
+  return {
+    ...user,
+    ...updates,
+    updatedAt: new Date(),
+  };
+}
+```
+
+### 3. **Separate Validations**
+
+- **Domain Validations**: In entities (business rules)
+- **Form Validations**: In presentation layer (Zod, Yup, etc.)
+- **API Validations**: In infrastructure layer (data transformation)
+
+### 4. **Use Strict TypeScript**
+
+Leverage the type system to make contracts between layers explicit.
+
+```typescript
+// ✅ Good: Explicit types
+export interface UserRepository {
+  findAll(filters?: UserFilters): Promise<UserEntity[]>;
+}
+
+// ❌ Avoid: any or implicit types
+export interface UserRepository {
+  findAll(filters?: any): Promise<any[]>;
+}
+```
+
+### 5. **Centralize Dependency Injection**
+
+Use a root provider that builds all dependencies:
+
+```typescript
+// presentation/providers/app-service.provider.tsx
+
+export function AppServiceProvider({ children }) {
+  // Build all dependencies once
+  const httpClient = createAxiosHttpClientAdapter(API_URL);
+  const userRepository = createUserRepositoryAdapter(httpClient);
+  const newsRepository = createNewsRepositoryAdapter(httpClient);
+
+  // ...
+
+  return (
+    <UserServiceProvider repository={userRepository}>
+      <NewsServiceProvider repository={newsRepository}>
+        {children}
+      </NewsServiceProvider>
+    </UserServiceProvider>
+  );
+}
+```
+
+### 6. **Handle Errors by Layer**
+
+```typescript
+// domain/errors/user.errors.ts
+export class UserNotFoundError extends Error {
+  constructor(id: string) {
+    super(`User with id ${id} not found`);
+    this.name = "UserNotFoundError";
+  }
+}
+
+// application/use-cases/users/get-user.use-case.ts
+export function createGetUserUseCase(repository: UserRepository) {
+  return {
+    async execute(id: string): Promise<UserEntity> {
+      const user = await repository.findById(id);
+      if (!user) {
+        throw new UserNotFoundError(id);
+      }
+      return user;
+    },
+  };
+}
+
+// presentation/hooks/users/use-user.ts
+export function useUser(id: string) {
+  const { getUserUseCase } = useUserService();
+
+  return useQuery({
+    queryKey: ["user", id],
+    queryFn: () => getUserUseCase.execute(id),
+    onError: (error) => {
+      if (error instanceof UserNotFoundError) {
+        // Handle specific error
+      }
+    },
+  });
+}
+```
+
+### 7. **Avoid Business Logic in Components**
+
+```typescript
+// ❌ Bad: Business logic in component
+function UserList() {
+  const { data } = useUsers();
+  const activeUsers = data?.filter(
+    (u) => u.role === "ADMIN" && u.status === "active",
+  );
+  // ...
+}
+
+// ✅ Good: Logic in use case
+export function createGetActiveAdminsUseCase(repository: UserRepository) {
+  return {
+    async execute() {
+      const users = await repository.findAll({ role: "ADMIN" });
+      return users.filter((u) => u.status === "active");
+    },
+  };
+}
+```
+
+### 8. **Use DTOs for External Communication**
+
+Never expose entities directly to external APIs. Always use DTOs:
+
+```typescript
+// ✅ Good: Clear separation
+const dto = UserMapper.toCreateDto(userData);
+await httpClient.post("/users", dto);
+
+// ❌ Avoid: Expose entity directly
+await httpClient.post("/users", userEntity);
+```
+
+## When to Use Clean Architecture
+
+Clean Architecture is especially useful when:
+
+- ✅ The project has multiple developers
+- ✅ The application is medium to large scale
+- ✅ You need to test business logic independently
+- ✅ You may need to change frameworks in the future
+- ✅ Business logic is complex
+
+It can be excessive for:
+
+- ❌ Quick prototypes
+- ❌ Very small applications (< 5 pages)
+- ❌ Projects with a single developer and no plans to scale
+
+## Conclusion
+
+Clean Architecture in frontend provides a solid foundation for building maintainable, scalable, and testable applications. Although it requires more initial code and a learning curve, the long-term benefits are significant:
+
+- **Cleaner and more organized code**
+- **Easy to test**
+- **Framework independent**
+- **Scalable and maintainable**
+- **Facilitates team work**
+
+The example we've seen can be adapted to any JavaScript framework (Vue, Angular, Svelte) by changing only the presentation layer. The domain, application, and infrastructure remain the same.
+
+## Additional Resources
+
+- [Clean Architecture by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Hexagonal Architecture (Ports and Adapters)](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
+
+---
+
+**Author**: [Your Name]  
+**Date**: 2025  
+**Tags**: #CleanArchitecture #React #Frontend #SoftwareArchitecture #TypeScript

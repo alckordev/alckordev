@@ -1,0 +1,757 @@
+---
+title: "Clean Architecture en Frontend: Guía Completa con React"
+abstract: "Aprende a aplicar Clean Architecture en proyectos frontend con React. Guía completa con ejemplos prácticos, estructura de carpetas, casos de uso y mejores prácticas para construir aplicaciones escalables y mantenibles."
+publishedAt: "2026-01-15 19:00:00"
+topics:
+  - name: Clean Architecture
+    slug: clean-architecture
+  - name: React
+    slug: react
+  - name: Frontend
+    slug: frontend
+  - name: Arquitectura de Software
+    slug: software-architecture
+  - name: TypeScript
+    slug: typescript
+featured: true
+highlighted: true
+---
+
+# Clean Architecture en Frontend: Guía Completa con React
+
+## Introducción
+
+Clean Architecture, popularizada por Robert C. Martin (Uncle Bob), es un enfoque de diseño de software que separa las preocupaciones en capas independientes. Aunque tradicionalmente se asocia con aplicaciones backend, sus principios son igualmente valiosos en proyectos frontend, especialmente en aplicaciones React de mediana a gran escala.
+
+En este artículo exploraremos cómo aplicar Clean Architecture en proyectos frontend, sus ventajas, y un ejemplo práctico paso a paso usando React.
+
+## ¿Qué es Clean Architecture?
+
+Clean Architecture organiza el código en capas concéntricas, donde cada capa tiene responsabilidades específicas y depende solo de las capas internas. Las dependencias fluyen hacia adentro, manteniendo el dominio (núcleo del negocio) independiente de frameworks, librerías y detalles de implementación.
+
+### Las Cuatro Capas Principales
+
+1. **Domain (Dominio)**: El núcleo de la aplicación. Contiene las entidades de negocio, reglas de negocio y contratos (interfaces) para repositorios.
+2. **Application (Aplicación)**: Contiene los casos de uso que orquestan la lógica de negocio. Define cómo interactúan las entidades del dominio.
+3. **Infrastructure (Infraestructura)**: Implementa los adaptadores concretos (HTTP, almacenamiento, bases de datos) que satisfacen los contratos definidos en el dominio.
+4. **Presentation (Presentación)**: La capa de UI. Componentes React, hooks, formularios y toda la lógica de presentación.
+
+## Ventajas de Clean Architecture en Frontend
+
+### 1. **Independencia de Frameworks**
+
+Tu lógica de negocio no depende de React, Vue, Angular o cualquier otro framework. Si necesitas migrar o actualizar, solo cambias la capa de presentación.
+
+```typescript
+// ❌ Mal: Lógica de negocio acoplada a React
+function UserList() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/users')
+      .then(res => res.json())
+      .then(data => setUsers(data));
+  }, []);
+
+  // Lógica de negocio mezclada con UI
+  const activeUsers = users.filter(u => u.status === 'active');
+
+  return <div>{/* ... */}</div>;
+}
+
+// ✅ Bien: Lógica separada en capas
+// Domain: user.entity.ts
+export interface UserEntity {
+  id: string;
+  name: string;
+  email: string;
+  status: 'active' | 'inactive';
+}
+
+// Application: get-users-list.use-case.ts
+export function createGetUsersListUseCase(repository: UserRepository) {
+  return {
+    async execute(filters?: UserFilters): Promise<UserEntity[]> {
+      const users = await repository.findAll(filters);
+      return users.filter(u => u.status === 'active');
+    }
+  };
+}
+
+// Presentation: use-users.ts
+export function useUsers() {
+  const { getUsersListUseCase } = useUserService();
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: () => getUsersListUseCase.execute()
+  });
+}
+```
+
+### 2. **Testabilidad Mejorada**
+
+Cada capa puede probarse de forma independiente. Puedes probar la lógica de negocio sin necesidad de renderizar componentes o hacer llamadas HTTP reales.
+
+```typescript
+// Test del caso de uso sin dependencias externas
+describe("GetUsersListUseCase", () => {
+  it("should filter active users", async () => {
+    const mockRepository = {
+      findAll: jest.fn().mockResolvedValue([
+        { id: "1", status: "active" },
+        { id: "2", status: "inactive" },
+      ]),
+    };
+
+    const useCase = createGetUsersListUseCase(mockRepository);
+    const result = await useCase.execute();
+
+    expect(result).toHaveLength(1);
+    expect(result[0].status).toBe("active");
+  });
+});
+```
+
+### 3. **Mantenibilidad y Escalabilidad**
+
+El código está organizado de manera predecible. Nuevos desarrolladores pueden entender rápidamente dónde va cada pieza de código. Agregar nuevas funcionalidades es más sencillo porque sabes exactamente dónde hacer los cambios.
+
+### 4. **Reutilización de Lógica**
+
+La lógica de negocio puede reutilizarse en diferentes contextos (web, mobile, desktop) sin modificaciones.
+
+### 5. **Facilita el Trabajo en Equipo**
+
+Diferentes desarrolladores pueden trabajar en diferentes capas simultáneamente sin conflictos frecuentes.
+
+## Estructura de Carpetas
+
+Una estructura típica de Clean Architecture en React se vería así:
+
+```
+src/
+├── domain/                    # Capa de Dominio
+│   ├── entities/            # Entidades de negocio
+│   │   └── user.entity.ts
+│   ├── repositories/        # Contratos (interfaces)
+│   │   └── user.repository.port.ts
+│   ├── errors/              # Errores de dominio
+│   │   └── user.errors.ts
+│   └── shared/              # Tipos compartidos
+│       └── types/
+│
+├── application/              # Capa de Aplicación
+│   ├── use-cases/          # Casos de uso
+│   │   └── users/
+│   │       └── get-users-list.use-case.ts
+│   ├── dto/                # Data Transfer Objects
+│   │   └── user.dto.ts
+│   ├── mappers/            # Convertidores DTO <-> Entity
+│   │   └── user.mapper.ts
+│   └── validators/         # Validaciones
+│
+├── infrastructure/          # Capa de Infraestructura
+│   ├── repositories/       # Implementaciones concretas
+│   │   └── user.repository.adapter.ts
+│   ├── http/              # Cliente HTTP
+│   │   └── axios-client.adapter.ts
+│   └── storage/           # Almacenamiento
+│       └── token-storage.adapter.ts
+│
+└── presentation/           # Capa de Presentación
+    ├── pages/             # Páginas/vistas
+    │   └── users/
+    │       └── index.tsx
+    ├── components/        # Componentes reutilizables
+    ├── hooks/            # Hooks de presentación
+    │   └── users/
+    │       └── use-users.ts
+    └── providers/        # Context providers
+        └── user-service.provider.tsx
+```
+
+## Ejemplo Paso a Paso: Módulo de Usuarios
+
+Vamos a construir un módulo completo de gestión de usuarios siguiendo Clean Architecture.
+
+### Paso 1: Definir la Entidad de Dominio
+
+La entidad representa el concepto de negocio, sin dependencias externas.
+
+```typescript
+// domain/entities/user.entity.ts
+
+export interface UserEntity {
+  id: string;
+  displayName: string;
+  email: string;
+  role: "ADMIN" | "USER" | "GUEST";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export function createUserEntity(data: {
+  id: string;
+  displayName: string;
+  email: string;
+  role: "ADMIN" | "USER" | "GUEST";
+  createdAt: Date;
+  updatedAt: Date;
+}): UserEntity {
+  // Validaciones de dominio
+  if (!data.email.includes("@")) {
+    throw new Error("Invalid email format");
+  }
+
+  return {
+    id: data.id,
+    displayName: data.displayName,
+    email: data.email,
+    role: data.role,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+}
+```
+
+### Paso 2: Definir el Contrato del Repositorio
+
+El repositorio es una interfaz que define qué operaciones necesitamos, sin especificar cómo se implementan.
+
+```typescript
+// domain/repositories/user.repository.port.ts
+
+import type { UserEntity } from "../entities/user.entity";
+
+export interface UserFilters {
+  role?: UserEntity["role"];
+  search?: string;
+}
+
+export interface CreateUserData {
+  displayName: string;
+  email: string;
+  role: UserEntity["role"];
+  password: string;
+}
+
+export interface UpdateUserData {
+  displayName?: string;
+  email?: string;
+  role?: UserEntity["role"];
+}
+
+export interface UserRepository {
+  findAll(filters?: UserFilters): Promise<UserEntity[]>;
+  findById(id: string): Promise<UserEntity | null>;
+  create(data: CreateUserData): Promise<UserEntity>;
+  update(id: string, data: UpdateUserData): Promise<UserEntity>;
+  delete(id: string): Promise<void>;
+}
+```
+
+### Paso 3: Crear el Caso de Uso
+
+El caso de uso orquesta la lógica de negocio usando el repositorio.
+
+```typescript
+// application/use-cases/users/get-users-list.use-case.ts
+
+import type { UserRepository } from "@/domain/repositories/user.repository.port";
+import type { UserEntity } from "@/domain/entities/user.entity";
+import type { UserFilters } from "@/domain/repositories/user.repository.port";
+
+export interface GetUsersListUseCase {
+  execute(filters?: UserFilters): Promise<UserEntity[]>;
+}
+
+export function createGetUsersListUseCase(
+  repository: UserRepository,
+): GetUsersListUseCase {
+  return {
+    async execute(filters?: UserFilters): Promise<UserEntity[]> {
+      // Lógica de negocio: obtener usuarios y aplicar reglas
+      const users = await repository.findAll(filters);
+
+      // Ejemplo: filtrar usuarios inactivos si es necesario
+      // Esta lógica de negocio está en la capa de aplicación
+      return users;
+    },
+  };
+}
+```
+
+### Paso 4: Crear DTOs y Mappers
+
+Los DTOs representan la estructura de datos que viene del servidor. Los mappers convierten entre DTOs y entidades.
+
+```typescript
+// application/dto/user.dto.ts
+
+export interface UserDto {
+  id: string;
+  display_name: string;
+  email: string;
+  role: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateUserDto {
+  display_name: string;
+  email: string;
+  role: string;
+  password: string;
+}
+
+export interface UpdateUserDto {
+  display_name?: string;
+  email?: string;
+  role?: string;
+}
+
+// application/mappers/user.mapper.ts
+
+import type { UserEntity } from "@/domain/entities/user.entity";
+import type { UserDto, CreateUserDto, UpdateUserDto } from "../dto/user.dto";
+
+export const UserMapper = {
+  toEntity(dto: UserDto): UserEntity {
+    return {
+      id: dto.id,
+      displayName: dto.display_name,
+      email: dto.email,
+      role: dto.role as UserEntity["role"],
+      createdAt: new Date(dto.created_at),
+      updatedAt: new Date(dto.updated_at),
+    };
+  },
+
+  toCreateDto(data: {
+    displayName: string;
+    email: string;
+    role: UserEntity["role"];
+    password: string;
+  }): CreateUserDto {
+    return {
+      display_name: data.displayName,
+      email: data.email,
+      role: data.role,
+      password: data.password,
+    };
+  },
+
+  toUpdateDto(data: {
+    displayName?: string;
+    email?: string;
+    role?: UserEntity["role"];
+  }): UpdateUserDto {
+    return {
+      display_name: data.displayName,
+      email: data.email,
+      role: data.role,
+    };
+  },
+};
+```
+
+### Paso 5: Implementar el Adaptador del Repositorio
+
+El adaptador implementa el contrato usando HTTP (o cualquier otra tecnología).
+
+```typescript
+// infrastructure/repositories/user.repository.adapter.ts
+
+import type {
+  UserRepository,
+  CreateUserData,
+  UpdateUserData,
+  UserFilters,
+} from "@/domain/repositories/user.repository.port";
+import type { UserEntity } from "@/domain/entities/user.entity";
+import type { HttpClient } from "../http/http-client.port";
+import { UserMapper } from "@/application/mappers/user.mapper";
+import type {
+  UserDto,
+  CreateUserDto,
+  UpdateUserDto,
+} from "@/application/dto/user.dto";
+import { serialize } from "@/application/utils";
+
+export function createUserRepositoryAdapter(
+  httpClient: HttpClient,
+): UserRepository {
+  return {
+    async findAll(filters?: UserFilters): Promise<UserEntity[]> {
+      const queryParams = filters ? serialize.queryParams(filters) : "";
+      const url = `/users${queryParams ? `?${queryParams}` : ""}`;
+      const dtos = await httpClient.get<UserDto[]>(url);
+      return dtos.map(UserMapper.toEntity);
+    },
+
+    async findById(id: string): Promise<UserEntity | null> {
+      const dto = await httpClient.get<UserDto>(`/users/${id}`);
+      return dto ? UserMapper.toEntity(dto) : null;
+    },
+
+    async create(data: CreateUserData): Promise<UserEntity> {
+      const createDto = UserMapper.toCreateDto(data);
+      const dto = await httpClient.post<UserDto>("/users", createDto);
+      return UserMapper.toEntity(dto);
+    },
+
+    async update(id: string, data: UpdateUserData): Promise<UserEntity> {
+      const updateDto = UserMapper.toUpdateDto(data);
+      const dto = await httpClient.put<UserDto>(`/users/${id}`, updateDto);
+      return UserMapper.toEntity(dto);
+    },
+
+    async delete(id: string): Promise<void> {
+      await httpClient.delete(`/users/${id}`);
+    },
+  };
+}
+```
+
+### Paso 6: Crear el Servicio de Presentación
+
+El servicio expone los casos de uso a la capa de presentación.
+
+```typescript
+// presentation/providers/user-service.provider.tsx
+
+import React, { createContext, useContext } from 'react';
+import { createGetUsersListUseCase } from '@/application/use-cases/users/get-users-list.use-case';
+import { createUserRepositoryAdapter } from '@/infrastructure/repositories/user.repository.adapter';
+import { createAxiosHttpClientAdapter } from '@/infrastructure/http/axios-client.adapter';
+import type { GetUsersListUseCase } from '@/application/use-cases/users/get-users-list.use-case';
+
+interface UserService {
+  getUsersListUseCase: GetUsersListUseCase;
+}
+
+const UserServiceContext = createContext<UserService | null>(null);
+
+export function UserServiceProvider({ children }: { children: React.ReactNode }) {
+  // Inyección de dependencias: construimos la cadena de dependencias
+  const httpClient = createAxiosHttpClientAdapter(import.meta.env.VITE_API_URL);
+  const userRepository = createUserRepositoryAdapter(httpClient);
+  const getUsersListUseCase = createGetUsersListUseCase(userRepository);
+
+  const service: UserService = {
+    getUsersListUseCase,
+  };
+
+  return (
+    <UserServiceContext.Provider value={service}>
+      {children}
+    </UserServiceContext.Provider>
+  );
+}
+
+export function useUserService(): UserService {
+  const context = useContext(UserServiceContext);
+  if (!context) {
+    throw new Error('useUserService must be used within UserServiceProvider');
+  }
+  return context;
+}
+```
+
+### Paso 7: Crear el Hook de Presentación
+
+El hook conecta React Query (o cualquier librería de estado) con los casos de uso.
+
+```typescript
+// presentation/hooks/users/use-users.ts
+
+import { useQuery } from "@tanstack/react-query";
+import { useUserService } from "@/presentation/providers/user-service.provider";
+import type { UserFilters } from "@/domain/repositories/user.repository.port";
+
+export const USERS_QUERY_KEY = ["users"] as const;
+
+export function useUsers(filters?: UserFilters) {
+  const { getUsersListUseCase } = useUserService();
+
+  return useQuery({
+    queryKey: [...USERS_QUERY_KEY, filters],
+    queryFn: () => getUsersListUseCase.execute(filters),
+  });
+}
+```
+
+### Paso 8: Crear el Componente de UI
+
+Finalmente, el componente React consume el hook.
+
+```typescript
+// presentation/pages/users/index.tsx
+
+import { useUsers } from '@/presentation/hooks/users/use-users';
+import { DataTable } from '@/presentation/components/data-table';
+import { PageContainer } from '@/presentation/components/page-container';
+
+export default function UsersPage() {
+  const { data: users, isLoading, error } = useUsers();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <PageContainer title="Users">
+      <DataTable
+        data={users || []}
+        columns={[
+          { accessorKey: 'displayName', header: 'Name' },
+          { accessorKey: 'email', header: 'Email' },
+          { accessorKey: 'role', header: 'Role' },
+        ]}
+      />
+    </PageContainer>
+  );
+}
+```
+
+## Cómo se Comunican las Capas
+
+El flujo de datos sigue esta dirección:
+
+```
+Presentation → Application → Domain ← Infrastructure
+     ↓              ↓           ↑            ↑
+  (Hooks)    (Use Cases)   (Entities)  (Adapters)
+```
+
+### Flujo de Lectura (Query)
+
+1. **Presentation**: El componente llama al hook `useUsers()`
+2. **Presentation**: El hook llama al caso de uso `getUsersListUseCase.execute()`
+3. **Application**: El caso de uso llama al repositorio `repository.findAll()`
+4. **Infrastructure**: El adaptador hace la llamada HTTP y convierte el DTO a Entity
+5. **Application**: El caso de uso retorna las entidades
+6. **Presentation**: El hook retorna los datos al componente
+
+### Flujo de Escritura (Mutation)
+
+1. **Presentation**: El usuario completa un formulario y hace submit
+2. **Presentation**: El hook de mutación llama al caso de uso `createUserUseCase.execute()`
+3. **Application**: El caso de uso valida y llama al repositorio `repository.create()`
+4. **Infrastructure**: El adaptador convierte la Entity a DTO y hace POST
+5. **Application**: El caso de uso retorna la nueva entidad
+6. **Presentation**: El hook actualiza el cache y muestra feedback al usuario
+
+## Consejos y Buenas Prácticas
+
+### 1. **Usa Factory Functions en lugar de Clases**
+
+Si tu proyecto tiene `erasableSyntaxOnly` habilitado en TypeScript, usa factory functions:
+
+```typescript
+// ✅ Bien: Factory function
+export function createGetUsersListUseCase(
+  repository: UserRepository,
+): GetUsersListUseCase {
+  return {
+    async execute(filters) {
+      return repository.findAll(filters);
+    },
+  };
+}
+
+// ❌ Evitar: Clase (no funciona con erasableSyntaxOnly)
+export class GetUsersListUseCase {
+  constructor(private repository: UserRepository) {}
+  async execute(filters) {
+    return this.repository.findAll(filters);
+  }
+}
+```
+
+### 2. **Mantén las Entidades Inmutables**
+
+Las entidades del dominio deben ser objetos inmutables o interfaces que representen el estado en un momento dado.
+
+```typescript
+// ✅ Bien: Entidad inmutable
+export interface UserEntity {
+  readonly id: string;
+  readonly displayName: string;
+  // ...
+}
+
+// ✅ Bien: Factory function que crea nueva instancia
+export function updateUser(
+  user: UserEntity,
+  updates: Partial<UserEntity>,
+): UserEntity {
+  return {
+    ...user,
+    ...updates,
+    updatedAt: new Date(),
+  };
+}
+```
+
+### 3. **Separa las Validaciones**
+
+- **Validaciones de Dominio**: En las entidades (reglas de negocio)
+- **Validaciones de Formulario**: En la capa de presentación (Zod, Yup, etc.)
+- **Validaciones de API**: En la capa de infraestructura (transformación de datos)
+
+### 4. **Usa TypeScript Estricto**
+
+Aprovecha el sistema de tipos para hacer explícitos los contratos entre capas.
+
+```typescript
+// ✅ Bien: Tipos explícitos
+export interface UserRepository {
+  findAll(filters?: UserFilters): Promise<UserEntity[]>;
+}
+
+// ❌ Evitar: any o tipos implícitos
+export interface UserRepository {
+  findAll(filters?: any): Promise<any[]>;
+}
+```
+
+### 5. **Centraliza la Inyección de Dependencias**
+
+Usa un provider raíz que construya todas las dependencias:
+
+```typescript
+// presentation/providers/app-service.provider.tsx
+
+export function AppServiceProvider({ children }) {
+  // Construir todas las dependencias una sola vez
+  const httpClient = createAxiosHttpClientAdapter(API_URL);
+  const userRepository = createUserRepositoryAdapter(httpClient);
+  const newsRepository = createNewsRepositoryAdapter(httpClient);
+
+  // ...
+
+  return (
+    <UserServiceProvider repository={userRepository}>
+      <NewsServiceProvider repository={newsRepository}>
+        {children}
+      </NewsServiceProvider>
+    </UserServiceProvider>
+  );
+}
+```
+
+### 6. **Maneja Errores por Capa**
+
+```typescript
+// domain/errors/user.errors.ts
+export class UserNotFoundError extends Error {
+  constructor(id: string) {
+    super(`User with id ${id} not found`);
+    this.name = "UserNotFoundError";
+  }
+}
+
+// application/use-cases/users/get-user.use-case.ts
+export function createGetUserUseCase(repository: UserRepository) {
+  return {
+    async execute(id: string): Promise<UserEntity> {
+      const user = await repository.findById(id);
+      if (!user) {
+        throw new UserNotFoundError(id);
+      }
+      return user;
+    },
+  };
+}
+
+// presentation/hooks/users/use-user.ts
+export function useUser(id: string) {
+  const { getUserUseCase } = useUserService();
+
+  return useQuery({
+    queryKey: ["user", id],
+    queryFn: () => getUserUseCase.execute(id),
+    onError: (error) => {
+      if (error instanceof UserNotFoundError) {
+        // Manejar error específico
+      }
+    },
+  });
+}
+```
+
+### 7. **Evita Lógica de Negocio en Componentes**
+
+```typescript
+// ❌ Mal: Lógica de negocio en el componente
+function UserList() {
+  const { data } = useUsers();
+  const activeUsers = data?.filter(
+    (u) => u.role === "ADMIN" && u.status === "active",
+  );
+  // ...
+}
+
+// ✅ Bien: Lógica en el caso de uso
+export function createGetActiveAdminsUseCase(repository: UserRepository) {
+  return {
+    async execute() {
+      const users = await repository.findAll({ role: "ADMIN" });
+      return users.filter((u) => u.status === "active");
+    },
+  };
+}
+```
+
+### 8. **Usa DTOs para Comunicación Externa**
+
+Nunca expongas entidades directamente a APIs externas. Siempre usa DTOs:
+
+```typescript
+// ✅ Bien: Separación clara
+const dto = UserMapper.toCreateDto(userData);
+await httpClient.post("/users", dto);
+
+// ❌ Evitar: Exponer entidad directamente
+await httpClient.post("/users", userEntity);
+```
+
+## Cuándo Usar Clean Architecture
+
+Clean Architecture es especialmente útil cuando:
+
+- ✅ El proyecto tiene múltiples desarrolladores
+- ✅ La aplicación es de mediana a gran escala
+- ✅ Necesitas testear la lógica de negocio independientemente
+- ✅ Puede que necesites cambiar de framework en el futuro
+- ✅ La lógica de negocio es compleja
+
+Puede ser excesivo para:
+
+- ❌ Prototipos rápidos
+- ❌ Aplicaciones muy pequeñas (< 5 páginas)
+- ❌ Proyectos con un solo desarrollador y sin planes de escalar
+
+## Conclusión
+
+Clean Architecture en frontend proporciona una base sólida para construir aplicaciones mantenibles, escalables y testables. Aunque requiere más código inicial y una curva de aprendizaje, los beneficios a largo plazo son significativos:
+
+- **Código más limpio y organizado**
+- **Fácil de testear**
+- **Independiente de frameworks**
+- **Escalable y mantenible**
+- **Facilita el trabajo en equipo**
+
+El ejemplo que hemos visto puede adaptarse a cualquier framework JavaScript (Vue, Angular, Svelte) cambiando solo la capa de presentación. El dominio, la aplicación y la infraestructura permanecen iguales.
+
+## Recursos Adicionales
+
+- [Clean Architecture by Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Hexagonal Architecture (Ports and Adapters)](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
+
+---
+
+**Autor**: [Tu Nombre]  
+**Fecha**: 2025  
+**Tags**: #CleanArchitecture #React #Frontend #SoftwareArchitecture #TypeScript

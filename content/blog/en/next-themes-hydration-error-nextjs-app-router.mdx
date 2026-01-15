@@ -1,17 +1,21 @@
 ---
 title: "How to Fix Hydration Errors with next-themes in Next.js (App Router)"
-abstract: "Resolve the ‘hydration mismatch’ warnings caused by next-themes in Next 13/14 projects using the App Router. Learn how to create an SSR-friendly ThemeProvider and consume it in any client component via the `useTheme` hook."
+abstract: "Resolve the 'hydration mismatch' warnings caused by next-themes in Next 13/14 projects using the App Router. Learn how to create an SSR-friendly ThemeProvider and consume it in any client component via the `useTheme` hook."
 publishedAt: "2025-08-05 19:00:00"
 topics:
   - name: Next.js
     slug: nextjs
 ---
 
-**Hydration errors** (or _hydration mismatches_) appear when the HTML rendered on the server doesn’t match what React renders on the client.  
+**Hydration errors** (or _hydration mismatches_) appear when the HTML rendered on the server doesn't match what React renders on the client.  
 With **next-themes** and the **App Router** (Next.js 13/14) this happens because the `<ThemeProvider />` reads `window.matchMedia`, `localStorage`, and other browser-only APIs during the server render.  
 The usual result is a console warning like:
 
-In this article you’ll learn:
+```
+Warning: Prop `className` did not match. Server: "light" Client: "dark"
+```
+
+In this article you'll learn:
 
 1. Why the error occurs.
 2. How to create a wrapper `ThemeProvider` that **disables SSR**.
@@ -25,7 +29,7 @@ In this article you’ll learn:
 
 - **next-themes** decides the theme (light/dark/system) _during_ the first render.
 - In the App Router, everything inside `layout.tsx` runs on the server first.
-- `window` and local storage don’t exist there → the server HTML gets a “default” theme.
+- `window` and local storage don't exist there → the server HTML gets a "default" theme.
 - During hydration, the client discovers the real theme and React warns about the difference.
 
 **Solution:** render `ThemeProvider` **only in the browser**.
@@ -121,7 +125,6 @@ Drop `<ThemeSwitcher />` in your navbar—or anywhere else on the client—and i
 | **`disableTransitionOnChange`**            | Removes flicker if you use Tailwind or CSS transitions                                      |
 | **Persist preference**                     | next-themes writes to `localStorage`; if you prefer cookies, grab `useTheme()` and store it |
 | **Tailwind**                               | Ensure `darkMode: "class"` in `tailwind.config.js` to match the class-based approach        |
-|                                            |
 
 ## Conclusion
 
@@ -129,5 +132,5 @@ Drop `<ThemeSwitcher />` in your navbar—or anywhere else on the client—and i
 - Fix: import `ThemeProvider` dynamically with `ssr:false` and wrap your app.
 - Usage: with the wrapper in place, `useTheme()` works in any Client Component (e.g., `ThemeSwitcher`).
 
-That’s it! Your Next.js App Router project now supports dark/light mode without hydration errors.
+That's it! Your Next.js App Router project now supports dark/light mode without hydration errors.
 Questions or suggestions? Drop them in the comments—thanks for reading!
