@@ -1,5 +1,5 @@
 import { Fragment, JSX } from "react";
-import { BundledLanguage, codeToHast } from "shiki/bundle/web";
+import { BundledLanguage, codeToHast } from "shiki/bundle/full";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { jsx, jsxs } from "react/jsx-runtime";
 

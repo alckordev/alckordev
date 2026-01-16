@@ -1,7 +1,24 @@
 import { FeaturedArticleCard } from "@/components/featured-article-card";
 import { NewsletterCTA } from "@/components/newsletter-cta";
-import { InfiniteArticlesList } from "@/components/infinite-articles-list";
+import dynamic from "next/dynamic";
 import { Link } from "@/i18n/navigation";
+
+// Lazy load InfiniteArticlesList (solo código JS, SSR aún funciona)
+const InfiniteArticlesList = dynamic(
+  () =>
+    import("@/components/infinite-articles-list").then((m) => ({
+      default: m.InfiniteArticlesList,
+    })),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center py-8">
+        <div className="flex items-center gap-2 text-sm text-neutral-500">
+          <span>Loading articles...</span>
+        </div>
+      </div>
+    ),
+  },
+);
 import { getPostsInfo, getAllTopics } from "@/lib/server/mdx";
 import { RiBookOpenLine, RiPriceTag3Line } from "@remixicon/react";
 import { Metadata } from "next";

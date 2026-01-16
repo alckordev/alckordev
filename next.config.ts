@@ -1,6 +1,7 @@
+import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   /* config options here */
   compress: true,
   poweredByHeader: false,
@@ -12,9 +13,9 @@ const nextConfig = {
         ? { exclude: ["error", "warn"] }
         : false,
   },
-  experimental: {
-    optimizeCss: true,
-  },
+  // experimental: {
+  //   optimizeCss: true,
+  // },
   images: {
     remotePatterns: [
       {
