@@ -8,7 +8,7 @@ type MermaidGraphProps = {
   graphCode: string;
 };
 
-// Singleton para evitar múltiples inicializaciones
+// Singleton pattern to prevent multiple Mermaid initializations
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let mermaidPromise: Promise<any> | null = null;
 
@@ -29,7 +29,7 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({ graphCode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const renderKeyRef = useRef(0);
 
-  // Cargar Mermaid de forma lazy
+  // Lazy load Mermaid library
   useEffect(() => {
     getMermaid().then((m) => {
       setMermaidInstance(m);
@@ -37,7 +37,7 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({ graphCode }) => {
     });
   }, []);
 
-  // Renderizar el diagrama cuando Mermaid está listo
+  // Render diagram when Mermaid instance is ready
   useEffect(() => {
     if (!mermaidInstance || !containerRef.current || isLoading) return;
 
@@ -45,26 +45,26 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({ graphCode }) => {
     renderKeyRef.current += 1;
     const id = `mermaid-${renderKeyRef.current}-${Date.now()}`;
 
-    // Limpiar contenido previo
+    // Clear previous content
     container.innerHTML = "";
 
-    // Configurar el tema antes de renderizar
+    // Configure theme before rendering
     const theme = resolvedTheme === "dark" ? "dark" : "default";
 
-    // Reinicializar con el tema correcto
+    // Reinitialize with correct theme
     mermaidInstance.initialize({
       startOnLoad: false,
       theme,
       securityLevel: "loose",
     });
 
-    // Limpiar y normalizar el código
+    // Clean and normalize the code
     const cleanCode = graphCode.trim().replace(/^\n+|\n+$/g, "");
 
-    // Renderizar con Mermaid usando la API render()
+    // Render diagram using Mermaid render() API
     const renderMermaid = async () => {
       try {
-        // Renderizar el diagrama directamente (render() ya valida internamente)
+        // Render diagram directly (render() validates internally)
         const { svg } = await mermaidInstance.render(id, cleanCode);
         container.innerHTML = svg;
       } catch (error) {
@@ -84,7 +84,7 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({ graphCode }) => {
 
     renderMermaid();
 
-    // Cleanup
+    // Cleanup function
     return () => {
       if (container && container.innerHTML) {
         container.innerHTML = "";

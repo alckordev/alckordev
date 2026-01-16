@@ -45,6 +45,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations("seo_article");
+  const { routing } = await import("@/i18n/routing");
 
   const { slug } = await params;
 
@@ -56,12 +57,28 @@ export async function generateMetadata({
     ? new Date(source.publishedAt)
     : new Date();
 
+  const canonicalUrl = `${process.env.SITE_URL}/${locale}/blog/${slug}`;
+
+  // Build alternates object for all locales
+  const alternatesLanguages: Record<string, string> = {};
+  for (const altLocale of routing.locales) {
+    const altPost = getPostInfo(`blog/${altLocale}/${slug}`);
+    if (altPost) {
+      alternatesLanguages[altLocale] =
+        `${process.env.SITE_URL}/${altLocale}/blog/${slug}`;
+    }
+  }
+
   return {
     title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: alternatesLanguages,
+    },
     openGraph: {
       ...getOpenGraph(title, description, locale),
-      url: `${process.env.SITE_URL}/${locale}/blog/${slug}`,
+      url: canonicalUrl,
       type: "article",
       authors: "@alckordev",
       publishedTime: publishedAt.toISOString(),

@@ -29,16 +29,30 @@ import { getOpenGraph, getTwitter } from "@/lib/server/og";
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations("seo_blog");
+  const { routing } = await import("@/i18n/routing");
 
   const title = t("seo_title");
   const description = t("seo_description");
 
+  const canonicalUrl = `${process.env.SITE_URL}/${locale}/blog`;
+
+  // Build alternates object for all locales
+  const alternatesLanguages: Record<string, string> = {};
+  for (const altLocale of routing.locales) {
+    alternatesLanguages[altLocale] =
+      `${process.env.SITE_URL}/${altLocale}/blog`;
+  }
+
   return {
     title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: alternatesLanguages,
+    },
     openGraph: {
       ...getOpenGraph(title, description, locale),
-      url: `${process.env.SITE_URL}/${locale}/blog`,
+      url: canonicalUrl,
     },
     twitter: getTwitter(title, description),
   };

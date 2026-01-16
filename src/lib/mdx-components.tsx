@@ -6,6 +6,7 @@ import type { BundledLanguage } from "shiki/bundle/web";
 import { cn } from "./cn";
 import { Blockquote } from "@/components/blockquote";
 import { MermaidGraph } from "@/components/mermaid";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { Suspense } from "react";
 
 function CodeSkeleton() {
@@ -234,18 +235,42 @@ export const components: MDXComponents = {
     if (language && typeof children === "string") {
       if (language === "mermaid") {
         return (
-          <Suspense fallback={<CodeSkeleton />}>
-            <MermaidGraph graphCode={children} />
-          </Suspense>
+          <ErrorBoundary
+            fallback={
+              <div className="my-6 rounded-lg border border-neutral-500/10 bg-neutral-100 p-4 text-sm text-red-500 [.dark_&]:bg-neutral-900">
+                <p className="font-semibold">
+                  Failed to render Mermaid diagram
+                </p>
+                <p className="mt-2 text-xs text-neutral-500">
+                  Please check the diagram syntax.
+                </p>
+              </div>
+            }
+          >
+            <Suspense fallback={<CodeSkeleton />}>
+              <MermaidGraph graphCode={children} />
+            </Suspense>
+          </ErrorBoundary>
         );
       } else {
         return (
-          <Suspense fallback={<CodeSkeleton />}>
-            <LazyCodeBlock
-              language={language as BundledLanguage}
-              code={children}
-            />
-          </Suspense>
+          <ErrorBoundary
+            fallback={
+              <div className="my-6 rounded-lg border border-neutral-500/10 bg-neutral-100 p-4 text-sm text-red-500 [.dark_&]:bg-neutral-900">
+                <p className="font-semibold">Failed to render code block</p>
+                <p className="mt-2 text-xs text-neutral-500">
+                  Please check the code syntax.
+                </p>
+              </div>
+            }
+          >
+            <Suspense fallback={<CodeSkeleton />}>
+              <LazyCodeBlock
+                language={language as BundledLanguage}
+                code={children}
+              />
+            </Suspense>
+          </ErrorBoundary>
         );
       }
     }
