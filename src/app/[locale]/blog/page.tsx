@@ -1,7 +1,24 @@
 import { FeaturedArticleCard } from "@/components/featured-article-card";
 import { NewsletterCTA } from "@/components/newsletter-cta";
-import { InfiniteArticlesList } from "@/components/infinite-articles-list";
+import dynamic from "next/dynamic";
 import { Link } from "@/i18n/navigation";
+
+// Lazy load InfiniteArticlesList (solo código JS, SSR aún funciona)
+const InfiniteArticlesList = dynamic(
+  () =>
+    import("@/components/infinite-articles-list").then((m) => ({
+      default: m.InfiniteArticlesList,
+    })),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center py-8">
+        <div className="flex items-center gap-2 text-sm text-neutral-500">
+          <span>Loading articles...</span>
+        </div>
+      </div>
+    ),
+  },
+);
 import { getPostsInfo, getAllTopics } from "@/lib/server/mdx";
 import { RiBookOpenLine, RiPriceTag3Line } from "@remixicon/react";
 import { Metadata } from "next";
@@ -12,16 +29,30 @@ import { getOpenGraph, getTwitter } from "@/lib/server/og";
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations("seo_blog");
+  const { routing } = await import("@/i18n/routing");
 
   const title = t("seo_title");
   const description = t("seo_description");
 
+  const canonicalUrl = `${process.env.SITE_URL}/${locale}/blog`;
+
+  // Build alternates object for all locales
+  const alternatesLanguages: Record<string, string> = {};
+  for (const altLocale of routing.locales) {
+    alternatesLanguages[altLocale] =
+      `${process.env.SITE_URL}/${altLocale}/blog`;
+  }
+
   return {
     title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: alternatesLanguages,
+    },
     openGraph: {
       ...getOpenGraph(title, description, locale),
-      url: `${process.env.SITE_URL}/${locale}/blog`,
+      url: canonicalUrl,
     },
     twitter: getTwitter(title, description),
   };

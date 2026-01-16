@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "prepare": "husky",
-    "vercel-build": "next build"
+    "vercel-build": "next build",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -36,6 +37,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^16.1.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

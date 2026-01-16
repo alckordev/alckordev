@@ -4,7 +4,8 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 
 export const LogoBrand = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   return (
     <Link
@@ -13,11 +14,14 @@ export const LogoBrand = () => {
         "group/logo flex items-center text-2xl font-semibold transition-all duration-200",
       )}
     >
-      {theme === "dark" ? (
-        <Image src="/assets/logo-dark.svg" alt="Iso" width={125} height={30} />
-      ) : (
-        <Image src="/assets/logo-light.svg" alt="Iso" width={125} height={30} />
-      )}
+      <Image
+        src={isDark ? "/assets/logo-dark.svg" : "/assets/logo-light.svg"}
+        alt="alckor.dev"
+        width={125}
+        height={30}
+        priority // Above-the-fold
+        quality={100} // SVG máximo calidad
+      />
     </Link>
   );
 };

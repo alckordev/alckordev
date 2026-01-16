@@ -10,6 +10,7 @@
 
 ## Latest posts
 
+- 🗒️ [Clean Architecture in Frontend with React](https://alckor.dev/en/blog/clean-architecture-frontend-react)
 - 🗒️ [Robust Authentication System in NestJS: JWT + Refresh Token + Blacklist with Prisma](https://alckor.dev/en/blog/nestjs-jwt-refresh-blacklist-prisma-complete)
 - 🗒️ [Husky: Automate Code Quality with Git Hooks](https://alckor.dev/en/blog/husky-automate-code-quality-git-hooks)
 - 🗒️ [Git and GitHub: Complete Guide to Commands and Best Practices for Daily Development](https://alckor.dev/en/blog/git-github-complete-guide)

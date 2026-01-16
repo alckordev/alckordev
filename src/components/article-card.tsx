@@ -3,12 +3,15 @@ import { cn } from "@/lib/cn";
 import { Frontmatter } from "@/types/mdx";
 import { RiArrowRightLine, RiCalendarLine, RiTimeLine } from "@remixicon/react";
 import { useLocale, useTranslations } from "next-intl";
+import { memo } from "react";
 
 interface ArticleCardProps {
   article: Frontmatter;
 }
 
-export function ArticleCard({ article }: ArticleCardProps) {
+export const ArticleCard = memo(function ArticleCard({
+  article,
+}: ArticleCardProps) {
   const locale = useLocale();
   const t = useTranslations();
 
@@ -108,4 +111,4 @@ export function ArticleCard({ article }: ArticleCardProps) {
       <div className="from-accent-500 via-accent-500/50 to-accent-500 absolute right-0 bottom-0 left-0 h-0.5 scale-x-0 bg-gradient-to-r transition-transform duration-300 group-hover/card:scale-x-100" />
     </article>
   );
-}
+}, (prev, next) => prev.article.slug === next.article.slug);

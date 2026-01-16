@@ -13,13 +13,26 @@ import { getLocale, getTranslations } from "next-intl/server";
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations("seo_home");
+  const { routing } = await import("@/i18n/routing");
 
   const title = t("seo_title");
   const description = t("seo_description");
 
+  const canonicalUrl = `${process.env.SITE_URL}/${locale}`;
+
+  // Build alternates object for all locales
+  const alternatesLanguages: Record<string, string> = {};
+  for (const altLocale of routing.locales) {
+    alternatesLanguages[altLocale] = `${process.env.SITE_URL}/${altLocale}`;
+  }
+
   return {
     title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: alternatesLanguages,
+    },
     openGraph: getOpenGraph(title, description, locale),
     twitter: getTwitter(title, description),
   };

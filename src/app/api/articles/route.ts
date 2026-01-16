@@ -1,6 +1,9 @@
 import { getPostsInfo } from "@/lib/server/mdx";
 import { NextRequest, NextResponse } from "next/server";
 
+// Cache por 1 hora
+export const revalidate = 3600;
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const locale = searchParams.get("locale") || "en";
@@ -30,12 +33,20 @@ export async function GET(request: NextRequest) {
       topics: post.topics || [],
     }));
 
-    return NextResponse.json({
-      articles,
-      totalCount: sortedPosts.length,
-      currentOffset: offset,
-      hasMore: endIndex < sortedPosts.length,
-    });
+    return NextResponse.json(
+      {
+        articles,
+        totalCount: sortedPosts.length,
+        currentOffset: offset,
+        hasMore: endIndex < sortedPosts.length,
+      },
+      {
+        headers: {
+          "Cache-Control":
+            "public, s-maxage=3600, stale-while-revalidate=86400",
+        },
+      },
+    );
   } catch (error) {
     console.error("Error fetching articles:", error);
     return NextResponse.json(

@@ -46,7 +46,8 @@ export async function getGitHubRepositories(): Promise<GitHubRepository[]> {
         },
       }),
       next: {
-        revalidate: 3600, // Cache por 1 hora
+        revalidate: 3600, // Cache for 1 hour
+        tags: ["github-repos"], // Tag for manual revalidation
       },
     });
 
