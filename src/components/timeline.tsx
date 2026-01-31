@@ -1,10 +1,11 @@
 import { experiences } from "@/consts/experiences";
 import { cn } from "@/lib/cn";
 import { RiArrowRightUpLine, RiBriefcaseLine } from "@remixicon/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export const Timeline = () => {
   const t = useTranslations();
+  const locale = useLocale() as "en" | "es";
 
   return (
     <div className="relative">
@@ -63,8 +64,25 @@ export const Timeline = () => {
               </div>
 
               <p className="mt-3 text-sm leading-relaxed text-neutral-500">
-                {exp.description}
+                {exp.description[locale]}
               </p>
+
+              {exp.technologies && exp.technologies.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {exp.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      className={cn(
+                        "inline-flex rounded-md border px-2 py-0.5 font-mono text-xs font-medium transition-colors",
+                        "bg-neutral-200/80 text-neutral-600 [.dark_&]:bg-neutral-800/80 [.dark_&]:text-neutral-400",
+                        "border-neutral-300/50 [.dark_&]:border-neutral-700/50",
+                      )}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {i < experiences.length - 1 && (

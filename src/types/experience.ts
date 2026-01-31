@@ -6,6 +6,9 @@ export type Experience = {
     name: string;
     url?: string;
   };
-  description: string;
+  description: {
+    en: string;
+    es: string;
+  };
   technologies?: string[];
 };
