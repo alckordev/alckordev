@@ -61,9 +61,9 @@ export default async function Layout({ children, params }: Props) {
           sans.variable,
           mono.variable,
           "min-h-screen scroll-smooth font-sans antialiased",
-          "bg-neutral-100 text-neutral-950 [.dark_&]:bg-neutral-950 [.dark_&]:text-neutral-100",
-          "selection:bg-accent-500/50 selection:text-neutral-950 [.dark_&]:selection:text-neutral-100",
-          "transition-colors duration-300",
+          "bg-neutral-50 text-neutral-900 [.dark_&]:bg-neutral-950 [.dark_&]:text-neutral-50",
+          "selection:bg-accent-500/30 selection:text-neutral-950 [.dark_&]:selection:text-neutral-50",
+          "transition-colors duration-200",
         )}
       >
         <NextIntlClientProvider>
@@ -74,14 +74,12 @@ export default async function Layout({ children, params }: Props) {
             disableTransitionOnChange
           >
             <div className="relative flex min-h-screen flex-col">
-              <div className="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,hsl(var(--border)/0.2)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.2)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] bg-[size:6rem_6rem]">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.1)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.1)_1px,transparent_1px)] bg-[size:2rem_2rem]" />
-              </div>
+              <div className="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,hsl(var(--border)/0.15)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.15)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_40%,transparent_100%)] bg-[size:4rem_4rem]" />
 
               <Header />
 
-              <main className="flex-1 px-4 py-8 md:py-12">
-                <div className="mx-auto max-w-4xl">{children}</div>
+              <main className="flex-1 px-4 py-10 md:py-16 md:px-6">
+                <div className="mx-auto max-w-3xl">{children}</div>
               </main>
 
               <Footer />

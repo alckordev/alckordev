@@ -2,6 +2,7 @@
 
 import { ArticleCard } from "@/components/article-card";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { cn } from "@/lib/cn";
 import { Frontmatter } from "@/types/mdx";
 import { RiLoaderLine } from "@remixicon/react";
 import { useTranslations } from "next-intl";
@@ -29,8 +30,12 @@ export function InfiniteArticlesList({
       {visibleItems.map((article, index) => (
         <div
           key={article.slug}
-          className="animate-fade-up"
-          style={{ animationDelay: `${(index % itemsPerPage) * 50}ms` }}
+          className={cn(
+            "timeline-view animate-fade-in-up",
+            index % 3 === 0 && "animate-range-[entry_0%_cover_40%]",
+            index % 3 === 1 && "animate-range-[entry_15%_cover_55%]",
+            index % 3 === 2 && "animate-range-[entry_30%_cover_70%]",
+          )}
         >
           <ArticleCard article={article} />
         </div>

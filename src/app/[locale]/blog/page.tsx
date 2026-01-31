@@ -76,7 +76,7 @@ export default async function Blog() {
   return (
     <div className="space-y-12 md:space-y-16">
       <section className="relative">
-        <div className="animate-fade-up">
+        <div className="timeline-view animate-fade-in-up animate-range-cover">
           <div className="mb-6 flex items-center gap-3">
             <RiBookOpenLine className="text-accent-500 h-6 w-6" />
             <span className="text-sm font-medium text-neutral-500">
@@ -139,7 +139,7 @@ export default async function Blog() {
             <div className="h-px flex-1 bg-gradient-to-r from-neutral-500/20 to-transparent" />
           </div>
 
-          <div className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+          <div className="timeline-view animate-fade-in-up animate-range-[entry_10%_cover_45%]">
             <FeaturedArticleCard article={featured} />
           </div>
         </section>
@@ -159,8 +159,7 @@ export default async function Blog() {
 
       {posts.length === 0 && (
         <section
-          className="animate-fade-up py-16 text-center"
-          style={{ animationDelay: "300ms" }}
+          className="timeline-view animate-fade-in-up animate-range-cover py-16 text-center"
         >
           <div className="mx-auto max-w-md space-y-4">
             <RiBookOpenLine className="mx-auto h-12 w-12 opacity-30" />

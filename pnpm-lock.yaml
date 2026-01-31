@@ -117,7 +117,7 @@ importers:
       tailwindcss:
         specifier: ^4
         version: 4.1.13
-      tailwindcss-animated:
+      tw-animations:
         specifier: ^2.0.0
         version: 2.0.0(tailwindcss@4.1.13)
       typescript:
@@ -3244,11 +3244,6 @@ packages:
   tailwind-merge@3.3.1:
     resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
 
-  tailwindcss-animated@2.0.0:
-    resolution: {integrity: sha512-anNNGpxNgjydD8p1lcJjxxH+XbjW6KR8Xs29owTrbcf3tOJ6IRblpyFob43HBkfxFJJTAfFQqugoEG2b1EsR0A==}
-    peerDependencies:
-      tailwindcss: '>=3.1.0 || >=4.0.0'
-
   tailwindcss@4.1.13:
     resolution: {integrity: sha512-i+zidfmTqtwquj4hMEwdjshYYgMbOrPzb9a0M3ZgNa0JMoZeFC6bxZvO8yr8ozS6ix2SDz0+mvryPeBs2TFE+w==}
 
@@ -3303,6 +3298,11 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  tw-animations@2.0.0:
+    resolution: {integrity: sha512-4DY+g0dbeb3RPQqV4L9mVjpYMmmkW3qVeaRvMyRvLfa4Rh7IcpP4yIK7VuuTpuTnw5+SJZRLbjRdNDNSGGYcDw==}
+    peerDependencies:
+      tailwindcss: '>=4.0.0'
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -7205,10 +7205,6 @@ snapshots:
 
   tailwind-merge@3.3.1: {}
 
-  tailwindcss-animated@2.0.0(tailwindcss@4.1.13):
-    dependencies:
-      tailwindcss: 4.1.13
-
   tailwindcss@4.1.13: {}
 
   tapable@2.2.3: {}
@@ -7257,6 +7253,10 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@2.8.1: {}
+
+  tw-animations@2.0.0(tailwindcss@4.1.13):
+    dependencies:
+      tailwindcss: 4.1.13
 
   type-check@0.4.0:
     dependencies:

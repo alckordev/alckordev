@@ -1,5 +1,6 @@
 import { TopicCard } from "@/components/topic-card";
 import { TopicsStats } from "@/components/topics-stats";
+import { cn } from "@/lib/cn";
 import { getAllTopics } from "@/lib/server/mdx";
 import { getOpenGraph, getTwitter } from "@/lib/server/og";
 import { RiBookOpenLine, RiPriceTag3Line } from "@remixicon/react";
@@ -35,7 +36,7 @@ export default async function Topics() {
   return (
     <div className="space-y-12 md:space-y-16">
       <section className="relative">
-        <div className="animate-fade-up">
+        <div className="timeline-view animate-fade-in-up animate-range-cover">
           <div className="mb-6 flex items-center gap-3">
             <RiPriceTag3Line className="text-accent-500 h-6 w-6" />
             <span className="text-sm font-medium text-neutral-500">
@@ -59,8 +60,7 @@ export default async function Topics() {
 
       {topics.length > 0 && (
         <section
-          className="animate-fade-up"
-          style={{ animationDelay: "200ms" }}
+          className="timeline-view animate-fade-in-up animate-range-[entry_10%_cover_45%]"
         >
           <TopicsStats topics={topics} />
         </section>
@@ -78,8 +78,12 @@ export default async function Topics() {
             {topics.map((topic, index) => (
               <div
                 key={topic.slug}
-                className="animate-fade-up"
-                style={{ animationDelay: `${index * 100 + 300}ms` }}
+                className={cn(
+                  "timeline-view animate-fade-in-up",
+                  index % 3 === 0 && "animate-range-[entry_5%_cover_40%]",
+                  index % 3 === 1 && "animate-range-[entry_20%_cover_55%]",
+                  index % 3 === 2 && "animate-range-[entry_35%_cover_70%]",
+                )}
               >
                 <TopicCard topic={topic} />
               </div>
@@ -88,8 +92,7 @@ export default async function Topics() {
         </section>
       ) : (
         <section
-          className="animate-fade-up py-16 text-center"
-          style={{ animationDelay: "300ms" }}
+          className="timeline-view animate-fade-in-up animate-range-cover py-16 text-center"
         >
           <div className="mx-auto max-w-md space-y-4">
             <RiBookOpenLine className="mx-auto h-12 w-12 opacity-30" />

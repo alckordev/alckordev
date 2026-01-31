@@ -54,7 +54,7 @@ export default async function Home() {
   return (
     <div className="space-y-16 md:space-y-20">
       <section className="relative md:px-4">
-        <div className="animate-fade-up max-w-3xl">
+        <div className="timeline-view animate-fade-in-up animate-range-cover max-w-3xl">
           <div className="mb-6 flex items-center gap-3">
             <span className="animate-wiggle animate-infinite text-2xl">👋</span>
             <span className="text-sm font-medium text-neutral-500">
@@ -112,21 +112,17 @@ export default async function Home() {
               {t("featured_projects_description")}
             </p>
           </div>
-          {/* <Link
-            href="/projects"
-            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors"
-          >
-            <span>{t("view_all")}</span>
-            <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
-          </Link> */}
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           {repos.map((repo, i) => (
             <div
               key={i}
-              className="animate-fade-up"
-              style={{ animationDelay: `${i * 100 + 200}ms` }}
+              className={cn(
+                "timeline-view animate-fade-in-up",
+                i === 0 && "animate-range-[entry_0%_cover_35%]",
+                i === 1 && "animate-range-[entry_15%_cover_50%]",
+              )}
             >
               <ProjectCard repo={repo} />
             </div>
@@ -144,7 +140,7 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="animate-fade-up" style={{ animationDelay: "300ms" }}>
+        <div className="timeline-view animate-slide-in-up animate-range-[entry_10%_contain_40%]">
           <Timeline />
         </div>
       </section>
@@ -172,8 +168,12 @@ export default async function Home() {
           {posts.map((post, i) => (
             <div
               key={post.slug}
-              className="animate-fade-up"
-              style={{ animationDelay: `${i * 100 + 400}ms` }}
+              className={cn(
+                "timeline-view animate-fade-in-up",
+                i === 0 && "animate-range-[entry_5%_cover_40%]",
+                i === 1 && "animate-range-[entry_20%_cover_55%]",
+                i === 2 && "animate-range-[entry_35%_cover_70%]",
+              )}
             >
               <ArticleCard article={post} />
             </div>

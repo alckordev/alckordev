@@ -69,7 +69,7 @@ export default async function Topic({
   return (
     <div className="space-y-12 md:space-y-16">
       <section className="relative">
-        <div className="animate-fade-up">
+        <div className="timeline-view animate-fade-in-up animate-range-cover">
           <div className="mb-6 flex items-center gap-3">
             <div className="bg-accent-500/10 rounded-lg p-2">
               <RiPriceTag3Line className="text-accent-500 h-5 w-5" />
@@ -111,8 +111,7 @@ export default async function Topic({
 
       {relatedTopics.length > 0 && (
         <section
-          className="animate-fade-up space-y-6"
-          style={{ animationDelay: "400ms" }}
+          className="timeline-view animate-fade-in-up animate-range-[entry_10%_contain_50%] space-y-6"
         >
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-semibold tracking-tight">
