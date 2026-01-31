@@ -63,13 +63,11 @@ export default async function Home() {
           </div>
 
           <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            Isco, Tech Lead &
-            <br />
-            Senior{" "}
+            Isco,{" "}
             <span className="from-accent-500 to-accent-500 bg-linear-to-r via-pink-500 bg-clip-text text-transparent">
-              Fullstack
+              Full Stack
             </span>{" "}
-            Developer
+            Engineer
           </h1>
 
           <div className="max-w-2xl space-y-4 text-lg leading-relaxed text-neutral-500">
@@ -91,7 +89,7 @@ export default async function Home() {
               <span className="flex-1 text-sm">
                 {t("current_focus")}{" "}
                 <span className="font-medium text-neutral-950 [.dark_&]:text-neutral-100">
-                  Astro, Next.js, Nest.js & TypeScript
+                  NestJS, Go, Vue, Nuxt & TypeScript
                 </span>
               </span>
             </div>

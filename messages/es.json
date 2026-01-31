@@ -30,7 +30,7 @@
   "no_more_articles": "¡Has llegado al final!",
   "greeting": "Hola, soy yo",
   "current_focus": "Actualmente construyendo cosas increíbles con",
-  "hero_description": "Me apasionan las tecnologías web modernas, las arquitecturas escalables y la mentoría de equipos de desarrollo para crear software con impacto.",
+  "hero_description": "Diseño y construyo sistemas escalables de punta a punta. Me apasiona la arquitectura, el código limpio y entregar aplicaciones robustas en backend y frontend.",
   "years_experience": "+{count} años de experiencia",
   "thoughts": "Ideas",
   "tutorials": "Tutoriales",
@@ -72,11 +72,11 @@
   "subscribe_already": "¡Excelente! \nYa estás suscrito con ese correo electrónico. \n😉",
   "server_error": "¡Ups! \nAlgo salió mal. \n😭",
   "seo_home": {
-    "seo_title": "Isco, Tech Lead & Senior Fullstack Developer",
-    "seo_description": "+10 años de experiencia. Me apasionan las tecnologías web modernas, las arquitecturas escalables y la mentoría de equipos de desarrollo para crear software con impacto."
+    "seo_title": "Isco, Full Stack Engineer",
+    "seo_description": "+10 años de experiencia. Full Stack Engineer diseñando y construyendo sistemas escalables. NestJS, Go, Vue, Nuxt y TypeScript."
   },
   "seo_blog": {
-    "seo_title": "Blog - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_title": "Blog - Isco, Full Stack Engineer",
     "seo_description": "Exploraciones profundas en desarrollo web moderno, patrones de React, mejores prácticas con TypeScript y las últimas herramientas que hacen que crear software de calidad sea más agradable."
   },
   "seo_article": {

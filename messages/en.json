@@ -30,7 +30,7 @@
   "no_more_articles": "You've reached the end!",
   "greeting": "Hey there, I'm",
   "current_focus": "Currently building amazing things with",
-  "hero_description": "I'm passionate about modern web technologies, scalable architectures, and mentoring development teams to build impactful software.",
+  "hero_description": "I design and build scalable systems end-to-end. I'm passionate about architecture, clean code, and delivering robust applications across backend and frontend.",
   "years_experience": "+{count} years of experience",
   "thoughts": "Thoughts",
   "tutorials": "Tutorials",
@@ -72,11 +72,11 @@
   "subscribe_already": "Great! You’re already subscribed with that email. 😉",
   "server_error": "Oops! Something went wrong. 😭",
   "seo_home": {
-    "seo_title": "Isco, Tech Lead & Senior Fullstack Developer",
-    "seo_description": "+10 years of experience. I'm passionate about modern web technologies, scalable architectures, and mentoring development teams to build impactful software."
+    "seo_title": "Isco, Full Stack Engineer",
+    "seo_description": "+10 years of experience. Full Stack Engineer designing and building scalable systems. NestJS, Go, Vue, Nuxt & TypeScript."
   },
   "seo_blog": {
-    "seo_title": "Blog - Isco, Tech Lead & Senior Fullstack Developer",
+    "seo_title": "Blog - Isco, Full Stack Engineer",
     "seo_description": "Deep dives into modern web development, React patterns, TypeScript best practices, and the latest tools that make building great software more enjoyable."
   },
   "seo_article": {
