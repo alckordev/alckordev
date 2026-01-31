@@ -54,6 +54,26 @@
 }
 
 /* ==========================================================================
+   Background pattern — gradient + subtle glow
+   ========================================================================== */
+
+.bg-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  --glow: color-mix(in srgb, var(--color-accent-500) 8%, transparent);
+  --gradient: color-mix(in srgb, var(--color-accent-500) 3%, transparent);
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, var(--glow) 0%, transparent 60%),
+    linear-gradient(to bottom, var(--gradient) 0%, transparent 50%);
+}
+
+.dark .bg-pattern {
+  --glow: color-mix(in srgb, var(--color-accent-400) 12%, transparent);
+  --gradient: color-mix(in srgb, var(--color-accent-500) 5%, transparent);
+}
+
+/* ==========================================================================
    Scrollbar — consistent with light/dark
    ========================================================================== */
 

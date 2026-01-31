@@ -74,7 +74,7 @@ export default async function Layout({ children, params }: Props) {
             disableTransitionOnChange
           >
             <div className="relative flex min-h-screen flex-col">
-              <div className="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,hsl(var(--border)/0.35)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.35)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,black_25%,transparent_100%)] bg-[size:4rem_4rem]" />
+              <div className="bg-pattern" aria-hidden="true" />
 
               <Header />
 
