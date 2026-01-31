@@ -2,6 +2,7 @@ import { experiences } from "@/consts/experiences";
 import { cn } from "@/lib/cn";
 import { RiArrowRightUpLine, RiBriefcaseLine } from "@remixicon/react";
 import { useLocale, useTranslations } from "next-intl";
+import { Badge } from "./ui";
 
 export const Timeline = () => {
   const t = useTranslations();
@@ -25,16 +26,16 @@ export const Timeline = () => {
 
             <div
               className={cn(
-                "rounded-lg p-4 backdrop-blur-sm transition-all duration-300 group-hover:shadow-md",
-                "bg-neutral-50/50 hover:bg-neutral-50 [.dark_&]:bg-neutral-950/50 [.dark_&]:hover:bg-neutral-950",
-                "group-hover:border-border border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+                "rounded-xl border p-4 backdrop-blur-sm transition-all duration-300 group-hover:shadow-md",
+                "bg-white/80 border-neutral-200/80 [.dark_&]:bg-neutral-900/80 [.dark_&]:border-neutral-800/80",
+                "group-hover:border-accent-500/30 [.dark_&]:group-hover:border-accent-500/20",
               )}
             >
               <div
                 className={cn(
-                  "mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 font-mono text-xs font-medium",
-                  "bg-neutral-200 text-neutral-600 [.dark_&]:bg-neutral-900 [.dark_&]:text-neutral-400",
-                  "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+                  "mb-3 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs font-medium",
+                  "bg-neutral-100 text-neutral-600 [.dark_&]:bg-neutral-800 [.dark_&]:text-neutral-400",
+                  "border-neutral-200/80 [.dark_&]:border-neutral-700/80",
                 )}
               >
                 <span>{exp.startYear}</span>
@@ -48,7 +49,7 @@ export const Timeline = () => {
               </div>
 
               <div className="space-y-2">
-                <h3 className="group-hover:text-accent-500 text-lg font-semibold tracking-tight transition-colors">
+                <h3 className="text-lg font-semibold tracking-tight text-neutral-900 transition-colors group-hover:text-accent-600 [.dark_&]:text-neutral-50 [.dark_&]:group-hover:text-accent-400">
                   {exp.role}
                 </h3>
 
@@ -56,30 +57,23 @@ export const Timeline = () => {
                   href={exp.company.url}
                   target="_blank"
                   rel="noopener"
-                  className="group/company hover:text-accent-500! inline-flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors [.dark_&]:text-neutral-400"
+                  className="group/company inline-flex items-center gap-2 text-sm font-medium text-neutral-600 transition-colors hover:text-accent-600 [.dark_&]:text-neutral-400 [.dark_&]:group-hover/company:text-accent-400"
                 >
                   <span>{exp.company.name}</span>
                   <RiArrowRightUpLine className="h-3 w-3 transition-transform group-hover/company:translate-x-0.5 group-hover/company:-translate-y-0.5" />
                 </a>
               </div>
 
-              <p className="mt-3 text-sm leading-relaxed text-neutral-500">
+              <p className="mt-3 text-sm leading-relaxed text-neutral-500 [.dark_&]:text-neutral-400">
                 {exp.description[locale]}
               </p>
 
               {exp.technologies && exp.technologies.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   {exp.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className={cn(
-                        "inline-flex rounded-md border px-2 py-0.5 font-mono text-xs font-medium transition-colors",
-                        "bg-neutral-200/80 text-neutral-600 [.dark_&]:bg-neutral-800/80 [.dark_&]:text-neutral-400",
-                        "border-neutral-300/50 [.dark_&]:border-neutral-700/50",
-                      )}
-                    >
+                    <Badge key={tech} variant="muted">
                       {tech}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               )}

@@ -15,18 +15,15 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   return (
     <article
       className={cn(
-        "group/card relative overflow-hidden rounded-lg backdrop-blur-sm duration-300",
-        "bg-neutral-50/50 hover:bg-neutral-50 [.dark_&]:bg-neutral-950/50 [.dark_&]:hover:bg-neutral-950",
-        "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
-        "hover:shadow-accent-500/5 hover:shadow-lg",
+        "group/card relative overflow-hidden rounded-xl border backdrop-blur-sm duration-300",
+        "bg-white/80 border-neutral-200/80 [.dark_&]:bg-neutral-900/80 [.dark_&]:border-neutral-800/80",
+        "hover:-translate-y-0.5 hover:shadow-md hover:shadow-accent-500/5",
       )}
     >
       <div
         className={cn(
-          "animate-shine absolute top-4 right-4 z-10 flex items-center gap-1 rounded-full bg-[length:200%_100%] px-3 py-1 text-xs font-medium",
-          "bg-[linear-gradient(110deg,#ffe29c4d,45%,#d6961608,55%,#ffe29c4d)]",
-          "[.dark_&]:bg-[linear-gradient(110deg,#fbb20323,45%,#ffa50033,55%,#fbb20323)]",
-          "border-accent-500/20 text-accent-500 border",
+          "animate-shine absolute top-4 right-4 z-10 flex items-center gap-1 rounded-full border bg-[length:200%_100%] px-3 py-1 text-xs font-medium",
+          "bg-accent-500/15 text-accent-600 border-accent-500/25 [.dark_&]:text-accent-400 [.dark_&]:border-accent-500/30",
         )}
       >
         {t("featured")}
@@ -78,10 +75,9 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
                 key={tag.slug}
                 href={`/topics/${tag.slug}`}
                 className={cn(
-                  "group inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors",
-                  "hover:bg-accent-500/10! bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
-                  "hover:text-accent-500! text-neutral-500",
-                  "hover:border-accent-500/30! border-neutral-300/50 [.dark_&]:border-neutral-800/50",
+                  "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors",
+                  "bg-neutral-100/80 text-neutral-600 hover:bg-accent-500/15 hover:text-accent-600 hover:border-accent-500/30",
+                  "border-neutral-200/80 [.dark_&]:bg-neutral-800/60 [.dark_&]:text-neutral-400 [.dark_&]:hover:bg-accent-500/15 [.dark_&]:hover:text-accent-400 [.dark_&]:border-neutral-700/80",
                 )}
               >
                 {tag.name}
@@ -91,7 +87,7 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
 
           <Link
             href={`/blog/${article.slug}`}
-            className="group/link text-accent-500 hidden items-center gap-2 text-sm font-medium transition-colors md:flex"
+            className="group/link hidden items-center gap-2 text-sm font-medium text-neutral-500 transition-colors hover:text-accent-600 md:flex [.dark_&]:text-neutral-400 [.dark_&]:hover:text-accent-400"
           >
             <span>{t("read_more")}</span>
             <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
@@ -101,9 +97,9 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
         <Link
           href={`/blog/${article.slug}`}
           className={cn(
-            "group/link hover:text-accent-500 flex items-center justify-center gap-2 rounded-md border py-2 text-sm font-medium transition-colors md:hidden",
-            "hover:bg-accent-500/10! bg-neutral-300/30 [.dark_&]:bg-neutral-800/30",
-            "hover:border-accent-500/50! border-neutral-300/50 [.dark_&]:border-neutral-800/50",
+            "group/link flex items-center justify-center gap-2 rounded-lg border py-2 text-sm font-medium transition-colors md:hidden",
+            "border-neutral-300/70 bg-neutral-100/80 text-neutral-600 hover:border-accent-500/40 hover:bg-accent-500/10 hover:text-accent-600",
+            "[.dark_&]:border-neutral-700/70 [.dark_&]:bg-neutral-800/50 [.dark_&]:text-neutral-300 [.dark_&]:hover:border-accent-500/40 [.dark_&]:hover:bg-accent-500/15 [.dark_&]:hover:text-accent-400",
           )}
         >
           <span>{t("read_more")}</span>

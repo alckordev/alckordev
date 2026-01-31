@@ -1,7 +1,7 @@
 import { getPostsInfo } from "@/lib/server/mdx";
 import { NextRequest, NextResponse } from "next/server";
 
-// Cache por 1 hora
+// Cache for 1 hour
 export const revalidate = 3600;
 
 export async function GET(request: NextRequest) {

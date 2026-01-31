@@ -20,7 +20,7 @@ export const LogoBrand = () => {
         width={125}
         height={30}
         priority // Above-the-fold
-        quality={100} // SVG máximo calidad
+        quality={100} // Maximum quality for SVG
       />
     </Link>
   );

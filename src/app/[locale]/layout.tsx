@@ -61,8 +61,8 @@ export default async function Layout({ children, params }: Props) {
           sans.variable,
           mono.variable,
           "min-h-screen scroll-smooth font-sans antialiased",
-          "bg-neutral-50 text-neutral-900 [.dark_&]:bg-neutral-950 [.dark_&]:text-neutral-50",
-          "selection:bg-accent-500/30 selection:text-neutral-950 [.dark_&]:selection:text-neutral-50",
+          "bg-neutral-50 text-neutral-900 [.dark_&]:bg-neutral-950 [.dark_&]:text-neutral-100",
+          "selection:bg-accent-500/25 selection:text-neutral-900 [.dark_&]:selection:bg-accent-500/30 [.dark_&]:selection:text-neutral-50",
           "transition-colors duration-200",
         )}
       >
@@ -74,7 +74,7 @@ export default async function Layout({ children, params }: Props) {
             disableTransitionOnChange
           >
             <div className="relative flex min-h-screen flex-col">
-              <div className="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,hsl(var(--border)/0.15)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.15)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_40%,transparent_100%)] bg-[size:4rem_4rem]" />
+              <div className="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,hsl(var(--border)/0.35)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.35)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,black_25%,transparent_100%)] bg-[size:4rem_4rem]" />
 
               <Header />
 

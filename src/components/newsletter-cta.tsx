@@ -53,17 +53,19 @@ export function NewsletterCTA() {
     <section
       className={cn(
         "relative overflow-hidden rounded-xl border bg-gradient-to-br backdrop-blur-sm",
-        "from-accent-500/10 to-accent-500/5 via-neutral-100/80 [.dark_&]:via-neutral-950/80",
-        "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
+        "from-accent-500/10 to-accent-500/5 via-white/90 [.dark_&]:via-neutral-950/90",
+        "border-neutral-200/80 [.dark_&]:border-neutral-800/80",
       )}
     >
       <div className="relative space-y-6 p-6 md:p-8">
         <div className="space-y-2 text-center">
-          <div className="bg-accent-500/10 text-accent-500 mx-auto flex h-12 w-12 items-center justify-center rounded-full">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent-500/15 text-accent-600 [.dark_&]:text-accent-400">
             <RiMailLine className="h-6 w-6" />
           </div>
-          <h3 className="text-xl font-semibold">{t("stay_updated")}</h3>
-          <p className="mx-auto max-w-md text-sm leading-relaxed text-neutral-500">
+          <h3 className="text-xl font-semibold text-neutral-900 [.dark_&]:text-neutral-50">
+            {t("stay_updated")}
+          </h3>
+          <p className="mx-auto max-w-md text-sm leading-relaxed text-neutral-500 [.dark_&]:text-neutral-400">
             {t("stay_updated_description")}
           </p>
         </div>
@@ -77,11 +79,10 @@ export function NewsletterCTA() {
                 data-invalid={!!errors.email}
                 autoComplete="off"
                 className={cn(
-                  "flex-1 rounded-lg px-4 py-2.5 text-sm backdrop-blur-sm transition-all placeholder:text-neutral-500",
-                  "bg-neutral-100/50 [.dark_&]:bg-neutral-950/50",
-                  "focus:border-accent-500! border border-neutral-300/50 [.dark_&]:border-neutral-800/50",
-                  "focus:ring-accent-500/80 focus:ring-2 focus:outline-none",
-                  "data-[invalid=true]:border-pink-500! data-[invalid=true]:focus:ring-pink-500/80!",
+                  "flex-1 rounded-lg border px-4 py-2.5 text-sm transition-all placeholder:text-neutral-500",
+                  "bg-neutral-100/80 border-neutral-200/80 [.dark_&]:bg-neutral-900/80 [.dark_&]:border-neutral-700/80",
+                  "focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none",
+                  "data-[invalid=true]:border-red-500 data-[invalid=true]:focus:ring-red-500/20",
                 )}
                 {...register("email")}
               />
@@ -89,8 +90,8 @@ export function NewsletterCTA() {
                 type="submit"
                 disabled={isSubmitting}
                 className={cn(
-                  "hidden cursor-pointer items-center justify-center space-x-2 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors md:inline-flex",
-                  "bg-accent-600 hover:bg-accent-500 text-neutral-100!",
+                  "hidden cursor-pointer items-center justify-center space-x-2 rounded-lg px-6 py-2.5 text-sm font-medium text-white transition-colors md:inline-flex",
+                  "bg-accent-600 hover:bg-accent-500",
                   "disabled:cursor-not-allowed disabled:opacity-50",
                 )}
               >
@@ -113,23 +114,22 @@ export function NewsletterCTA() {
                 type="checkbox"
                 data-invalid={!!errors.policy}
                 className={cn(
-                  "h-5 w-5 appearance-none rounded backdrop-blur-sm transition-all",
-                  "bg-neutral-100/50 [.dark_&]:bg-neutral-950/50",
-                  "focus:border-accent-500! border border-neutral-300/50 [.dark_&]:border-neutral-800/50",
-                  "focus:ring-accent-500/80 focus:ring-2 focus:outline-none",
-                  "data-[invalid=true]:border-pink-500! data-[invalid=true]:focus:ring-pink-500/80!",
+                  "h-5 w-5 appearance-none rounded border transition-all",
+                  "bg-neutral-100/80 [.dark_&]:bg-neutral-900/80 border-neutral-200/80 [.dark_&]:border-neutral-700/80",
+                  "focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none",
+                  "data-[invalid=true]:border-red-500 data-[invalid=true]:focus:ring-red-500/20",
                 )}
                 {...register("policy")}
               />
               <label
-                className="flex-1 text-xs leading-relaxed"
+                className="flex-1 text-xs leading-relaxed text-neutral-600 [.dark_&]:text-neutral-400"
                 htmlFor="policy"
               >
                 {t.rich("policy_label", {
                   privacy: (chunks) => (
                     <Link
                       href="/privacy-policy"
-                      className="text-accent-500 hover:text-accent-500/80 underline underline-offset-2"
+                      className="text-accent-600 underline underline-offset-2 hover:text-accent-500 [.dark_&]:text-accent-400 [.dark_&]:hover:text-accent-300"
                     >
                       {chunks}
                     </Link>
@@ -137,7 +137,7 @@ export function NewsletterCTA() {
                   terms: (chunks) => (
                     <Link
                       href="/terms-of-service"
-                      className="text-accent-500 hover:text-accent-500/80 underline underline-offset-2"
+                      className="text-accent-600 underline underline-offset-2 hover:text-accent-500 [.dark_&]:text-accent-400 [.dark_&]:hover:text-accent-300"
                     >
                       {chunks}
                     </Link>
@@ -154,9 +154,9 @@ export function NewsletterCTA() {
             type="submit"
             disabled={isSubmitting}
             className={cn(
-              "flex cursor-pointer items-center justify-center space-x-2 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors md:hidden",
-              "bg-accent-600 hover:bg-accent-500 text-neutral-100!",
-              "w-full disabled:cursor-not-allowed disabled:opacity-50",
+              "flex w-full cursor-pointer items-center justify-center space-x-2 rounded-lg px-6 py-2.5 text-sm font-medium text-white transition-colors md:hidden",
+              "bg-accent-600 hover:bg-accent-500",
+              "disabled:cursor-not-allowed disabled:opacity-50",
             )}
           >
             {isSubmitting ? (

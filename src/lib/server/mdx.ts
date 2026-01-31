@@ -45,8 +45,8 @@ const frontmatterCache = new Map<
     timestamp: number;
   }
 >();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
-const FRONTMATTER_CACHE_TTL = 10 * 60 * 1000; // 10 minutos
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const FRONTMATTER_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
 export const listSlugs = (dir = ""): string[] => {
   const cacheKey = dir;
@@ -72,7 +72,7 @@ export const listSlugs = (dir = ""): string[] => {
 };
 
 export const getPostInfo = (slug: string): Frontmatter | undefined => {
-  // Verificar caché de frontmatter
+  // Check frontmatter cache
   const cached = frontmatterCache.get(slug);
   if (cached && Date.now() - cached.timestamp < FRONTMATTER_CACHE_TTL) {
     return cached.data;
@@ -88,7 +88,7 @@ export const getPostInfo = (slug: string): Frontmatter | undefined => {
     readingTime: readingTime(source).minutes,
   };
 
-  // Guardar en caché
+  // Save to cache
   frontmatterCache.set(slug, { data, timestamp: Date.now() });
   return data;
 };

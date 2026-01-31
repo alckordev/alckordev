@@ -1,6 +1,7 @@
 import { ArticleCard } from "@/components/article-card";
 import { ProjectCard } from "@/components/project-card";
 import { Timeline } from "@/components/timeline";
+import { PageHero, SectionHeader } from "@/components/ui";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { getGitHubRepositories } from "@/lib/server/github";
@@ -54,63 +55,48 @@ export default async function Home() {
   return (
     <div className="space-y-16 md:space-y-20">
       <section className="relative md:px-4">
-        <div className="timeline-view animate-fade-in-up animate-range-cover max-w-3xl">
-          <div className="mb-6 flex items-center gap-3">
-            <span className="animate-wiggle animate-infinite text-2xl">👋</span>
-            <span className="text-sm font-medium text-neutral-500">
-              {t("greeting")}
-            </span>
-          </div>
-
-          <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            Isco,{" "}
-            <span className="from-accent-500 to-accent-500 bg-linear-to-r via-pink-500 bg-clip-text text-transparent">
-              Full Stack
-            </span>{" "}
-            Engineer
-          </h1>
-
-          <div className="max-w-2xl space-y-4 text-lg leading-relaxed text-neutral-500">
+        <PageHero
+          icon={<span className="animate-wiggle animate-infinite">👋</span>}
+          label={t("greeting")}
+          title={
+            <>
+              Isco,{" "}
+              <span className="bg-gradient-to-r from-accent-500 via-accent-400 to-accent-600 bg-clip-text text-transparent">
+                Full Stack
+              </span>{" "}
+              Engineer
+            </>
+          }
+          description={
             <p>
-              <span className="text-accent-500 font-semibold">
+              <span className="font-semibold text-accent-600 [.dark_&]:text-accent-400">
                 {t("years_experience", { count: 10 })}
               </span>
               . {t("hero_description")}
             </p>
-
-            <div
-              className={cn(
-                "flex items-center gap-2 rounded-lg px-4 py-3",
-                "bg-neutral-200/30 [.dark_&]:bg-neutral-800/30",
-                "border border-neutral-200/50 [.dark_&]:border-neutral-800/50",
-              )}
-            >
-              <RiSparklingLine className="text-accent-500 h-4 w-4 animate-pulse" />
-              <span className="flex-1 text-sm">
+          }
+          highlight={
+            <>
+              <RiSparklingLine className="h-5 w-5 flex-shrink-0 text-accent-500 animate-pulse" />
+              <span className="flex-1 text-sm text-neutral-600 [.dark_&]:text-neutral-300">
                 {t("current_focus")}{" "}
-                <span className="font-medium text-neutral-950 [.dark_&]:text-neutral-100">
+                <span className="font-semibold text-neutral-900 [.dark_&]:text-neutral-100">
                   NestJS, Go, Vue, Nuxt & TypeScript
                 </span>
               </span>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        />
 
-        <div className="from-accent-500/20 to-accent-500/5 absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-gradient-to-br blur-3xl" />
+        <div className="from-accent-500/15 to-accent-500/5 absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-gradient-to-br blur-3xl" />
         <div className="from-accent-500/10 absolute bottom-0 left-0 -z-10 h-24 w-24 rounded-full bg-gradient-to-tr to-transparent blur-2xl" />
       </section>
 
       <section className="group space-y-6">
-        <div className="flex items-center justify-between md:px-4">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              {t("featured_projects")}
-            </h2>
-            <p className="text-sm text-neutral-500">
-              {t("featured_projects_description")}
-            </p>
-          </div>
-        </div>
+        <SectionHeader
+          title={t("featured_projects")}
+          description={t("featured_projects_description")}
+        />
 
         <div className="grid gap-4 md:grid-cols-2">
           {repos.map((repo, i) => (
@@ -129,14 +115,10 @@ export default async function Home() {
       </section>
 
       <section className="space-y-6">
-        <div className="space-y-1 md:px-4">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            {t("experience")}
-          </h2>
-          <p className="text-sm text-neutral-500">
-            {t("experience_description")}
-          </p>
-        </div>
+        <SectionHeader
+          title={t("experience")}
+          description={t("experience_description")}
+        />
 
         <div className="timeline-view animate-slide-in-up animate-range-[entry_10%_contain_40%]">
           <Timeline />
@@ -144,23 +126,19 @@ export default async function Home() {
       </section>
 
       <section className="space-y-6">
-        <div className="flex items-center justify-between md:px-4">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              {t("latest_posts")}
-            </h2>
-            <p className="text-sm text-neutral-500">
-              {t("latest_posts_description")}
-            </p>
-          </div>
-          <Link
-            href="/blog"
-            className="group/link hover:text-accent-500! flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors"
-          >
-            <span>{t("view_all")}</span>
-            <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
-          </Link>
-        </div>
+        <SectionHeader
+          title={t("latest_posts")}
+          description={t("latest_posts_description")}
+          action={
+            <Link
+              href="/blog"
+              className="group/link inline-flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors hover:text-accent-600 [.dark_&]:hover:text-accent-400"
+            >
+              <span>{t("view_all")}</span>
+              <RiArrowRightLine className="h-4 w-4 transition-transform group-hover/link:translate-x-1" />
+            </Link>
+          }
+        />
 
         <div className="space-y-4">
           {posts.map((post, i) => (
