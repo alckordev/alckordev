@@ -515,10 +515,22 @@ export default function UsersPage() {
 
 El flujo de datos sigue esta dirección:
 
-```
-Presentation → Application → Domain ← Infrastructure
-     ↓              ↓           ↑            ↑
-  (Hooks)    (Use Cases)   (Entities)  (Adapters)
+```mermaid
+flowchart LR
+    subgraph Presentation["Presentation"]
+        Hooks["(Hooks)"]
+    end
+    subgraph Application["Application"]
+        UseCases["(Use Cases)"]
+    end
+    subgraph Domain["Domain"]
+        Entities["(Entities)"]
+    end
+    subgraph Infrastructure["Infrastructure"]
+        Adapters["(Adapters)"]
+    end
+    Presentation --> Application --> Domain
+    Infrastructure --> Domain
 ```
 
 ### Flujo de Lectura (Query)
