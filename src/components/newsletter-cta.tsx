@@ -114,10 +114,12 @@ export function NewsletterCTA() {
                 type="checkbox"
                 data-invalid={!!errors.policy}
                 className={cn(
-                  "h-5 w-5 appearance-none rounded border transition-all",
-                  "bg-neutral-100/80 [.dark_&]:bg-neutral-900/80 border-neutral-200/80 [.dark_&]:border-neutral-700/80",
-                  "focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none",
-                  "data-[invalid=true]:border-red-500 data-[invalid=true]:focus:ring-red-500/20",
+                  "mt-0.5 h-5 w-5 shrink-0 cursor-pointer appearance-none rounded border-2 transition-all duration-200",
+                  "bg-white border-neutral-300 [.dark_&]:bg-neutral-900 [.dark_&]:border-neutral-600",
+                  "hover:border-accent-400 [.dark_&]:hover:border-accent-500",
+                  "checked:bg-accent-500 checked:border-accent-500",
+                  "focus:border-accent-500 focus:ring-2 focus:ring-accent-500/25 focus:ring-offset-0 focus:outline-none",
+                  "data-[invalid=true]:border-red-500 data-[invalid=true]:focus:ring-red-500/25",
                 )}
                 {...register("policy")}
               />
