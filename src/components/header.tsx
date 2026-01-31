@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { RiMoonLine, RiSunLine } from "@remixicon/react";
 import { socials } from "@/consts/socials";
@@ -11,13 +12,22 @@ import { LogoBrand } from "./logo-brand";
 export function Header() {
   const { theme, setTheme } = useTheme();
   const t = useTranslations();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 backdrop-blur-md",
-        "bg-white/70 border-b border-neutral-200/80 [.dark_&]:bg-neutral-950/70 [.dark_&]:border-neutral-800/80",
-        "transition-colors duration-300",
+        "sticky top-0 z-50 transition-all duration-300",
+        scrolled
+          ? "backdrop-blur-md bg-white/70 [.dark_&]:bg-neutral-950/70"
+          : "bg-transparent",
       )}
     >
       <nav className="mx-auto flex max-w-4xl items-center justify-between p-4">
