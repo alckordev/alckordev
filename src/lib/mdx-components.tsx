@@ -130,26 +130,38 @@ export const components: MDXComponents = {
 
   // Paragraphs
   p: ({ children, ...props }) => (
-    <p className="mb-6 leading-normal [&:not(:first-child)]:mt-6" {...props}>
+    <p
+      className="mb-6 leading-normal text-neutral-500 [&:not(:first-child)]:mt-6 [.dark_&]:text-neutral-400"
+      {...props}
+    >
       {children}
     </p>
   ),
 
   // Lists
   ul: ({ children, ...props }) => (
-    <ul className="mb-6 space-y-2 [&>li]:mt-2" {...props}>
+    <ul
+      className="mb-6 space-y-2 text-neutral-500 [&>li]:mt-2 [.dark_&]:text-neutral-400"
+      {...props}
+    >
       {children}
     </ul>
   ),
 
   ol: ({ children, ...props }) => (
-    <ol className="mb-6 space-y-2 [&>li]:mt-2" {...props}>
+    <ol
+      className="mb-6 space-y-2 text-neutral-500 [&>li]:mt-2 [.dark_&]:text-neutral-400"
+      {...props}
+    >
       {children}
     </ol>
   ),
 
   li: ({ children, ...props }) => (
-    <li className="flex items-start gap-x-2 leading-normal" {...props}>
+    <li
+      className="flex items-start gap-x-2 leading-normal text-neutral-500 [.dark_&]:text-neutral-400"
+      {...props}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -209,7 +221,7 @@ export const components: MDXComponents = {
 
   th: ({ children, ...props }) => (
     <th
-      className="border border-neutral-500/10 px-4 py-2 text-left font-semibold"
+      className="border border-neutral-500/10 px-4 py-2 text-left font-semibold text-neutral-500 [.dark_&]:text-neutral-400"
       {...props}
     >
       {children}
@@ -217,7 +229,10 @@ export const components: MDXComponents = {
   ),
 
   td: ({ children, ...props }) => (
-    <td className="border border-neutral-500/10 px-4 py-2" {...props}>
+    <td
+      className="border border-neutral-500/10 px-4 py-2 text-neutral-500 [.dark_&]:text-neutral-400"
+      {...props}
+    >
       {children}
     </td>
   ),
