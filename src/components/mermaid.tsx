@@ -48,14 +48,38 @@ const MermaidGraph: React.FC<MermaidGraphProps> = ({ graphCode }) => {
     // Clear previous content
     container.innerHTML = "";
 
-    // Configure theme before rendering
-    const theme = resolvedTheme === "dark" ? "dark" : "default";
+    // Custom theme aligned with design (accent blue, neutrals)
+    const isDark = resolvedTheme === "dark";
 
-    // Reinitialize with correct theme
+    const themeVariables = isDark
+      ? {
+        darkMode: true,
+        background: "#0a0a0a",
+        primaryColor: "#171717",
+        primaryTextColor: "#e5e5e5",
+        primaryBorderColor: "#3b82f6",
+        lineColor: "#60a5fa",
+        textColor: "#a3a3a3",
+        secondaryColor: "#262626",
+        tertiaryColor: "#171717",
+      }
+      : {
+        darkMode: false,
+        background: "#fafafa",
+        primaryColor: "#ffffff",
+        primaryTextColor: "#171717",
+        primaryBorderColor: "#3b82f6",
+        lineColor: "#2563eb",
+        textColor: "#525252",
+        secondaryColor: "#eff6ff",
+        tertiaryColor: "#f5f5f5",
+      };
+
     mermaidInstance.initialize({
       startOnLoad: false,
-      theme,
+      theme: "base",
       securityLevel: "loose",
+      themeVariables,
     });
 
     // Clean and normalize the code
