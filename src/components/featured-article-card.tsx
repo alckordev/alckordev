@@ -15,9 +15,9 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
   return (
     <article
       className={cn(
-        "group/card relative overflow-hidden rounded-xl border backdrop-blur-sm duration-300",
-        "bg-white/80 border-neutral-200/80 [.dark_&]:bg-neutral-900/80 [.dark_&]:border-neutral-800/80",
-        "hover:-translate-y-0.5 hover:shadow-md hover:shadow-accent-500/5",
+        "group/card relative overflow-hidden rounded-xl border backdrop-blur-sm transition-all duration-300",
+        "bg-white border-neutral-200 shadow-sm [.dark_&]:bg-neutral-900 [.dark_&]:border-neutral-700/80 [.dark_&]:shadow-lg [.dark_&]:shadow-black/20",
+        "hover:-translate-y-0.5 hover:shadow-md hover:shadow-accent-500/5 [.dark_&]:hover:shadow-xl [.dark_&]:hover:shadow-black/30",
       )}
     >
       <div
@@ -58,12 +58,12 @@ export function FeaturedArticleCard({ article }: FeaturedArticleCardProps) {
             href={`/blog/${article.slug}`}
             className="group/title block cursor-pointer"
           >
-            <h3 className="group-hover/title:text-accent line-clamp-2 text-2xl leading-tight font-bold transition-colors duration-200 md:text-3xl">
+            <h3 className="line-clamp-2 text-2xl font-bold leading-tight text-neutral-900 transition-colors duration-200 group-hover/title:text-accent-600 md:text-3xl [.dark_&]:text-neutral-50 [.dark_&]:group-hover/title:text-accent-400">
               {article.title}
             </h3>
           </Link>
 
-          <p className="line-clamp-3 text-sm leading-relaxed text-neutral-500">
+          <p className="line-clamp-3 text-sm leading-relaxed text-neutral-500 [.dark_&]:text-neutral-400">
             {article.abstract}
           </p>
         </div>

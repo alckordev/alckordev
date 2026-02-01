@@ -9,10 +9,10 @@ interface CardProps {
 
 const cardBase =
   "relative overflow-hidden rounded-xl backdrop-blur-sm transition-all duration-300 " +
-  "bg-white/80 border border-neutral-200/80 shadow-sm shadow-neutral-200/50 " +
-  "[.dark_&]:bg-neutral-900/80 [.dark_&]:border-neutral-800/80 [.dark_&]:shadow-neutral-950/50 " +
-  "hover:bg-white hover:shadow-md hover:shadow-accent-500/5 hover:-translate-y-0.5 " +
-  "[.dark_&]:hover:bg-neutral-900 [.dark_&]:hover:border-neutral-700/80";
+  "bg-white border border-neutral-200 shadow-sm shadow-neutral-200/60 " +
+  "[.dark_&]:bg-neutral-900 [.dark_&]:border-neutral-700/80 [.dark_&]:shadow-lg [.dark_&]:shadow-black/20 " +
+  "hover:shadow-md hover:shadow-accent-500/5 hover:-translate-y-0.5 " +
+  "[.dark_&]:hover:border-neutral-600/80 [.dark_&]:hover:shadow-xl [.dark_&]:hover:shadow-black/30";
 
 export function Card({
   children,

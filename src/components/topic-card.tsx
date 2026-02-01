@@ -12,8 +12,8 @@ export const TopicCard = ({ topic }: { topic: Topic & { count: number } }) => {
       href={`/topics/${topic.slug}`}
       className={cn(
         "group/topic relative block overflow-hidden rounded-xl border transition-all duration-300",
-        "bg-white/80 border-neutral-200/80 [.dark_&]:bg-neutral-900/80 [.dark_&]:border-neutral-800/80",
-        "hover:-translate-y-0.5 hover:border-accent-500/30 hover:shadow-md hover:shadow-accent-500/5 [.dark_&]:hover:border-accent-500/20",
+        "bg-white border-neutral-200 shadow-sm [.dark_&]:bg-neutral-900 [.dark_&]:border-neutral-700/80 [.dark_&]:shadow-lg [.dark_&]:shadow-black/20",
+        "hover:-translate-y-0.5 hover:border-accent-500/40 hover:shadow-md hover:shadow-accent-500/5 [.dark_&]:hover:border-accent-500/30 [.dark_&]:hover:shadow-xl [.dark_&]:hover:shadow-black/30",
       )}
     >
       <div className="from-accent-500/10 to-accent-500/5 absolute inset-0 bg-gradient-to-br via-transparent opacity-0 transition-opacity duration-300 group-hover/topic:opacity-100" />
