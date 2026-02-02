@@ -60,7 +60,7 @@ export default async function Home() {
           label={t("greeting")}
           title={
             <>
-              Isco,{" "}
+              Fran,{" "}
               <span className="bg-gradient-to-r from-accent-500 via-accent-400 to-accent-600 bg-clip-text text-transparent">
                 Full Stack
               </span>{" "}
