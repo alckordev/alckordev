@@ -28,10 +28,10 @@ export async function generateMetadata({
     title,
     description,
     openGraph: {
-      ...getOpenGraph(title, description, locale),
+      ...getOpenGraph(title, description, locale, { includeImages: false }),
       url: `${process.env.SITE_URL}/${locale}/topics/${slug}`,
     },
-    twitter: getTwitter(title, description),
+    twitter: getTwitter(title, description, { includeImages: false }),
   };
 }
 

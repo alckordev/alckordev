@@ -18,10 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     openGraph: {
-      ...getOpenGraph(title, description, locale),
+      ...getOpenGraph(title, description, locale, { includeImages: false }),
       url: `${process.env.SITE_URL}/${locale}/topics`,
     },
-    twitter: getTwitter(title, description),
+    twitter: getTwitter(title, description, { includeImages: false }),
   };
 }
 

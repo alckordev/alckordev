@@ -4,13 +4,22 @@ export const getOpenGraph = (
   title: string,
   description: string,
   locale: string,
+  options?: { includeImages?: boolean },
 ): Metadata["openGraph"] => {
-  return {
-    type: "website",
+  const base = {
+    type: "website" as const,
     title,
     description,
     url: process.env.SITE_URL,
     locale,
+  };
+
+  if (options?.includeImages === false) {
+    return base;
+  }
+
+  return {
+    ...base,
     images: [
       {
         url: `${process.env.SITE_URL}/assets/og.jpg`,
@@ -22,13 +31,22 @@ export const getOpenGraph = (
 export const getTwitter = (
   title: string,
   description: string,
+  options?: { includeImages?: boolean },
 ): Metadata["twitter"] => {
-  return {
-    card: "summary_large_image",
+  const base = {
+    card: "summary_large_image" as const,
     site: "@alckordev",
     creator: "@alckordev",
     title,
     description,
+  };
+
+  if (options?.includeImages === false) {
+    return base;
+  }
+
+  return {
+    ...base,
     images: `${process.env.SITE_URL}/assets/og.jpg`,
   };
 };

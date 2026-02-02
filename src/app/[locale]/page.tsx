@@ -34,8 +34,8 @@ export async function generateMetadata(): Promise<Metadata> {
       canonical: canonicalUrl,
       languages: alternatesLanguages,
     },
-    openGraph: getOpenGraph(title, description, locale),
-    twitter: getTwitter(title, description),
+    openGraph: getOpenGraph(title, description, locale, { includeImages: false }),
+    twitter: getTwitter(title, description, { includeImages: false }),
   };
 }
 

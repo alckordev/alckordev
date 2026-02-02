@@ -51,10 +51,10 @@ export async function generateMetadata(): Promise<Metadata> {
       languages: alternatesLanguages,
     },
     openGraph: {
-      ...getOpenGraph(title, description, locale),
+      ...getOpenGraph(title, description, locale, { includeImages: false }),
       url: canonicalUrl,
     },
-    twitter: getTwitter(title, description),
+    twitter: getTwitter(title, description, { includeImages: false }),
   };
 }
 

@@ -79,14 +79,14 @@ export async function generateMetadata({
       languages: alternatesLanguages,
     },
     openGraph: {
-      ...getOpenGraph(title, description, locale),
+      ...getOpenGraph(title, description, locale, { includeImages: false }),
       url: canonicalUrl,
       type: "article",
       authors: "@alckordev",
       publishedTime: publishedAt.toISOString(),
       tags: source?.topics?.map((t) => t.name).join(", "),
     },
-    twitter: getTwitter(title, description),
+    twitter: getTwitter(title, description, { includeImages: false }),
   };
 }
 
