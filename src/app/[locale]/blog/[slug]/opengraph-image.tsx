@@ -1,11 +1,28 @@
 import {
   createOGImage,
-  ogSize
+  ogSize,
 } from "@/lib/server/og-image";
-import { getPostInfo } from "@/lib/server/mdx";
+import { getPostInfo, listSlugs } from "@/lib/server/mdx";
 
 export const size = ogSize;
 export const contentType = "image/png";
+
+/** Pre-generate OG images at build time (content/ is available then). In prod, on-demand runs may not have content/. */
+export async function generateStaticParams() {
+  const locales = ["en", "es"];
+  const params: { locale: string; slug: string }[] = [];
+
+  for (const locale of locales) {
+    const slugs = listSlugs(`blog/${locale}`);
+    for (const slug of slugs) {
+      params.push({
+        locale,
+        slug: slug.replace(`blog/${locale}/`, ""),
+      });
+    }
+  }
+  return params;
+}
 
 export default async function Image({
   params,
@@ -32,9 +49,4 @@ export default async function Image({
     tags: topics,
     footerText: "Full Stack Engineer",
   });
-}
-
-export function generateStaticParams() {
-  // This will be handled by the page's generateStaticParams
-  return [];
 }
