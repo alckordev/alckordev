@@ -21,7 +21,7 @@ export function PageHero({
   return (
     <div
       className={cn(
-        "timeline-view animate-fade-in-up animate-range-cover max-w-3xl",
+        "timeline-view animate-fade-in-up animate-range-cover max-w-2xl",
         className,
       )}
     >
@@ -50,7 +50,7 @@ export function PageHero({
           {highlight && (
             <div
               className={cn(
-                "flex items-center gap-3 rounded-xl px-4 py-3",
+                "inline-flex items-center gap-3 rounded-xl ps-4 pe-5 py-3",
                 "bg-accent-500/10 border border-accent-500/20 [.dark_&]:bg-accent-500/10 [.dark_&]:border-accent-500/20",
               )}
             >
