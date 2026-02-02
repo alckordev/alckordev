@@ -2,11 +2,7 @@
   <img src="https://github.com/user-attachments/assets/e6a6c5f3-89a3-4313-b482-d227079e68ba" alt="alckor.dev" width="1400" height="350" />
 </p>
 
-<h1 align="center">Fran · Full Stack Engineer</h1>
-
-<p align="center">
-  <strong>Technical blog</strong> · React · Next.js · TypeScript · Node.js
-</p>
+<h1 align="center">Full Stack Engineer</h1>
 
 <p align="center">
   <a href="https://alckor.dev"><img src="https://img.shields.io/badge/🌐_Blog-alckor.dev-blue?style=for-the-badge" alt="Blog" /></a>
