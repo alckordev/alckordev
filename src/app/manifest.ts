@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "alckor.dev",
     short_name: "alckor.dev",
-    description: "Isco, Tech Lead & Senior Fullstack Developer",
+    description: "Fran, Full Stack Engineer",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0a",
