@@ -1,20 +1,51 @@
-<img width="1400" height="350" alt="image" src="https://github.com/user-attachments/assets/e6a6c5f3-89a3-4313-b482-d227079e68ba" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e6a6c5f3-89a3-4313-b482-d227079e68ba" alt="alckor.dev" width="1400" height="350" />
+</p>
 
-# Isco / alckordev
+<h1 align="center">Fran · Full Stack Engineer</h1>
 
-[![GitHub followers](https://img.shields.io/github/followers/alckordev?label=Follow&style=social)](https://github.com/alckordev)
-[![Twitter Follow](https://img.shields.io/twitter/follow/alckordev?style=social)](https://x.com/alckordev)
-[![Website](https://img.shields.io/website?down_color=red&down_message=offline&style=social&url=https%3A%2F%2Falckor.dev)](https://alckor.dev)
+<p align="center">
+  <strong>Technical blog</strong> · React · Next.js · TypeScript · Node.js
+</p>
+
+<p align="center">
+  <a href="https://alckor.dev"><img src="https://img.shields.io/badge/🌐_Blog-alckor.dev-blue?style=for-the-badge" alt="Blog" /></a>
+  <a href="https://github.com/alckordev"><img src="https://img.shields.io/github/followers/alckordev?style=for-the-badge&logo=github" alt="GitHub" /></a>
+  <a href="https://x.com/alckordev"><img src="https://img.shields.io/badge/Twitter-@alckordev-1DA1F2?style=for-the-badge&logo=x" alt="Twitter/X" /></a>
+</p>
 
 ---
 
-## Latest posts
+### ✨ About me
 
-- 🗒️ [Clean Architecture in Frontend with React](https://alckor.dev/en/blog/clean-architecture-frontend-react)
-- 🗒️ [Robust Authentication System in NestJS: JWT + Refresh Token + Blacklist with Prisma](https://alckor.dev/en/blog/nestjs-jwt-refresh-blacklist-prisma-complete)
-- 🗒️ [Husky: Automate Code Quality with Git Hooks](https://alckor.dev/en/blog/husky-automate-code-quality-git-hooks)
-- 🗒️ [Git and GitHub: Complete Guide to Commands and Best Practices for Daily Development](https://alckor.dev/en/blog/git-github-complete-guide)
-- 🗒️ [Forms with Server Actions, Zod, and React Hook Form (No API Routes) in Next.js App Router](https://alckor.dev/en/blog/nextjs-server-actions-forms)
-- 🗒️ [How to Fix Hydration Errors with next-themes in Next.js (App Router)](https://alckor.dev/en/blog/next-themes-hydration-error-nextjs-app-router)
-- 🗒️ [API Versioning with NestJS](https://alckor.dev/en/blog/versioning-api-with-nestjs)
-- 🗒️ [Integrate Culqi Payments with the Node.js SDK](https://alckor.dev/en/blog/integrate-culqi-payments-nodejs-sdk)
+Hi, I'm **Fran**. Full Stack Engineer with **10+ years of experience** designing and building scalable systems. I'm passionate about architecture, clean code, and delivering robust applications across backend and frontend.
+
+Currently focused on **React**, **Next.js**, **NestJS**, **Go**, **Vue**, **Nuxt** & **TypeScript**. I write about software development, best practices, and the tools I use daily.
+
+### 📚 Latest articles
+
+| Article                                                                                                                        | Topic        |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| [React vs Vue: Developer's Equivalence Guide](https://alckor.dev/en/blog/react-vs-vue-equivalences)                            | Frontend     |
+| [Clean Architecture in Frontend with React](https://alckor.dev/en/blog/clean-architecture-frontend-react)                      | Architecture |
+| [NestJS: JWT + Refresh Token + Blacklist with Prisma](https://alckor.dev/en/blog/nestjs-jwt-refresh-blacklist-prisma-complete) | Backend      |
+| [Forms with Server Actions in Next.js](https://alckor.dev/en/blog/nextjs-server-actions-forms)                                 | Next.js      |
+
+**[→ View all articles](https://alckor.dev/blog)**
+
+### 🛠 Tech stack
+
+![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react)
+![Next.js](https://img.shields.io/badge/Next.js-black?style=flat-square&logo=next.js)
+![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=vue.js)
+![Nuxt](https://img.shields.io/badge/Nuxt-00DC82?style=flat-square&logo=nuxt.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js)
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs)
+![Go](https://img.shields.io/badge/Go-00ADD8?style=flat-square&logo=go)
+
+---
+
+<p align="center">
+  <sub>Built with ❤️ · <a href="https://alckor.dev">alckor.dev</a></sub>
+</p>
