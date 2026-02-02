@@ -1,7 +1,6 @@
 import {
   createOGImage,
-  ogSize,
-  ogContentType,
+  ogSize
 } from "@/lib/server/og-image";
 import { getPostInfo } from "@/lib/server/mdx";
 
