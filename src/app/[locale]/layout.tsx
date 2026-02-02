@@ -42,24 +42,6 @@ export default async function Layout({ children, params }: Props) {
     <html lang={locale} suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link
-          rel="preload"
-          href="/assets/og.jpg"
-          as="image"
-          type="image/jpeg"
-        />
-        <link
-          rel="preload"
-          href="/assets/logo-light.svg"
-          as="image"
-          type="image/svg+xml"
-        />
-        <link
-          rel="preload"
-          href="/assets/logo-dark.svg"
-          as="image"
-          type="image/svg+xml"
-        />
       </head>
       <body
         className={cn(

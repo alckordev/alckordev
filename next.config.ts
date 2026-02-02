@@ -27,6 +27,8 @@ const nextConfig: NextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
+    // Required for quality={100} (e.g. logo); needed in Next.js 16+
+    qualities: [75, 90, 100],
   },
   async redirects() {
     return [
