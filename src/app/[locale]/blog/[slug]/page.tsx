@@ -12,7 +12,7 @@ import {
   RiTimeLine,
 } from "@remixicon/react";
 import { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { evaluate, EvaluateOptions } from "next-mdx-remote-client/rsc";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -23,15 +23,19 @@ import remarkGfm from "remark-gfm";
 export const dynamic = "force-static";
 export const revalidate = 86400;
 
+/** Return (locale, slug) so Next.js generates separate static pages per locale (avoids shared cache). */
 export async function generateStaticParams() {
   const locales = ["en", "es"];
-  const params = [];
+  const params: { locale: string; slug: string }[] = [];
 
   for (const locale of locales) {
     const slugs = listSlugs(`blog/${locale}`);
 
     for (const slug of slugs) {
-      params.push({ slug: slug.replace(`blog/${locale}/`, "") });
+      params.push({
+        locale,
+        slug: slug.replace(`blog/${locale}/`, ""),
+      });
     }
   }
 
@@ -41,13 +45,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const locale = await getLocale();
+  const { locale, slug } = await params;
   const t = await getTranslations("seo_article");
   const { routing } = await import("@/i18n/routing");
-
-  const { slug } = await params;
 
   const source = getPostInfo(`blog/${locale}/${slug}`);
 
@@ -130,12 +132,10 @@ async function ArticleContent({ source }: { source: string }) {
 export default async function Article({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const locale = await getLocale();
+  const { locale, slug } = await params;
   const t = await getTranslations();
-
-  const { slug } = await params;
 
   const frontmatter = getPostInfo(`blog/${locale}/${slug}`);
   if (!frontmatter) notFound();

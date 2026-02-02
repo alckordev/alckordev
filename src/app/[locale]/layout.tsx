@@ -28,6 +28,11 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
+/** Generate static pages for each locale so /es/* and /en/* get correct content (no shared cache). */
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 export default async function Layout({ children, params }: Props) {
   const { locale } = await params;
 

@@ -1,0 +1,482 @@
+---
+title: "React vs Vue: Developer's Equivalence Guide"
+abstract: "Technical comparison between React and Vue: direct equivalences for state, effects, computed values, props, forms, and composables. Includes side-by-side examples and links to official documentation."
+publishedAt: "2026-02-01 12:00:00"
+topics:
+  - name: React
+    slug: react
+  - name: Vue
+    slug: vue
+  - name: Frontend
+    slug: frontend
+  - name: JavaScript
+    slug: javascript
+---
+
+If you already know React or Vue and want to understand the other framework, this guide shows **direct equivalences** between them. The goal is not to say which is better, but to map concepts and APIs so you can switch from one to the other with less friction. Official references are [React](https://react.dev/) and [Vue.js](https://vuejs.org/).
+
+In this article we use **React 19+** and **Vue 3** with the **Composition API** (`<script setup>`), which is the closest mental model to React's hooks.
+
+## 1. Design philosophies
+
+**React** is a JavaScript-first library: the UI is described with JSX (JavaScript + markup), state is explicit, and reactivity is based on re-renders when state changes. Learning React is largely about learning to program in JavaScript.
+
+**Vue** is a progressive framework built on standard HTML, CSS, and JavaScript. It offers templates with directives (`v-if`, `v-for`, `v-model`), automatic reactivity via proxies, and optionally JSX. The Composition API brings Vue close to React's composition style (hooks vs composables).
+
+Both support reusable components, local and global state, and mature ecosystems (Next.js, Nuxt, etc.). The choice usually depends on team, project, and ecosystem, not on one being objectively better than the other.
+
+## 2. Local state: useState vs ref/reactive
+
+### React: `useState`
+
+```tsx
+import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  const [user, setUser] = useState({ name: "Ana" });
+
+  const increment = () => setCount((c) => c + 1);
+  const updateName = () => setUser({ ...user, name: "María" });
+
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={increment}>+1</button>
+      <p>{user.name}</p>
+    </div>
+  );
+}
+```
+
+In React, state is **immutable**: you don't mutate the object directly; you create a new one (e.g. with spread) and pass it to the setter.
+
+### Vue: `ref` and `reactive`
+
+```vue
+<script setup lang="ts">
+import { ref, reactive } from "vue";
+
+const count = ref(0);
+const user = reactive({ name: "Ana" });
+
+const increment = () => {
+  count.value++;
+};
+const updateName = () => {
+  user.name = "María";
+};
+</script>
+
+<template>
+  <div>
+    <p>{{ count }}</p>
+    <button @click="increment">+1</button>
+    <p>{{ user.name }}</p>
+  </div>
+</template>
+```
+
+In Vue, use `ref` for primitives: you read and write via `.value` in the script; in the template you don't need `.value`. For objects, `reactive` allows **direct mutation**: you change properties and the view updates automatically.
+
+| React              | Vue                                         |
+| ------------------ | ------------------------------------------- |
+| `useState(0)`      | `ref(0)` → use `.value`                     |
+| `useState({})`     | `reactive({})` or `ref({})`                 |
+| `setState(newVal)` | assign `ref.value = x` or mutate `reactive` |
+
+## 3. Side effects: useEffect vs watch / watchEffect
+
+### React: `useEffect`
+
+```tsx
+import { useEffect, useState } from "react";
+
+function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/users/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setUser(data);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  if (!user) return <p>Loading…</p>;
+  return <p>{user.name}</p>;
+}
+```
+
+The dependency array controls when the effect runs again; the cleanup function runs on unmount or before the next run.
+
+### Vue: `watch` and `watchEffect`
+
+```vue
+<script setup lang="ts">
+import { ref, watch, watchEffect, onMounted, onUnmounted } from "vue";
+
+const props = defineProps<{ userId: string }>();
+const user = ref(null);
+
+// Equivalent to useEffect with deps [userId]
+watch(
+  () => props.userId,
+  async (userId) => {
+    const res = await fetch(`/api/users/${userId}`);
+    const data = await res.json();
+    user.value = data;
+  },
+  { immediate: true },
+);
+
+// Equivalent to useEffect with no deps: runs on mount and when any reactive dependency used inside changes
+watchEffect(() => {
+  console.log("Current user:", user.value?.name);
+});
+
+// Mount: onMounted ≈ useEffect(() => { ... }, [])
+onMounted(() => {
+  console.log("Component mounted");
+});
+
+// Cleanup: onUnmounted ≈ return () => {} from useEffect
+onUnmounted(() => {
+  console.log("Component unmounted");
+});
+</script>
+
+<template>
+  <p v-if="!user">Loading…</p>
+  <p v-else>{{ user.name }}</p>
+</template>
+```
+
+- **watch**: react to one or more specific sources (like useEffect's dependency array).
+- **watchEffect**: run code that uses reactive values; Vue tracks dependencies automatically.
+- **onMounted / onUnmounted**: equivalent to useEffect with cleanup for lifecycle logic.
+
+## 4. Computed values: useMemo / useCallback vs computed
+
+### React: `useMemo` and `useCallback`
+
+```tsx
+import { useMemo, useCallback, useState } from "react";
+
+function ProductList({ items }: { items: Item[] }) {
+  const [filter, setFilter] = useState("");
+
+  const filteredItems = useMemo(
+    () => items.filter((i) => i.name.includes(filter)),
+    [items, filter],
+  );
+
+  const handleSelect = useCallback((id: string) => {
+    console.log("Selected", id);
+  }, []);
+
+  return (
+    <>
+      <input value={filter} onChange={(e) => setFilter(e.target.value)} />
+      {filteredItems.map((item) => (
+        <div key={item.id} onClick={() => handleSelect(item.id)}>
+          {item.name}
+        </div>
+      ))}
+    </>
+  );
+}
+```
+
+In React you memoize manually: `useMemo` for derived values and `useCallback` for stable function references.
+
+### Vue: `computed`
+
+```vue
+<script setup lang="ts">
+import { ref, computed } from "vue";
+
+const items = ref<Item[]>([]);
+const filter = ref("");
+
+const filteredItems = computed(() =>
+  items.value.filter((i) => i.name.includes(filter.value)),
+);
+
+const handleSelect = (id: string) => {
+  console.log("Selected", id);
+};
+</script>
+
+<template>
+  <input v-model="filter" />
+  <div
+    v-for="item in filteredItems"
+    :key="item.id"
+    @click="handleSelect(item.id)"
+  >
+    {{ item.name }}
+  </div>
+</template>
+```
+
+In Vue, `computed` is **cached by default**: it only recomputes when its reactive dependencies change. You don't need an explicit equivalent to `useCallback` for simple handlers; if you want to avoid recreating functions on every render, you can use `computed` for a function or define it outside `setup` when it doesn't depend on state.
+
+## 5. Props and events
+
+### React: props and callbacks
+
+```tsx
+interface ButtonProps {
+  label: string;
+  disabled?: boolean;
+  onPress: () => void;
+}
+
+function Button({ label, disabled = false, onPress }: ButtonProps) {
+  return (
+    <button disabled={disabled} onClick={onPress}>
+      {label}
+    </button>
+  );
+}
+
+// Usage
+<Button label="Submit" onPress={() => submit()} />;
+```
+
+### Vue: `defineProps` and `defineEmits`
+
+```vue
+<script setup lang="ts">
+interface Props {
+  label: string;
+  disabled?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  disabled: false,
+});
+
+const emit = defineEmits<{
+  press: [];
+}>();
+
+function handleClick() {
+  emit("press");
+}
+</script>
+
+<template>
+  <button :disabled="disabled" @click="handleClick">
+    {{ label }}
+  </button>
+</template>
+```
+
+```vue
+<!-- Usage -->
+<Button label="Submit" @press="submit" />
+```
+
+In React you pass a function (`onPress`); in Vue you declare events with `defineEmits` and the parent listens with `@press`. Validation and typing are done with TypeScript in both.
+
+## 6. Conditional rendering and lists
+
+### React
+
+```tsx
+{
+  isLoading && <Spinner />;
+}
+{
+  error ? <ErrorMessage msg={error} /> : <Content />;
+}
+
+{
+  items.map((item) => <Item key={item.id} data={item} />);
+}
+```
+
+### Vue
+
+```vue
+<Spinner v-if="isLoading" />
+<ErrorMessage v-if="error" :msg="error" />
+<Content v-else />
+
+<Item v-for="item in items" :key="item.id" :data="item" />
+```
+
+In Vue, `v-if`/`v-else` replace conditionals; `v-for` replaces `.map()`. Always use `:key` in lists (same as in React). Vue's `v-show` only toggles CSS (`display`), it doesn't mount/unmount the node like `v-if`.
+
+## 7. Forms: controlled components vs v-model
+
+### React: controlled components
+
+```tsx
+const [email, setEmail] = useState("");
+const [agree, setAgree] = useState(false);
+
+<input
+  type="email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+/>
+<input
+  type="checkbox"
+  checked={agree}
+  onChange={(e) => setAgree(e.target.checked)}
+/>
+```
+
+State is the single source of truth; each input is bound to a value and a handler.
+
+### Vue: `v-model`
+
+```vue
+<script setup>
+const email = ref("");
+const agree = ref(false);
+</script>
+
+<template>
+  <input v-model="email" type="email" />
+  <input v-model="agree" type="checkbox" />
+</template>
+```
+
+`v-model` is syntactic sugar for `:value` + `@input` (or `:checked` + `@change` for checkboxes). In Vue 3 you also have `v-model` for custom components (conceptually similar to controlled components in React).
+
+## 8. Composition and reuse: Hooks vs Composables
+
+### React: Custom Hooks
+
+```tsx
+import { useState } from "react";
+
+function useCounter(initial = 0) {
+  const [count, setCount] = useState(initial);
+  const increment = () => setCount((c) => c + 1);
+  const decrement = () => setCount((c) => c - 1);
+  return { count, increment, decrement };
+}
+
+function MyComponent() {
+  const { count, increment } = useCounter(0);
+  return <button onClick={increment}>{count}</button>;
+}
+```
+
+### Vue: Composables
+
+```ts
+// useCounter.ts
+import { ref } from "vue";
+
+export function useCounter(initial = 0) {
+  const count = ref(initial);
+  const increment = () => count.value++;
+  const decrement = () => count.value--;
+  return { count, increment, decrement };
+}
+```
+
+```vue
+<script setup>
+import { useCounter } from "./useCounter";
+
+const { count, increment } = useCounter(0);
+</script>
+
+<template>
+  <button @click="increment">{{ count }}</button>
+</template>
+```
+
+Same idea: you extract reactive logic into a reusable function. In React you return state and setters; in Vue, `ref`s and functions that mutate `.value`.
+
+## 9. Context / injection: Context vs provide/inject
+
+### React: Context API
+
+```tsx
+const ThemeContext = createContext<"light" | "dark">("light");
+
+function App() {
+  return (
+    <ThemeContext.Provider value="dark">
+      <Layout />
+    </ThemeContext.Provider>
+  );
+}
+
+function ThemedButton() {
+  const theme = useContext(ThemeContext);
+  return <button className={theme}>Button</button>;
+}
+```
+
+### Vue: provide / inject
+
+```vue
+<!-- App.vue -->
+<script setup>
+import { provide } from "vue";
+provide("theme", "dark");
+</script>
+
+<template>
+  <Layout />
+</template>
+```
+
+```vue
+<!-- ThemedButton.vue -->
+<script setup>
+import { inject } from "vue";
+const theme = inject("theme", "light");
+</script>
+
+<template>
+  <button :class="theme">Button</button>
+</template>
+```
+
+In both cases you avoid prop drilling. React uses a Context object and a Provider; Vue uses string (or symbol) keys with `provide`/`inject`.
+
+## 10. Quick reference table
+
+| Concept          | React                          | Vue (Composition API)      |
+| ---------------- | ------------------------------ | -------------------------- |
+| Local state      | `useState`                     | `ref`, `reactive`          |
+| Side effects     | `useEffect`                    | `watch`, `watchEffect`     |
+| Mount / unmount  | `useEffect` + cleanup          | `onMounted`, `onUnmounted` |
+| Derived value    | `useMemo`                      | `computed`                 |
+| Stable callback  | `useCallback`                  | function or `computed`     |
+| Props            | function arguments             | `defineProps`              |
+| Events to parent | callback props                 | `defineEmits` + `emit()`   |
+| Conditional      | `&&`, ternary                  | `v-if`, `v-else`, `v-show` |
+| List             | `.map()` + `key`               | `v-for` + `:key`           |
+| Controlled input | `value` + `onChange`           | `v-model`                  |
+| Reusable logic   | Custom Hooks                   | Composables                |
+| Global context   | `createContext` + `useContext` | `provide` / `inject`       |
+
+## 11. Ecosystem and frameworks
+
+- **React**: [Next.js](https://nextjs.org/), Remix, Gatsby — the [React docs](https://react.dev/) recommend a full-stack framework for complete applications.
+- **Vue**: [Nuxt](https://nuxt.com/), Vite as the build tool.
+- **Routing**: React Router vs Vue Router.
+- **Global state**: Redux, Zustand, Jotai (React) vs Pinia (Vue).
+
+Both ecosystems support SSR, SSG, and SPA applications. The decision is often about team convention, performance in specific cases, or integration with an existing backend.
+
+## Conclusion
+
+React and Vue solve similar problems with different philosophies: React emphasizes JavaScript and explicit data flow; Vue offers templates and automatic reactivity with a gentle learning curve. With the Composition API, Vue aligns closely with the mental model of React hooks, so the equivalences in this guide let you move from one to the other without starting from scratch.
+
+To go deeper, check the [official React documentation](https://react.dev/) and the [official Vue documentation](https://vuejs.org/).

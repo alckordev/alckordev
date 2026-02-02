@@ -4,11 +4,11 @@
   <defs>
     <style>
       .st0 {
-        fill: #fddf47;
+        fill: #60a5fa;
       }
 
       .st1 {
-        fill: #e7b008;
+        fill: #3b82f6;
       }
 
       .st2 {
@@ -24,8 +24,8 @@
       }
     </style>
     <linearGradient id="linear-gradient" x1="35" y1="55.1" x2="35" y2="14.9" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#f0ad00"/>
-      <stop offset="1" stop-color="#ff009b"/>
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#60a5fa"/>
     </linearGradient>
   </defs>
   <g id="Layer_2">
