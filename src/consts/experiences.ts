@@ -9,8 +9,8 @@ export const experiences: Experience[] = [
       url: "https://www.interseguro.pe",
     },
     description: {
-      en: "As a Full Stack Engineer, I design and build scalable systems end-to-end. I own architecture decisions, define technical standards, and implement solutions across backend and frontend. I work with NestJS, Go, Vue and Nuxt to deliver robust applications, and I collaborate with product and other teams to align technical delivery with business objectives.",
-      es: "Como Full Stack Engineer, diseño y construyo sistemas escalables de punta a punta. Me responsabilizo de decisiones de arquitectura, defino estándares técnicos e implemento soluciones en backend y frontend. Trabajo con NestJS, Go, Vue y Nuxt para entregar aplicaciones robustas, y colaboro con producto y otros equipos para alinear la entrega técnica con los objetivos del negocio.",
+      en: "I'm part of the Customer Experience squad, developing end-to-end solutions that directly impact the user experience. I work on frontend and backend, collaborating with the team to build maintainable, scalable, user-centered digital products.",
+      es: "Integro el squad de Experiencia al Cliente, desarrollando soluciones end-to-end que impactan directamente en la experiencia de los usuarios. Trabajo en frontend y backend, colaborando con el equipo en la construcción de productos digitales mantenibles, escalables y centrados en el usuario.",
     },
     technologies: [
       "Go",
