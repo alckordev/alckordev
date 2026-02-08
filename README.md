@@ -22,10 +22,10 @@ Currently focused on **React**, **Next.js**, **NestJS**, **Go**, **Vue**, **Nuxt
 
 | Article                                                                                                                        | Topic        |
 | ------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| [Hexagonal Architecture in NestJS: Ports, Adapters and Domain](https://alckor.dev/en/blog/hexagonal-architecture-nestjs)       | Architecture |
 | [React vs Vue: Developer's Equivalence Guide](https://alckor.dev/en/blog/react-vs-vue-equivalences)                            | Frontend     |
 | [Clean Architecture in Frontend with React](https://alckor.dev/en/blog/clean-architecture-frontend-react)                      | Architecture |
 | [NestJS: JWT + Refresh Token + Blacklist with Prisma](https://alckor.dev/en/blog/nestjs-jwt-refresh-blacklist-prisma-complete) | Backend      |
-| [Forms with Server Actions in Next.js](https://alckor.dev/en/blog/nextjs-server-actions-forms)                                 | Next.js      |
 
 **[→ View all articles](https://alckor.dev/blog)**
 
