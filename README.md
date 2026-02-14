@@ -22,23 +22,23 @@ Currently focused on **React**, **Next.js**, **NestJS**, **Go**, **Vue**, **Nuxt
 
 | Article                                                                                                                        | Topic        |
 | ------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| [Redux vs TanStack Query: Developer Equivalence Guide](https://alckor.dev/en/blog/redux-vs-tanstack-query)                     | Frontend     |
 | [React vs Vue: Developer's Equivalence Guide](https://alckor.dev/en/blog/react-vs-vue-equivalences)                            | Frontend     |
 | [Clean Architecture in Frontend with React](https://alckor.dev/en/blog/clean-architecture-frontend-react)                      | Architecture |
 | [NestJS: JWT + Refresh Token + Blacklist with Prisma](https://alckor.dev/en/blog/nestjs-jwt-refresh-blacklist-prisma-complete) | Backend      |
-| [Forms with Server Actions in Next.js](https://alckor.dev/en/blog/nextjs-server-actions-forms)                                 | Next.js      |
 
 **[→ View all articles](https://alckor.dev/blog)**
 
 ### 🛠 Tech stack
 
-![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react)
+![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=23272f)
 ![Next.js](https://img.shields.io/badge/Next.js-black?style=flat-square&logo=next.js)
-![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=flat-square&logo=vue.js)
+![Vue.js](https://img.shields.io/badge/Vue.js-1a1a1a?style=flat-square&logo=vue.js)
 ![Nuxt](https://img.shields.io/badge/Nuxt-00DC82?style=flat-square&logo=nuxt.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=ffffff)
+![Node.js](https://img.shields.io/badge/Node.js-0d121c?style=flat-square&logo=node.js)
 ![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs)
-![Go](https://img.shields.io/badge/Go-00ADD8?style=flat-square&logo=go)
+![Go](https://img.shields.io/badge/Go-00ADD8?style=flat-square&logo=go&logoColor=ffffff)
 
 ---
 
