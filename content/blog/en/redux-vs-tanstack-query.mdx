@@ -1,0 +1,883 @@
+---
+title: "Redux vs TanStack Query: Developer Equivalence Guide"
+abstract: "Technical comparison between Redux and TanStack Query: when to use each, equivalences in async state management, caching, optimistic updates, and server synchronization. Includes side-by-side examples and references to official documentation."
+publishedAt: "2026-02-13 12:00:00"
+topics:
+  - name: Redux
+    slug: redux
+  - name: TanStack Query
+    slug: tanstack-query
+  - name: State Management
+    slug: state-management
+  - name: React
+    slug: react
+highlighted: true
+---
+
+If you know Redux and want to understand TanStack Query (formerly React Query), or vice versa, this guide shows you **when and how to use each tool**. This isn't about which is better, but understanding that they solve different problems: Redux handles global application state; TanStack Query specializes in asynchronous server state. Official references are [Redux](https://redux.js.org/) and [TanStack Query](https://tanstack.com/query).
+
+In this article we use **Redux Toolkit** (the official recommended way to write Redux) and **TanStack Query v5** with React.
+
+## 1. Philosophies and use cases
+
+**Redux** is a library for predictable global state management. It manages your application's state in a centralized store, with updates through actions and reducers. It's ideal for: complex UI state, data shared across many components, business logic that doesn't depend on a server, action history (time-travel debugging).
+
+**TanStack Query** is a library for asynchronous server state management. It handles fetching, caching, synchronization, and updating server data declaratively. It's ideal for: server data (API calls), automatic synchronization, smart caching, optimistic updates, background revalidation, infinite scroll and pagination.
+
+**Key principle**: Redux handles client state (UI, preferences, session); TanStack Query handles server state (remote data). You can (and often should) use both together.
+
+## 2. Global state vs Server state
+
+### Redux: Centralized global state
+
+```tsx
+// userSlice.ts
+import { createSlice } from "@reduxjs/toolkit";
+
+const userSlice = createSlice({
+  name: "user",
+  initialState: {
+    data: null,
+    loading: false,
+    error: null,
+  },
+  reducers: {
+    fetchUserStart: (state) => {
+      state.loading = true;
+    },
+    fetchUserSuccess: (state, action) => {
+      state.loading = false;
+      state.data = action.payload;
+    },
+    fetchUserError: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+  },
+});
+
+export const { fetchUserStart, fetchUserSuccess, fetchUserError } =
+  userSlice.actions;
+export default userSlice.reducer;
+```
+
+```tsx
+// store.ts
+import { configureStore } from "@reduxjs/toolkit";
+import userReducer from "./userSlice";
+
+export const store = configureStore({
+  reducer: {
+    user: userReducer,
+  },
+});
+```
+
+```tsx
+// UserProfile.tsx
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchUserStart, fetchUserSuccess, fetchUserError } from "./userSlice";
+
+function UserProfile() {
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      dispatch(fetchUserStart());
+      try {
+        const res = await fetch("/api/user");
+        const user = await res.json();
+        dispatch(fetchUserSuccess(user));
+      } catch (err) {
+        dispatch(fetchUserError(err.message));
+      }
+    };
+    fetchUser();
+  }, [dispatch]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  return <p>{data?.name}</p>;
+}
+```
+
+In Redux you manually control: when to fetch, loading/error states, updating the store, and managing cache. Lots of boilerplate for async operations.
+
+### TanStack Query: Simplified server state
+
+```tsx
+// UserProfile.tsx
+import { useQuery } from "@tanstack/react-query";
+
+function UserProfile() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const res = await fetch("/api/user");
+      if (!res.ok) throw new Error("Network error");
+      return res.json();
+    },
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  return <p>{data?.name}</p>;
+}
+```
+
+TanStack Query automatically handles: caching, loading/error states, revalidation, background refetching, request deduplication. Much less code for the same result.
+
+| Redux                     | TanStack Query                      |
+| ------------------------- | ----------------------------------- |
+| Centralized global state  | Server state with cache             |
+| Manual async handling     | Automatic async with `useQuery`     |
+| Requires actions/reducers | Declarative with `queryKey/queryFn` |
+| Extensive boilerplate     | Minimal API                         |
+| Total control             | Automatic optimizations             |
+
+## 3. Mutations: Updating data
+
+### Redux: Thunks for async operations
+
+```tsx
+// userSlice.ts
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
+export const updateUser = createAsyncThunk(
+  "user/update",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        body: JSON.stringify(userData),
+      });
+      return await res.json();
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  },
+);
+
+const userSlice = createSlice({
+  name: "user",
+  initialState: { data: null, loading: false, error: null },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+export default userSlice.reducer;
+```
+
+```tsx
+// UpdateUserForm.tsx
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "./userSlice";
+
+function UpdateUserForm() {
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.user);
+
+  const handleSubmit = (data) => {
+    dispatch(updateUser(data));
+  };
+
+  return <form onSubmit={handleSubmit}>...</form>;
+}
+```
+
+### TanStack Query: Mutations with automatic invalidation
+
+```tsx
+// UpdateUserForm.tsx
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+function UpdateUserForm() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (userData) => {
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        body: JSON.stringify(userData),
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      // Invalidate and automatic refetch of related queries
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+
+  const handleSubmit = (data) => {
+    mutation.mutate(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {mutation.isPending && <p>Updating...</p>}
+      {mutation.isError && <p>Error: {mutation.error.message}</p>}
+      {/* form fields */}
+    </form>
+  );
+}
+```
+
+TanStack Query automatically invalidates cache after successful mutations, refetching updated data. Redux requires manual logic.
+
+## 4. Optimistic Updates
+
+### Redux: Manual update with rollback
+
+```tsx
+// userSlice.ts
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
+const userSlice = createSlice({
+  name: "user",
+  initialState: { data: null, loading: false, error: null },
+  reducers: {
+    setUser: (state, action) => {
+      state.data = action.payload;
+    },
+  },
+});
+
+export const updateUser = createAsyncThunk(
+  "user/update",
+  async (userData, { dispatch, getState, rejectWithValue }) => {
+    const previousData = getState().user.data;
+
+    // Optimistic update
+    dispatch(userSlice.actions.setUser(userData));
+
+    try {
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        body: JSON.stringify(userData),
+      });
+      return await res.json();
+    } catch (err) {
+      // Manual rollback
+      dispatch(userSlice.actions.setUser(previousData));
+      return rejectWithValue(err.message);
+    }
+  },
+);
+
+export default userSlice.reducer;
+```
+
+### TanStack Query: Built-in optimistic updates
+
+```tsx
+// UpdateUserForm.tsx
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+function UpdateUserForm() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: async (newData) => {
+      const res = await fetch("/api/user", {
+        method: "PUT",
+        body: JSON.stringify(newData),
+      });
+      return res.json();
+    },
+    onMutate: async (newData) => {
+      // Cancel ongoing refetch
+      await queryClient.cancelQueries({ queryKey: ["user"] });
+
+      // Snapshot of previous value
+      const previousUser = queryClient.getQueryData(["user"]);
+
+      // Optimistic update
+      queryClient.setQueryData(["user"], newData);
+
+      // Return context with snapshot for rollback
+      return { previousUser };
+    },
+    onError: (err, newData, context) => {
+      // Automatic rollback with snapshot
+      queryClient.setQueryData(["user"], context.previousUser);
+    },
+    onSettled: () => {
+      // Refetch to ensure synchronization
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+
+  return <form onSubmit={(data) => mutation.mutate(data)}>...</form>;
+}
+```
+
+TanStack Query has specific primitives for optimistic updates with automatic rollback. In Redux you must implement all the logic manually.
+
+## 5. Caching and refetching
+
+### Redux: Manual cache
+
+```tsx
+// userSlice.ts
+import { createSlice } from "@reduxjs/toolkit";
+
+const userSlice = createSlice({
+  name: "user",
+  initialState: {
+    data: null,
+    lastFetch: null,
+    loading: false,
+  },
+  reducers: {
+    fetchUserSuccess: (state, action) => {
+      state.data = action.payload;
+      state.lastFetch = Date.now();
+      state.loading = false;
+    },
+  },
+});
+
+export default userSlice.reducer;
+```
+
+```tsx
+// UserProfile.tsx
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+function UserProfile() {
+  const dispatch = useDispatch();
+  const { lastFetch } = useSelector((state) => state.user);
+  const CACHE_TIME = 5 * 60 * 1000; // 5 minutes
+
+  useEffect(() => {
+    if (!lastFetch || Date.now() - lastFetch > CACHE_TIME) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch, lastFetch]);
+
+  // ... rest of component
+}
+```
+
+### TanStack Query: Smart automatic cache
+
+```tsx
+// UserProfile.tsx
+import { useQuery } from "@tanstack/react-query";
+
+function UserProfile() {
+  const { data } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const res = await fetch("/api/user");
+      return res.json();
+    },
+    staleTime: 5 * 60 * 1000, // Data valid for 5 minutes
+    gcTime: 10 * 60 * 1000, // Garbage collection after 10 minutes
+    refetchOnWindowFocus: true, // Refetch when returning to window
+    refetchOnReconnect: true, // Refetch on reconnect
+    retry: 3, // Retry 3 times on error
+  });
+
+  // ... rest of component
+}
+```
+
+TanStack Query manages cache, stale time, garbage collection, and revalidation automatically. Redux requires manual implementation.
+
+## 6. Pagination and infinite scroll
+
+### Redux: Complex manual implementation
+
+```tsx
+// postsSlice.ts
+import { createSlice } from "@reduxjs/toolkit";
+
+const postsSlice = createSlice({
+  name: "posts",
+  initialState: {
+    items: [],
+    page: 1,
+    hasMore: true,
+    loading: false,
+  },
+  reducers: {
+    appendPosts: (state, action) => {
+      state.items = [...state.items, ...action.payload.posts];
+      state.hasMore = action.payload.hasMore;
+      state.page += 1;
+    },
+  },
+});
+
+export const { appendPosts } = postsSlice.actions;
+export default postsSlice.reducer;
+```
+
+```tsx
+// PostList.tsx
+import { useDispatch, useSelector } from "react-redux";
+import { appendPosts } from "./postsSlice";
+
+function PostList() {
+  const dispatch = useDispatch();
+  const { items, page, hasMore, loading } = useSelector((state) => state.posts);
+
+  const loadMore = async () => {
+    const res = await fetch(`/api/posts?page=${page}`);
+    const data = await res.json();
+    dispatch(appendPosts(data));
+  };
+
+  return (
+    <>
+      {items.map((post) => (
+        <Post key={post.id} {...post} />
+      ))}
+      {hasMore && <button onClick={loadMore}>Load more</button>}
+    </>
+  );
+}
+```
+
+### TanStack Query: Built-in infinite queries
+
+```tsx
+// PostList.tsx
+import { useInfiniteQuery } from "@tanstack/react-query";
+
+function PostList() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["posts"],
+      queryFn: async ({ pageParam = 1 }) => {
+        const res = await fetch(`/api/posts?page=${pageParam}`);
+        return res.json();
+      },
+      getNextPageParam: (lastPage, pages) => {
+        return lastPage.hasMore ? pages.length + 1 : undefined;
+      },
+      initialPageParam: 1,
+    });
+
+  return (
+    <>
+      {data?.pages.map((page) =>
+        page.posts.map((post) => <Post key={post.id} {...post} />),
+      )}
+      {hasNextPage && (
+        <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+          {isFetchingNextPage ? "Loading..." : "Load more"}
+        </button>
+      )}
+    </>
+  );
+}
+```
+
+`useInfiniteQuery` automatically handles: pagination, page concatenation, loading states, and "next page" management.
+
+## 7. Derived state and selectors
+
+### Redux: Selectors with Reselect
+
+```tsx
+// todosSlice.ts
+import { createSlice, createSelector } from "@reduxjs/toolkit";
+
+const todosSlice = createSlice({
+  name: "todos",
+  initialState: { items: [] },
+  reducers: {
+    // ... reducers
+  },
+});
+
+// Memoized selector
+export const selectCompletedTodos = createSelector(
+  [(state) => state.todos.items],
+  (todos) => todos.filter((todo) => todo.completed),
+);
+
+export default todosSlice.reducer;
+```
+
+```tsx
+// CompletedTodos.tsx
+import { useSelector } from "react-redux";
+import { selectCompletedTodos } from "./todosSlice";
+
+function CompletedTodos() {
+  const completedTodos = useSelector(selectCompletedTodos);
+
+  return (
+    <ul>
+      {completedTodos.map((todo) => (
+        <li key={todo.id}>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### TanStack Query: Select option
+
+```tsx
+// CompletedTodos.tsx
+import { useQuery } from "@tanstack/react-query";
+
+function CompletedTodos() {
+  const { data: completedTodos } = useQuery({
+    queryKey: ["todos"],
+    queryFn: async () => {
+      const res = await fetch("/api/todos");
+      return res.json();
+    },
+    select: (todos) => todos.filter((todo) => todo.completed),
+  });
+
+  return (
+    <ul>
+      {completedTodos?.map((todo) => (
+        <li key={todo.id}>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Both memoize data transformations, but TanStack Query does it in an integrated way within the query.
+
+## 8. Data normalization
+
+### Redux: Normalization with RTK
+
+```tsx
+// usersSlice.ts
+import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+
+const usersAdapter = createEntityAdapter();
+
+const usersSlice = createSlice({
+  name: "users",
+  initialState: usersAdapter.getInitialState(),
+  reducers: {
+    usersReceived: usersAdapter.setAll,
+  },
+});
+
+export const { usersReceived } = usersSlice.actions;
+
+// Auto-generated selectors
+export const {
+  selectAll: selectAllUsers,
+  selectById: selectUserById,
+  selectIds: selectUserIds,
+} = usersAdapter.getSelectors((state) => state.users);
+
+export default usersSlice.reducer;
+```
+
+### TanStack Query: Individual queries + shared cache
+
+```tsx
+// hooks/useUsers.ts
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+export function useUsers() {
+  const queryClient = useQueryClient();
+
+  return useQuery({
+    queryKey: ["users"],
+    queryFn: async () => {
+      const res = await fetch("/api/users");
+      return res.json();
+    },
+    onSuccess: (users) => {
+      // Pre-populate individual cache
+      users.forEach((user) => {
+        queryClient.setQueryData(["user", user.id], user);
+      });
+    },
+  });
+}
+
+export function useUser(userId) {
+  const queryClient = useQueryClient();
+
+  return useQuery({
+    queryKey: ["user", userId],
+    queryFn: async () => {
+      const res = await fetch(`/api/users/${userId}`);
+      return res.json();
+    },
+    initialData: () => {
+      // Try to get from list cache
+      return queryClient
+        .getQueryData(["users"])
+        ?.find((user) => user.id === userId);
+    },
+  });
+}
+```
+
+```tsx
+// UserList.tsx
+import { useUsers } from "./hooks/useUsers";
+
+function UserList() {
+  const { data: users } = useUsers();
+  return (
+    <ul>
+      {users?.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Redux has built-in tools for normalization. TanStack Query uses shared cache strategies between queries.
+
+## 9. DevTools and debugging
+
+### Redux DevTools
+
+- Time-travel debugging
+- Inspection of actions and state
+- Complete change history
+- Session replay
+
+```tsx
+// store.ts
+import { configureStore } from "@reduxjs/toolkit";
+import userReducer from "./userSlice";
+
+export const store = configureStore({
+  reducer: {
+    user: userReducer,
+  },
+  devTools: process.env.NODE_ENV !== "production",
+});
+```
+
+### TanStack Query DevTools
+
+- Inspection of queries and mutations
+- Real-time cache state
+- Fetch and revalidation times
+- Hierarchical data structure
+
+```tsx
+// App.tsx
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { queryClient } from "./queryClient";
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <YourApp />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+}
+```
+
+Both have excellent DevTools, optimized for their respective use cases.
+
+## 10. Setup and configuration
+
+### Redux: Store setup
+
+```tsx
+// store.ts
+import { configureStore } from "@reduxjs/toolkit";
+import usersReducer from "./slices/usersSlice";
+import postsReducer from "./slices/postsSlice";
+
+export const store = configureStore({
+  reducer: {
+    users: usersReducer,
+    posts: postsReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+```tsx
+// App.tsx
+import { Provider } from "react-redux";
+import { store } from "./store";
+
+function App() {
+  return (
+    <Provider store={store}>
+      <YourApp />
+    </Provider>
+  );
+}
+```
+
+### TanStack Query: QueryClient setup
+
+```tsx
+// queryClient.ts
+import { QueryClient } from "@tanstack/react-query";
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60, // 1 minute
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+```
+
+```tsx
+// App.tsx
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./queryClient";
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <YourApp />
+    </QueryClientProvider>
+  );
+}
+```
+
+Both require a Provider at the root of your application.
+
+## 11. Quick reference table
+
+| Concept            | Redux                 | TanStack Query           |
+| ------------------ | --------------------- | ------------------------ |
+| Purpose            | Global client state   | Server state             |
+| Data fetching      | Manual with thunks    | `useQuery`               |
+| Mutations          | Actions + reducers    | `useMutation`            |
+| Cache              | Manual                | Automatic and smart      |
+| Loading states     | Manual in reducers    | `isLoading`, `isPending` |
+| Automatic refetch  | No (manual)           | Yes (configurable)       |
+| Optimistic updates | Manual with rollback  | Built-in with `onMutate` |
+| Pagination         | Manual                | `useInfiniteQuery`       |
+| Normalization      | `createEntityAdapter` | Cache strategies         |
+| DevTools           | Redux DevTools        | React Query DevTools     |
+| Synchronization    | Not automatic         | Automatic (window focus) |
+| Boilerplate        | High                  | Low                      |
+
+## 12. When to use each
+
+### Use Redux when:
+
+- You need complex global UI state (theme, preferences, session)
+- You require time-travel debugging
+- Business logic is primarily client-side
+- You need a single source of truth for non-server state
+- You already use Redux and code is working well
+
+### Use TanStack Query when:
+
+- Working with server data (REST APIs, GraphQL)
+- You need automatic caching and synchronization
+- You want optimistic updates without boilerplate
+- Implementing pagination or infinite scroll
+- You need automatic revalidation
+
+### Use both when:
+
+- You have client state (Redux) AND server state (TanStack Query)
+- Example: theme/preferences in Redux, user/posts data in TanStack Query
+- This is the most common architecture in modern applications
+
+## 13. Migration and coexistence
+
+### Common pattern: Redux + TanStack Query
+
+```tsx
+// uiSlice.ts
+import { createSlice } from "@reduxjs/toolkit";
+
+const uiSlice = createSlice({
+  name: "ui",
+  initialState: {
+    theme: "dark",
+    sidebarOpen: true,
+  },
+  reducers: {
+    toggleTheme: (state) => {
+      state.theme = state.theme === "dark" ? "light" : "dark";
+    },
+    toggleSidebar: (state) => {
+      state.sidebarOpen = !state.sidebarOpen;
+    },
+  },
+});
+
+export const { toggleTheme, toggleSidebar } = uiSlice.actions;
+export default uiSlice.reducer;
+```
+
+```tsx
+// UserDashboard.tsx
+import { useQuery } from "@tanstack/react-query";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleTheme } from "./uiSlice";
+
+function UserDashboard() {
+  // Server state with TanStack Query
+  const { data: user } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const res = await fetch("/api/user");
+      return res.json();
+    },
+  });
+
+  // UI state with Redux
+  const theme = useSelector((state) => state.ui.theme);
+  const dispatch = useDispatch();
+
+  return (
+    <div className={theme}>
+      <h1>{user?.name}</h1>
+      <button onClick={() => dispatch(toggleTheme())}>Toggle theme</button>
+    </div>
+  );
+}
+```
+
+This separation of concerns results in cleaner and more maintainable code.
+
+## Conclusion
+
+Redux and TanStack Query are not direct competitors: they solve different problems. Redux shines in global client state management; TanStack Query excels at server synchronization. Modern React architecture often combines both: Redux for UI/session/preferences, TanStack Query for remote data.
+
+If you're building a new app, consider TanStack Query for any server data — you'll significantly reduce boilerplate. If you already use Redux, evaluate whether part of your Redux state is really "server state" that could benefit from TanStack Query.
+
+For deeper learning, check the [official Redux documentation](https://redux.js.org/) and the [official TanStack Query documentation](https://tanstack.com/query).
