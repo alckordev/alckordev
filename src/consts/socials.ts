@@ -1,16 +1,16 @@
 import { Social } from "@/types/social";
 import {
-  RiFacebookLine,
   RiGithubLine,
+  RiInstagramLine,
   RiLinkedinLine,
   RiTwitterXLine,
 } from "@remixicon/react";
 
 export const socials: Social[] = [
   {
-    name: "Facebook",
-    url: "https://www.facebook.com/alckordev",
-    icon: RiFacebookLine,
+    name: "Instagram",
+    url: "https://www.instagram.com/fr4n_rios",
+    icon: RiInstagramLine,
   },
   {
     name: "Twitter X",

@@ -15,14 +15,13 @@ export const experiences: Experience[] = [
     technologies: [
       "Go",
       "TypeScript",
-      "NestJS",
+      "Node.js",
       "Vue",
-      "Nuxt",
+      "MongoDB",
       "Tailwind CSS",
       "PostgreSQL",
-      "Prisma",
       "Docker",
-      "AWS",
+      "GCP",
     ],
   },
   {
