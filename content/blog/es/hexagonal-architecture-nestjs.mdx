@@ -1,0 +1,255 @@
+---
+title: "Arquitectura hexagonal en NestJS: puertos, adaptadores y dominio en el centro"
+abstract: "Aprende a aplicar la Arquitectura Hexagonal (Puertos y Adaptadores) en NestJS. Coloca el dominio en el centro, define puertos para la infraestructura y construye servicios backend testeables e independientes del framework con ejemplos prácticos."
+publishedAt: "2026-02-15 10:00:00"
+topics:
+  - name: Arquitectura Hexagonal
+    slug: hexagonal-architecture
+  - name: NestJS
+    slug: nestjs
+  - name: Backend
+    slug: backend
+  - name: Arquitectura de Software
+    slug: software-architecture
+  - name: TypeScript
+    slug: typescript
+---
+
+Si ya exploraste la [Clean Architecture en el frontend](/es/blog/clean-architecture-frontend-react), la Arquitectura Hexagonal (también conocida como **Puertos y Adaptadores**) te resultará natural en el backend. Ambas enfoques mantienen el núcleo de negocio independiente de frameworks e infraestructura. En este artículo veremos cómo aplicar la Arquitectura Hexagonal en NestJS: dominio en el centro, puertos como contratos y adaptadores para HTTP, base de datos y servicios externos.
+
+## ¿Qué es la Arquitectura Hexagonal?
+
+La Arquitectura Hexagonal fue propuesta por **Alistair Cockburn**. La idea es colocar el **dominio** (lógica y reglas de negocio) en el centro, y comunicarse con el exterior solo a través de **puertos** (interfaces) implementados por **adaptadores** (implementaciones concretas). El "hexágono" es una metáfora: el núcleo tiene seis lados porque puede tener múltiples puntos de entrada y salida, todos definidos por puertos.
+
+### ¿Por qué "Puertos y Adaptadores"?
+
+- **Puertos**: Contratos (interfaces) que definen _qué_ necesita la aplicación (ej. "persistir un pedido") o _qué_ ofrece (ej. "manejar el comando crear-pedido"). El dominio y los casos de uso solo dependen de estas abstracciones.
+- **Adaptadores**: Implementaciones que _adaptan_ el mundo exterior a los puertos. Por ejemplo, un puerto "persistir pedido" puede ser implementado por un adaptador con Prisma, un cliente REST o un mock en tests.
+
+Las dependencias apuntan **hacia adentro**: el dominio no depende de NestJS, Prisma ni HTTP. La infraestructura depende del dominio.
+
+## Conceptos clave
+
+### 1. Dominio (centro)
+
+Entidades, objetos de valor y reglas de negocio. Sin imports de framework, sin detalles de base de datos ni HTTP. TypeScript puro.
+
+### 2. Aplicación (casos de uso)
+
+Orquestan el dominio. Dependen de **puertos** (interfaces inyectadas) para cargar o persistir datos y para llamar a servicios externos. No saben _cómo_ funciona la persistencia ni el HTTP.
+
+### 3. Puertos (entrada y salida)
+
+- **Puertos de entrada**: Lo que la aplicación _expone_ (ej. "crear pedido", "obtener usuario"). En NestJS suelen ser clases de caso de uso o servicios de aplicación.
+- **Puertos de salida**: Lo que la aplicación _necesita_ del exterior (ej. "guardar pedido", "enviar notificación"). Son interfaces implementadas por adaptadores.
+
+### 4. Adaptadores
+
+- **Adaptadores de entrada**: Disparan los casos de uso. En NestJS: controladores HTTP, resolvers GraphQL o consumidores de mensajes.
+- **Adaptadores de salida**: Implementan los puertos de salida. Por ejemplo: repositorio con Prisma, cliente REST o envío de email.
+
+## Estructura de carpetas en NestJS
+
+Una forma sencilla de organizar un proyecto NestJS con Arquitectura Hexagonal:
+
+```text
+src/
+├── domain/                    # Núcleo (sin framework)
+│   ├── order.entity.ts
+│   ├── user.entity.ts
+│   └── ports/
+│       ├── order.repository.port.ts
+│       └── notification.port.ts
+├── application/               # Casos de uso
+│   ├── create-order.use-case.ts
+│   └── get-user.use-case.ts
+├── infrastructure/            # Adaptadores
+│   ├── persistence/
+│   │   └── prisma-order.repository.ts
+│   ├── http/
+│   │   └── order.controller.ts
+│   └── external/
+│       └── email-notification.adapter.ts
+└── app.module.ts
+```
+
+Las capas de dominio y aplicación no importan de `infrastructure` ni de `@nestjs/*` (salvo quizá en aplicación si usas el DI de Nest para resolver casos de uso). La infraestructura importa e implementa los puertos.
+
+## Ejemplo: Dominio y puertos
+
+Supongamos un contexto delimitado "Pedidos". El dominio define la entidad y el puerto de persistencia:
+
+```typescript
+// domain/order.entity.ts
+export interface Order {
+  id: string;
+  userId: string;
+  total: number;
+  status: "pending" | "paid" | "shipped";
+  createdAt: Date;
+}
+
+// domain/ports/order.repository.port.ts
+import type { Order } from "../order.entity";
+
+export interface OrderRepositoryPort {
+  save(order: Omit<Order, "id" | "createdAt">): Promise<Order>;
+  findById(id: string): Promise<Order | null>;
+}
+```
+
+El caso de uso solo depende de este puerto. No sabe si la implementación usa Prisma, TypeORM o un almacén en memoria.
+
+## Ejemplo: Caso de uso (capa de aplicación)
+
+El caso de uso orquesta el flujo y usa el puerto para persistir:
+
+```typescript
+// application/create-order.use-case.ts
+import type { Order } from "../../domain/order.entity";
+import type { OrderRepositoryPort } from "../../domain/ports/order.repository.port";
+
+export class CreateOrderUseCase {
+  constructor(private readonly orderRepository: OrderRepositoryPort) {}
+
+  async execute(input: { userId: string; total: number }): Promise<Order> {
+    const order = {
+      userId: input.userId,
+      total: input.total,
+      status: "pending" as const,
+    };
+    return this.orderRepository.save(order);
+  }
+}
+```
+
+Sin Prisma, sin HTTP: solo el puerto. Los tests son sencillos: inyectas una implementación falsa o en memoria de `OrderRepositoryPort`.
+
+## Ejemplo: Adaptador (infraestructura)
+
+El adaptador implementa el puerto y usa Prisma (u otra tecnología):
+
+```typescript
+// infrastructure/persistence/prisma-order.repository.ts
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma.service";
+import type { Order } from "../../domain/order.entity";
+import type { OrderRepositoryPort } from "../../domain/ports/order.repository.port";
+
+@Injectable()
+export class PrismaOrderRepository implements OrderRepositoryPort {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async save(order: Omit<Order, "id" | "createdAt">): Promise<Order> {
+    const created = await this.prisma.order.create({
+      data: {
+        userId: order.userId,
+        total: order.total,
+        status: order.status,
+      },
+    });
+    return {
+      id: created.id,
+      userId: created.userId,
+      total: Number(created.total),
+      status: created.status as Order["status"],
+      createdAt: created.createdAt,
+    };
+  }
+
+  async findById(id: string): Promise<Order | null> {
+    const row = await this.prisma.order.findUnique({ where: { id } });
+    if (!row) return null;
+    return {
+      id: row.id,
+      userId: row.userId,
+      total: Number(row.total),
+      status: row.status as Order["status"],
+      createdAt: row.createdAt,
+    };
+  }
+}
+```
+
+El dominio y el caso de uso no cambian si cambias de ORM o de almacenamiento; solo añades o sustituyes adaptadores.
+
+## Conexión en NestJS (inyección de dependencias)
+
+Registra el puerto con la implementación del adaptador en un módulo:
+
+```typescript
+// order.module.ts
+import { Module } from "@nestjs/common";
+import { CreateOrderUseCase } from "./application/create-order.use-case";
+import { OrderRepositoryPort } from "./domain/ports/order.repository.port";
+import { PrismaOrderRepository } from "./infrastructure/persistence/prisma-order.repository";
+import { OrderController } from "./infrastructure/http/order.controller";
+
+@Module({
+  controllers: [OrderController],
+  providers: [
+    CreateOrderUseCase,
+    {
+      provide: OrderRepositoryPort,
+      useClass: PrismaOrderRepository,
+    },
+  ],
+})
+export class OrderModule {}
+```
+
+El controlador (adaptador de entrada) recibe el caso de uso y delega:
+
+```typescript
+// infrastructure/http/order.controller.ts
+import { Body, Controller, Post } from "@nestjs/common";
+import { CreateOrderUseCase } from "../../application/create-order.use-case";
+
+@Controller("orders")
+export class OrderController {
+  constructor(private readonly createOrder: CreateOrderUseCase) {}
+
+  @Post()
+  async create(@Body() body: { userId: string; total: number }) {
+    return this.createOrder.execute(body);
+  }
+}
+```
+
+Los casos de uso siguen siendo agnósticos del framework; solo el controlador conoce HTTP y DTOs.
+
+## Puertos de entrada vs salida (resumen)
+
+| Tipo                     | Rol                                | Ejemplo en NestJS                               |
+| ------------------------ | ---------------------------------- | ----------------------------------------------- |
+| **Puerto de entrada**    | Cómo se _conduce_ la app           | Clase de caso de uso llamada por el controlador |
+| **Adaptador de entrada** | Quién llama al puerto              | Controlador, resolver GraphQL, consumidor       |
+| **Puerto de salida**     | Qué _necesita_ la app del exterior | Interfaz `OrderRepositoryPort`                  |
+| **Adaptador de salida**  | Quién lo implementa                | `PrismaOrderRepository`, cliente REST           |
+
+El dominio y la capa de aplicación definen y usan estos puertos; la infraestructura aporta los adaptadores.
+
+## Cuándo usar Arquitectura Hexagonal
+
+- **Backends medianos o grandes**: Varios casos de uso, varias fuentes de datos o APIs externas.
+- **Productos a largo plazo**: Esperas cambiar base de datos, framework o integraciones con el tiempo.
+- **Alta testeabilidad**: Los casos de uso se prueban con adaptadores en memoria o falsos, sin tocar BD ni HTTP.
+- **Alineación en equipo**: Límites claros (dominio, aplicación, infraestructura) facilitan la propiedad y la incorporación.
+
+Para APIs CRUD pequeñas o prototipos, un único módulo NestJS con servicio y repositorio puede bastar. Introduce puertos y adaptadores cuando la complejidad o la necesidad de flexibilidad y tests lo justifiquen.
+
+## Beneficios
+
+1. **Testabilidad**: Los casos de uso se ejecutan con repositorios falsos y sin I/O real.
+2. **Flexibilidad**: Cambiar Prisma por TypeORM, o REST por GraphQL, añadiendo adaptadores sin tocar el dominio.
+3. **Límites claros**: El dominio y la aplicación permanecen libres de detalles de framework e infraestructura.
+4. **Coherencia con el frontend**: Si el frontend sigue Clean Architecture, el backend con Hexagonal mantiene la misma filosofía: dominio en el centro, dependencias hacia adentro.
+
+## Resumen
+
+- La **Arquitectura Hexagonal** coloca el dominio en el centro y se comunica con el exterior mediante **puertos** (interfaces) y **adaptadores** (implementaciones).
+- En NestJS: coloca **dominio** (entidades, puertos) y **aplicación** (casos de uso) en carpetas dedicadas; coloca **infraestructura** (controladores, Prisma, clientes externos) en adaptadores.
+- Usa **inyección de dependencias** para vincular interfaces de puertos con implementaciones de adaptadores.
+- Mantén los casos de uso y el dominio libres de NestJS, Prisma y HTTP para que sigan siendo testeables y fáciles de evolucionar.
+
+Si quieres profundizar, puedes añadir value objects, eventos de dominio o CQRS sobre esta estructura. Las mismas ideas se aplican en otros backends (por ejemplo Go o .NET): puertos y adaptadores son agnósticos de lenguaje y framework.

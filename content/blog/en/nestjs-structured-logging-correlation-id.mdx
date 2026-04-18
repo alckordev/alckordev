@@ -1,0 +1,114 @@
+---
+title: "Structured logging and correlation IDs in NestJS: debug without noise or leaks"
+abstract: "Add a per-request identifier, log status and duration as JSON, and define what must never appear in logs, aligned with versioned APIs and JWT auth."
+publishedAt: "2026-04-13 10:00:00"
+topics:
+  - name: NestJS
+    slug: nestjs
+  - name: API
+    slug: api
+  - name: Observability
+    slug: observability
+---
+
+When something breaks in production, plain-text logs without context make it hard to tie errors to a specific request. **Structured logs** (one JSON line per event) filter and aggregate in any stack (ELK, Loki, CloudWatch, and so on). A **correlation ID** (or request ID) links middleware, database calls, and error messages into one logical trace.
+
+This guide targets a NestJS API; if you document the contract with OpenAPI, see part one: [OpenAPI and Swagger in NestJS](/en/blog/nestjs-openapi-swagger-production). [API versioning](/en/blog/versioning-api-with-nestjs) and JWT auth ([JWT + refresh + Prisma guide](/en/blog/nestjs-jwt-refresh-blacklist-prisma-complete)) provide useful context: logs should help you debug **without** dumping tokens or PII.
+
+## What to log per HTTP request
+
+Useful minimum fields:
+
+- **`requestId`**: UUID or opaque id generated at the start of the request.
+- **`method`**, **`path`** (or a route template if you use URI versioning).
+- **`statusCode`** and **`durationMs`** when the response finishes.
+- **`userId`** or an opaque identifier only if support truly needs it; avoid raw email or government IDs.
+
+Avoid by default: full request bodies, `Authorization` headers, session cookies, query strings with secrets.
+
+## Correlation ID: middleware and propagation
+
+Generate an id when the client does not send one. Many teams honor **`X-Request-Id`** or **`X-Correlation-Id`** when present (for example from an API gateway).
+
+```ts
+import { Injectable, NestMiddleware } from "@nestjs/common";
+import { randomUUID } from "crypto";
+import type { Request, Response, NextFunction } from "express";
+
+@Injectable()
+export class RequestIdMiddleware implements NestMiddleware {
+  use(req: Request, res: Response, next: NextFunction) {
+    const id =
+      (req.headers["x-request-id"] as string)?.trim() || randomUUID();
+    req.requestId = id;
+    res.setHeader("x-request-id", id);
+    next();
+  }
+}
+```
+
+Extend the `Request` type via a declaration file (`requestId?: string`) for TypeScript. Register the middleware in `AppModule` with `configure(consumer)` for `*` or under your `api` prefix.
+
+## Logging interceptor when the response completes
+
+An **interceptor** wrapping the handler gives you final status and elapsed time:
+
+```ts
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from "@nestjs/common";
+import type { Observable } from "rxjs";
+import { tap } from "rxjs/operators";
+
+@Injectable()
+export class LoggingInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const started = Date.now();
+    const http = context.switchToHttp();
+    const req = http.getRequest<{ method: string; url: string; requestId?: string }>();
+    const res = http.getResponse<{ statusCode: number }>();
+
+    return next.handle().pipe(
+      tap({
+        next: () => {
+          this.writeLine({
+            level: "info",
+            requestId: req.requestId,
+            method: req.method,
+            path: req.url,
+            statusCode: res.statusCode,
+            durationMs: Date.now() - started,
+          });
+        },
+        error: (err: Error) => {
+          this.writeLine({
+            level: "error",
+            requestId: req.requestId,
+            method: req.method,
+            path: req.url,
+            message: err.message,
+            durationMs: Date.now() - started,
+          });
+        },
+      }),
+    );
+  }
+
+  private writeLine(payload: Record<string, unknown>) {
+    process.stdout.write(`${JSON.stringify(payload)}\n`);
+  }
+}
+```
+
+Register it as a global `APP_INTERCEPTOR` or per module. In internal services, reuse `req.requestId` when logging from use cases or repositories (pass it explicitly, or use `AsyncLocalStorage` if you need implicit context without coupling everything to `Request`).
+
+## Aggregation without vendor lock
+
+**JSON to stdout/stderr** is the most portable contract: your platform (Docker, Kubernetes, VPS) forwards lines to whatever aggregator you choose. Avoid pretty human-only formatting in production: tools prefer one JSON object per line.
+
+## Closing the series
+
+With the contract ([OpenAPI](/en/blog/nestjs-openapi-swagger-production)) and visibility (this article), hardening moves to part three: [CORS, rate limiting, and security headers in NestJS](/en/blog/nestjs-api-security-headers-cors-rate-limiting).

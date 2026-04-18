@@ -1,0 +1,255 @@
+---
+title: "Hexagonal Architecture in NestJS: Ports, Adapters and Domain at the Center"
+abstract: "Learn how to apply Hexagonal Architecture (Ports and Adapters) in NestJS. Put the domain at the center, define ports for infrastructure, and build testable, framework-independent backend services with practical examples."
+publishedAt: "2026-02-15 10:00:00"
+topics:
+  - name: Hexagonal Architecture
+    slug: hexagonal-architecture
+  - name: NestJS
+    slug: nestjs
+  - name: Backend
+    slug: backend
+  - name: Software Architecture
+    slug: software-architecture
+  - name: TypeScript
+    slug: typescript
+---
+
+If you've already explored [Clean Architecture in the frontend](/en/blog/clean-architecture-frontend-react), you'll find Hexagonal Architecture (also known as **Ports and Adapters**) to be a natural fit for the backend. Both approaches keep the business core independent of frameworks and infrastructure. In this article we'll see how to apply Hexagonal Architecture in NestJS: domain at the center, ports as contracts, and adapters for HTTP, database, and external services.
+
+## What is Hexagonal Architecture?
+
+Hexagonal Architecture was proposed by **Alistair Cockburn**. The idea is to place the **domain** (business logic and rules) at the center, and communicate with the outside world only through **ports** (interfaces) implemented by **adapters** (concrete implementations). The "hexagon" is a metaphor: the core has six sides because it can have multiple entry and exit points, all defined by ports.
+
+### Why "Ports and Adapters"?
+
+- **Ports**: Contracts (interfaces) that define _what_ the application needs (e.g. "persist an order") or _what_ it offers (e.g. "handle a create-order command"). The domain and use cases depend only on these abstractions.
+- **Adapters**: Implementations that _adapt_ the outside world to the ports. For example, a "persist order" port can be implemented by a Prisma adapter, a REST client, or a mock in tests.
+
+Dependencies point **inward**: the domain does not depend on NestJS, Prisma, or HTTP. Infrastructure depends on the domain.
+
+## Core Concepts
+
+### 1. Domain (center)
+
+Entities, value objects, and business rules. No framework imports, no database or HTTP details. Pure TypeScript.
+
+### 2. Application (use cases)
+
+Orchestrate the domain. They depend on **ports** (injected interfaces) to load or persist data and to call external services. They do not know _how_ persistence or HTTP works.
+
+### 3. Ports (inbound and outbound)
+
+- **Inbound ports**: What the application _exposes_ (e.g. "create order", "get user"). In NestJS they are often use-case classes or application services.
+- **Outbound ports**: What the application _needs_ from the outside (e.g. "save order", "send notification"). They are interfaces implemented by adapters.
+
+### 4. Adapters
+
+- **Inbound adapters**: Trigger use cases. In NestJS, HTTP controllers, GraphQL resolvers, or message consumers.
+- **Outbound adapters**: Implement outbound ports. For example: Prisma repository, REST client, or an email sender.
+
+## Folder structure in NestJS
+
+A simple way to organize a NestJS project with Hexagonal Architecture:
+
+```text
+src/
+├── domain/                    # Core (no framework)
+│   ├── order.entity.ts
+│   ├── user.entity.ts
+│   └── ports/
+│       ├── order.repository.port.ts
+│       └── notification.port.ts
+├── application/               # Use cases
+│   ├── create-order.use-case.ts
+│   └── get-user.use-case.ts
+├── infrastructure/            # Adapters
+│   ├── persistence/
+│   │   └── prisma-order.repository.ts
+│   ├── http/
+│   │   └── order.controller.ts
+│   └── external/
+│       └── email-notification.adapter.ts
+└── app.module.ts
+```
+
+The domain and application layers do not import from `infrastructure` or from `@nestjs/*` (except perhaps in the application layer if you use Nest's DI to resolve use cases). Infrastructure imports and implements the ports.
+
+## Example: Domain and ports
+
+Suppose we have a bounded context "Orders". The domain defines the entity and the port for persistence:
+
+```typescript
+// domain/order.entity.ts
+export interface Order {
+  id: string;
+  userId: string;
+  total: number;
+  status: "pending" | "paid" | "shipped";
+  createdAt: Date;
+}
+
+// domain/ports/order.repository.port.ts
+import type { Order } from "../order.entity";
+
+export interface OrderRepositoryPort {
+  save(order: Omit<Order, "id" | "createdAt">): Promise<Order>;
+  findById(id: string): Promise<Order | null>;
+}
+```
+
+The use case depends only on this port. It does not know if the implementation uses Prisma, TypeORM, or an in-memory store.
+
+## Example: Use case (application layer)
+
+The use case orchestrates the flow and uses the port to persist:
+
+```typescript
+// application/create-order.use-case.ts
+import type { Order } from "../../domain/order.entity";
+import type { OrderRepositoryPort } from "../../domain/ports/order.repository.port";
+
+export class CreateOrderUseCase {
+  constructor(private readonly orderRepository: OrderRepositoryPort) {}
+
+  async execute(input: { userId: string; total: number }): Promise<Order> {
+    const order = {
+      userId: input.userId,
+      total: input.total,
+      status: "pending" as const,
+    };
+    return this.orderRepository.save(order);
+  }
+}
+```
+
+No Prisma, no HTTP — only the port. Testing is easy: you inject a fake or in-memory implementation of `OrderRepositoryPort`.
+
+## Example: Adapter (infrastructure)
+
+The adapter implements the port and uses Prisma (or any other technology):
+
+```typescript
+// infrastructure/persistence/prisma-order.repository.ts
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma.service";
+import type { Order } from "../../domain/order.entity";
+import type { OrderRepositoryPort } from "../../domain/ports/order.repository.port";
+
+@Injectable()
+export class PrismaOrderRepository implements OrderRepositoryPort {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async save(order: Omit<Order, "id" | "createdAt">): Promise<Order> {
+    const created = await this.prisma.order.create({
+      data: {
+        userId: order.userId,
+        total: order.total,
+        status: order.status,
+      },
+    });
+    return {
+      id: created.id,
+      userId: created.userId,
+      total: Number(created.total),
+      status: created.status as Order["status"],
+      createdAt: created.createdAt,
+    };
+  }
+
+  async findById(id: string): Promise<Order | null> {
+    const row = await this.prisma.order.findUnique({ where: { id } });
+    if (!row) return null;
+    return {
+      id: row.id,
+      userId: row.userId,
+      total: Number(row.total),
+      status: row.status as Order["status"],
+      createdAt: row.createdAt,
+    };
+  }
+}
+```
+
+The domain and use case stay unchanged if you switch to another ORM or storage; you only add or replace adapters.
+
+## Wiring in NestJS (dependency injection)
+
+Register the port with the adapter implementation in a module:
+
+```typescript
+// order.module.ts
+import { Module } from "@nestjs/common";
+import { CreateOrderUseCase } from "./application/create-order.use-case";
+import { OrderRepositoryPort } from "./domain/ports/order.repository.port";
+import { PrismaOrderRepository } from "./infrastructure/persistence/prisma-order.repository";
+import { OrderController } from "./infrastructure/http/order.controller";
+
+@Module({
+  controllers: [OrderController],
+  providers: [
+    CreateOrderUseCase,
+    {
+      provide: OrderRepositoryPort,
+      useClass: PrismaOrderRepository,
+    },
+  ],
+})
+export class OrderModule {}
+```
+
+The controller (inbound adapter) receives the use case and delegates:
+
+```typescript
+// infrastructure/http/order.controller.ts
+import { Body, Controller, Post } from "@nestjs/common";
+import { CreateOrderUseCase } from "../../application/create-order.use-case";
+
+@Controller("orders")
+export class OrderController {
+  constructor(private readonly createOrder: CreateOrderUseCase) {}
+
+  @Post()
+  async create(@Body() body: { userId: string; total: number }) {
+    return this.createOrder.execute(body);
+  }
+}
+```
+
+Use cases stay framework-agnostic; only the controller knows about HTTP and DTOs.
+
+## Inbound vs outbound ports (summary)
+
+| Type                 | Role                              | Example in NestJS                      |
+| -------------------- | --------------------------------- | -------------------------------------- |
+| **Inbound port**     | How the app is _driven_           | Use case class called by controller    |
+| **Inbound adapter**  | Who calls the port                | Controller, GraphQL resolver, consumer |
+| **Outbound port**    | What the app _needs_ from outside | `OrderRepositoryPort` interface        |
+| **Outbound adapter** | Who implements it                 | `PrismaOrderRepository`, REST client   |
+
+The domain and application layers define and use these ports; infrastructure provides the adapters.
+
+## When to use Hexagonal Architecture
+
+- **Medium to large backends**: Multiple use cases, several data sources or external APIs.
+- **Long-lived products**: You expect to change database, framework, or integrations over time.
+- **High testability**: Use cases can be tested with in-memory or fake adapters, without touching the DB or HTTP.
+- **Team alignment**: Clear boundaries (domain, application, infrastructure) make ownership and onboarding easier.
+
+For small CRUD APIs or prototypes, a single NestJS module with a service and repository can be enough. Introduce ports and adapters when the complexity or the need for flexibility and tests justifies it.
+
+## Benefits
+
+1. **Testability**: Use cases run with fake repositories and no real I/O.
+2. **Flexibility**: Swap Prisma for TypeORM, or REST for GraphQL, by adding adapters without touching the domain.
+3. **Clear boundaries**: Domain and application stay free of framework and infrastructure details.
+4. **Consistency with frontend**: If the frontend follows Clean Architecture, the backend with Hexagonal keeps the same philosophy: domain at the center, dependencies pointing inward.
+
+## Summary
+
+- **Hexagonal Architecture** places the domain at the center and communicates with the outside via **ports** (interfaces) and **adapters** (implementations).
+- In NestJS: put **domain** (entities, ports) and **application** (use cases) in dedicated folders; put **infrastructure** (controllers, Prisma, external clients) in adapters.
+- Use **dependency injection** to bind port interfaces to adapter implementations.
+- Keep use cases and domain free of NestJS, Prisma, and HTTP so they remain testable and easy to evolve.
+
+If you want to go deeper, you can add value objects, domain events, or CQRS on top of this structure. The same ideas also apply to other backends (e.g. Go or .NET): ports and adapters are language- and framework-agnostic.

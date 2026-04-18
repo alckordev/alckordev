@@ -20,14 +20,30 @@ Currently focused on **React**, **Next.js**, **NestJS**, **Go**, **Vue**, **Nuxt
 
 ### 📚 Latest articles
 
-| Article                                                                                                                        | Topic        |
-| ------------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| [Redux vs TanStack Query: Developer Equivalence Guide](https://alckor.dev/en/blog/redux-vs-tanstack-query)                     | Frontend     |
-| [React vs Vue: Developer's Equivalence Guide](https://alckor.dev/en/blog/react-vs-vue-equivalences)                            | Frontend     |
-| [Clean Architecture in Frontend with React](https://alckor.dev/en/blog/clean-architecture-frontend-react)                      | Architecture |
-| [NestJS: JWT + Refresh Token + Blacklist with Prisma](https://alckor.dev/en/blog/nestjs-jwt-refresh-blacklist-prisma-complete) | Backend      |
+_Series — NestJS APIs in production:_ [OpenAPI & Swagger](https://alckor.dev/en/blog/nestjs-openapi-swagger-production) → [Structured logging & correlation ID](https://alckor.dev/en/blog/nestjs-structured-logging-correlation-id) → [CORS, rate limiting & security headers](https://alckor.dev/en/blog/nestjs-api-security-headers-cors-rate-limiting)
+
+| Article                                                                                                                          | Topic        |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| [OpenAPI and Swagger in NestJS](https://alckor.dev/en/blog/nestjs-openapi-swagger-production)                                    | Backend      |
+| [Structured logging and correlation IDs in NestJS](https://alckor.dev/en/blog/nestjs-structured-logging-correlation-id)          | Backend      |
+| [CORS, rate limiting, and security headers in NestJS](https://alckor.dev/en/blog/nestjs-api-security-headers-cors-rate-limiting) | Backend      |
+| [Hexagonal Architecture in NestJS: Ports, Adapters and Domain](https://alckor.dev/en/blog/hexagonal-architecture-nestjs)         | Architecture |
+| [Redux vs TanStack Query: Developer Equivalence Guide](https://alckor.dev/en/blog/redux-vs-tanstack-query)                       | Frontend     |
 
 **[→ View all articles](https://alckor.dev/blog)**
+
+Blog posts are MDX files under `content/blog/en/` and `content/blog/es/` (same filename = same slug per language). Frontmatter uses `title`, `abstract`, `publishedAt`, and `topics`.
+
+### 💻 Local development
+
+This site is a **Next.js** app (`src/`). Install dependencies and run the dev server:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Other scripts: `pnpm build`, `pnpm start`, `pnpm lint`. Configure environment as needed for your deployment (e.g. `SITE_URL` for canonical URLs and OG metadata).
 
 ### 🛠 Tech stack
 

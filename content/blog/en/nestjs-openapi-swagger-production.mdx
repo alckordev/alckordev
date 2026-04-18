@@ -1,0 +1,68 @@
+---
+title: "OpenAPI and Swagger in NestJS: a clear contract in dev and production"
+abstract: "Integrate @nestjs/swagger to document your REST API, keep the spec aligned with route versioning, and follow safe patterns so Swagger is not exposed without controls in real environments."
+publishedAt: "2026-04-12 10:00:00"
+topics:
+  - name: NestJS
+    slug: nestjs
+  - name: API
+    slug: api
+  - name: OpenAPI
+    slug: openapi
+---
+
+An API without an explicit contract forces clients to read code or guess bodies and status codes. **OpenAPI** (formerly Swagger) describes those contracts in a standard way so frontends, QA, and integrators can work in parallel. In NestJS, **`@nestjs/swagger`** builds the spec from decorators and typed DTOs.
+
+If you already version your API with NestJS, read [API versioning with NestJS](/en/blog/versioning-api-with-nestjs) first: documentation should mirror the same versions (`/api/v1/...`, headers, etc.) so clients are not misled.
+
+## Why it matters in production
+
+In **development**, Swagger UI speeds up manual testing and onboarding. In **production**, the value is not “leave the explorer open to the world”, but having a **reliable spec** (JSON/YAML) you can version, validate in CI, or publish on an internal portal. A public UI without authentication is a map of your attack surface: expose it only where it makes sense and with controls.
+
+## Install and minimal bootstrap
+
+```bash
+npm install @nestjs/swagger
+```
+
+In `main.ts`, after creating the app and **before** `listen`, build the document:
+
+```ts
+import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { AppModule } from "./app.module";
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle("My API")
+    .setDescription("REST contract")
+    .setVersion("1.0")
+    .addBearerAuth()
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("docs", app, document);
+
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+Open `http://localhost:3000/docs` for the UI. Controllers and DTOs decorated with `@ApiTags`, `@ApiOperation`, `@ApiProperty`, and related decorators enrich the schema without maintaining parallel types by hand.
+
+## Versioning and tags
+
+- Use **`@ApiTags('v1', 'Orders')`** (or your convention) to group by domain and, if needed, by version.
+- With **URI versioning**, ensure documented paths match the real prefix (`/api/v1/...`). The [API versioning](/en/blog/versioning-api-with-nestjs) guide helps keep code and spec aligned.
+
+## Three safe production patterns
+
+1. **Spec only, no public UI**: expose JSON on a protected route or ship it as a CI artifact; keep Swagger UI on localhost or VPN.
+2. **UI behind auth**: basic auth middleware, corporate IdP, or IP allowlists in front of your reverse proxy.
+3. **Environment-gated**: register `SwaggerModule.setup` only when `NODE_ENV !== 'production'` or when an explicit flag like `ENABLE_SWAGGER=true` is set in a controlled environment.
+
+## Next in this series
+
+Once the contract is clear, the next operational step is **observability**: in part two, [structured logging and correlation IDs in NestJS](/en/blog/nestjs-structured-logging-correlation-id), we log each request usefully without leaking sensitive data. Part three covers [CORS, rate limiting, and security headers](/en/blog/nestjs-api-security-headers-cors-rate-limiting).
