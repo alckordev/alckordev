@@ -1,0 +1,79 @@
+---
+title: "CORS, rate limiting y cabeceras de seguridad en NestJS: checklist para APIs en producción"
+abstract: "Configura CORS con orígenes explícitos, limita abusos con @nestjs/throttler o el gateway y añade cabeceras HTTP seguras detrás del proxy, enlazando con OpenAPI y logs estructurados."
+publishedAt: "2026-04-14 10:00:00"
+topics:
+  - name: NestJS
+    slug: nestjs
+  - name: API
+    slug: api
+  - name: Seguridad
+    slug: security
+---
+
+Las dos primeras entregas de esta serie cubrieron el **contrato** ([OpenAPI en NestJS](/es/blog/nestjs-openapi-swagger-production)) y la **visibilidad** ([logs estructurados y correlation id](/es/blog/nestjs-structured-logging-correlation-id)). Aquí cerramos el ciclo con la **superficie HTTP** que suele exponerse primero a internet: CORS, límites de tasa y cabeceras que endurecen el comportamiento del navegador y de proxies inversos.
+
+El [versionado de APIs](/es/blog/versioning-api-with-nestjs) sigue siendo la referencia si expones varias versiones: CORS y throttling deben aplicarse de forma coherente a todos los prefijos.
+
+## CORS: explícito y restrictivo
+
+`enableCors({ origin: true })` es cómodo en local y arriesgado en producción. Prefiere una **lista blanca** de orígenes:
+
+```ts
+app.enableCors({
+  origin: ["https://app.tudominio.com"],
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Request-Id"],
+  credentials: true,
+});
+```
+
+Si el front y la API comparten dominio bajo el mismo sitio (mismo origen), muchas veces **no necesitas CORS** en el navegador para ese flujo. Activa CORS solo para orígenes que realmente consuman la API desde el cliente.
+
+## Rate limiting: en Nest o en el gateway
+
+**Abuso** (fuerza bruta, scraping, errores en bucle) se mitiga limitando peticiones por ventana de tiempo.
+
+- **En NestJS**, `@nestjs/throttler` y `ThrottlerGuard` son el camino habitual: límites globales y por ruta, con TTL configurable.
+- **En el gateway** (Nginx, Cloudflare, API Management), centralizas políticas y ahorras CPU de aplicación; muchos equipos combinan ambos: límites agresivos en el borde y límites finos en Nest para rutas sensibles (login, webhooks).
+
+Ejemplo mínimo de registro global (consulta la documentación oficial para la versión de Nest que uses):
+
+```ts
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { APP_GUARD } from "@nestjs/core";
+
+ThrottlerModule.forRoot({
+  throttlers: [{ ttl: 60_000, limit: 100 }],
+});
+
+// providers: { provide: APP_GUARD, useClass: ThrottlerGuard }
+```
+
+Ajusta `ttl` y `limit` a tu tráfico legítimo; rutas internas o health checks pueden excluirse con decoradores o reglas específicas.
+
+## Cabeceras de seguridad
+
+**Helmet** (middleware Express) añade cabeceras como `X-Content-Type-Options`, `X-Frame-Options` y políticas CSP cuando las configures. En Nest con adaptador Express:
+
+```bash
+npm install helmet
+```
+
+```ts
+import helmet from "helmet";
+// después de crear la app
+app.use(helmet());
+```
+
+Detrás de **Nginx** o un CDN, parte de la política puede vivir también en el proxy (HSTS, CSP estrictas). Evita duplicar cabeceras contradictorias entre capas.
+
+## Checklist breve antes de producción
+
+- CORS con orígenes conocidos; sin comodines innecesarios.
+- Rate limiting activo en rutas públicas; exclusiones documentadas para health checks.
+- Cabeceras de seguridad revisadas con el front (CSP puede romper scripts inline).
+- Swagger u otra UI de documentación no expuesta sin control (ver [OpenAPI](/es/blog/nestjs-openapi-swagger-production)).
+- Logs sin secretos y con `requestId` (ver [correlation id](/es/blog/nestjs-structured-logging-correlation-id)).
+
+Con estas tres entregas tienes un hilo coherente desde el contrato hasta el endurecimiento HTTP sobre una base NestJS alineada con buenas prácticas de APIs en producción.
